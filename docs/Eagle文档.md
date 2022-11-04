@@ -123,6 +123,8 @@ GREATER_EQUAL // >=
  STRING
  LIST
  DICT
+ TUPLE
+ STREAM
  ```
 
 ### 关键字
@@ -183,6 +185,6 @@ RIGHT_BRACE // }
 * 注释："//" + ...
 
 * list添加/删除元素：push，pop？
-* map添加/删除元素：insert？
+* dict添加/删除元素：insert？
 * filter/map/reduce：当内置方法实现？
 * 类初始化init函数内置

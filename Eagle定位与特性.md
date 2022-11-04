@@ -4,7 +4,7 @@
 * 类Python的动态类型，解释型语言
 * 具有面向过程（OP），面向对象（OO）和部分函数式特性
 * 实现基础表达式，控制流，面向对象，继承
-* 内置list和map两种迭代器
+* 内置list、tuple、dict三种迭代器
 * 类缺乏弹性，定义好的类无法额外添加需要和变化
 
 ### 特性
@@ -14,7 +14,7 @@
 var a = condition ? t_value : f_value;
 ```
 
-* 引入高阶函数map/reduce/filter
+* 引入stream流操作（类似java的Stream流）和高阶函数map/reduce/filter
   * filter example
 
 ```eagle
@@ -23,11 +23,18 @@ def check(n) {
 }
 
 var l = [1, 2, 3, 4, 5];
-print l.filter(check); // [3, 4, 5]
+print stream(l).filter(check).to_list(); // [3, 4, 5]
 
 var d = {1: "1", 2: "2", 3: "3"};
-print d.values.filter(check); // {3: "3"}
-print d.keys.filter(check); // error?
+print stream(d.values()).filter(check).to_list(); // 运行时error, 字符串和整数不能进行比较
+print stream(d.keys()).filter(check).to_list(); // [3, ]
+
+def check_item(item) {
+	return item[0] >= 2
+}
+
+print stream(d.items()).filter(check_item).to_list(); // [(2, "2"), (3, "3")]
+print stream(d.items()).filter(check_item).to_dict(); // {2: "2", 3: "3"}
 ```
 
 * 引入match/switch case模式匹配
