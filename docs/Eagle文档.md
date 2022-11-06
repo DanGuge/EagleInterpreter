@@ -33,7 +33,7 @@ if-statement ::= "if" "(" condition ")" statement
 								 ("else" statement)? ;
 
 for-statement ::= "for" "(" 
-									(variable-declaration | expression-statement| ";")?
+									(variable-declaration | expression-statement | ";")?
 									expression? ";"
 									expression? 
 									")"
@@ -54,29 +54,32 @@ continue-statement ::= "continue" ";" ;
 block-statement ::= "{" (declaration|statement)* "}" ;
 
 // 表达式
-expression ::= assignment |
-							 logic_expression |
-							 number_expression |
-							 switch_expression ;
+expression ::= assignment_expression ;
 
-assignment ::= (call ".")? identifier ("[" expression "]")* "=" expression ;
+assignment_expression ::= (call ".")? identifier ("[" assignment_expression "]")* 
+													("="|"+" "="|"-" "="|"*" "="|"/" "="|"%" "=") assignment_expression |
+													ternary_if_else ;
 
-logic_expression ::= logic_and ("or" logic_and)* ;
-logic_and ::= comparison ("and" comparison)* ;
-comparison ""= expression (!="|"=="|">"|">="|"<"|"<=" expression)* ;
-										 
-number_expression ::= factor (("-"|"+") factor)* ;
+ternary_if_else ::= logic_or ("?" ternary_if_else ":" ternary_if_else)? ;
+logic_or ::= logic_and ("or" logic_and)* ;
+logic_and ::= equality ("and" equality)* ;
+equality ::= comparison (("!="|"==") comparison)* ;
+comparison ::= term ((">"|">="|"<"|"<=") term)* ;						 
+term ::= factor (("-"|"+") factor)* ;
 factor ::= unary (("*"|"/"|"%") unary)* ;
-unary ::= ("!"|"-") unary | call ;
+unary ::= ("!"|"-"|"not") unary | call ;
 call ::= subscript ( "(" arguments? ")" | "." identifier)* ;
-subscript ::= primary ("[" expression "]")* ;
+subscript ::= primary ("[" logic_or "]")* ;
 primary ::= "true" | "false" | "null" | "this" | "super" "." identifier |
 						number | string | identifier | "(" expression ")" |
-						"[" elements? "]" | "{" key_values? "}" ;
-elements ::= expression ("," expression)* ;
-key_values ::= expression ":" expression 
-							 ("," expression ":" expression)* ;
+						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
+						stream_expression | switch_expression ;
 
+list_elements ::= expression ("," expression)* ;
+dict_elements ::= expression ":" expression ("," expression ":" expression)* ;
+typle_elements ::= (expression ",")? | expression ("," expression)* ;
+
+stream_expression ::= "stream" "(" expression ")" ("." identifier "(" identifier? ")")* ;
 switch_expression ::= "switch" "(" expression ")" "{"
 											("case" expression ":" expression ",")*
 											"default" ":" expression "}" ;
@@ -134,6 +137,7 @@ GREATER_EQUAL // >=
  
  AND // and
  OR // or
+ NOT // not
  
  TRUE // true
  FALSE // false
@@ -150,6 +154,8 @@ GREATER_EQUAL // >=
  SWITCH // switch
  CASE // case
  DEFAULT // default
+ 
+ STREAM // stream
  
  DEF // def
  
@@ -172,6 +178,7 @@ COMMA // ,
 DOT // .
 COLON // :
 SEMICOLON // ;
+QUESTIONMARK // ?
 LEFT_PAREN // (
 RIGHT_PAREN // )
 LEFT_BRACKET // [
@@ -183,8 +190,17 @@ RIGHT_BRACE // }
 ## 其他
 
 * 注释："//" + ...
-
-* list添加/删除元素：push，pop？
-* dict添加/删除元素：insert？
-* filter/map/reduce：当内置方法实现？
+* list添加/删除元素：push，pop
+* dict添加/删除元素：insert，remove
+* steam--基本类型
+  * 非终结方法：map/filter/limit/sorted，返回值为stream
+    * map：将元素进行映射
+    * filter：通过check的方法，对元素进行过滤
+    * limit：取出前k个元素
+    * sorted：对元素进行排序
+  * 终结方法：to_list/to_dict/to_tuple/for_each/count
+    * to_list/to_tuple：将流元素转换为对应的可迭代类型，返回值为list/tuple
+    * to_dict：对二元流元素转换为对应的可迭代类型，返回值为dict
+    * for_each：对每个元素都执行该方法，返回值为void
+    * count：统计流元素个数，返回值为int
 * 类初始化init函数内置

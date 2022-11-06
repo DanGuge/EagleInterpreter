@@ -14,7 +14,7 @@
 var a = condition ? t_value : f_value;
 ```
 
-* 引入stream流操作（类似java的Stream流）和高阶函数map/reduce/filter
+* 引入stream流操作（类似java的Stream流）和高阶函数for_each/count/map/filter/limit/sorted
   * filter example
 
 ```eagle
