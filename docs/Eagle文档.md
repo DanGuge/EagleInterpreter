@@ -70,7 +70,7 @@ factor ::= unary (("*"|"/"|"%") unary)* ;
 unary ::= ("!"|"-"|"not") unary | call ;
 call ::= subscript ( "(" arguments? ")" | "." identifier)* ;
 subscript ::= primary ("[" logic_or "]")* ;
-primary ::= "true" | "false" | "null" | "this" | "super" "." identifier |
+primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
 						number | string | identifier | "(" expression ")" |
 						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
 						stream_expression | switch_expression ;
@@ -102,9 +102,14 @@ alpha ::= "a"..."z"|"A"..."Z"|"_" ;
 ```
 MINUS // -
 PLUS // +
-MULT // *
+MULTI // *
 DIV // /
 MOD // %
+MINUS_EQUAL // -=
+PLUS_EQUAL // +=
+MULTI_EQUAL // *=
+DIV_EQUAL // /=
+MOD_EQUAL // %=
 ```
 
 ### 关系运算符
@@ -123,12 +128,10 @@ GREATER_EQUAL // >=
  ```
  IDENTIFIER
  NUMBER
- BOOLEAN
  STRING
  LIST
  DICT
  TUPLE
- STREAM
  ```
 
 ### 关键字
@@ -142,7 +145,7 @@ GREATER_EQUAL // >=
  
  TRUE // true
  FALSE // false
- NULL // null
+ NIL // nil
  
  FOR // for
  WHILE // while
@@ -168,7 +171,7 @@ GREATER_EQUAL // >=
  PRINT // print
  RETURN // return
  
- EOF // 辅助终止符
+ END // 辅助终止符
  ```
 
 ### 其他符号
@@ -179,7 +182,8 @@ COMMA // ,
 DOT // .
 COLON // :
 SEMICOLON // ;
-QUESTIONMARK // ?
+QUESTION_MARK // ?
+EXCLAMATION_MARK // !
 LEFT_PAREN // (
 RIGHT_PAREN // )
 LEFT_BRACKET // [
