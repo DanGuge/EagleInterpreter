@@ -69,8 +69,8 @@ term ::= factor (("-"|"+") factor)* ;
 factor ::= unary (("*"|"/"|"%") unary)* ;
 unary ::= ("!"|"-"|"not") unary | call ;
 call ::= subscript ( "(" arguments? ")" | "." identifier)* ;
-subscript ::= primary ("[" logic_or "]")* ;
-primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
+subscript ::= primary ("[" expression "]")* ;
+primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |ZZ
 						number | string | identifier | "(" expression ")" |
 						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
 						stream_expression | switch_expression ;
