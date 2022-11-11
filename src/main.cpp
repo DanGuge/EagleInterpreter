@@ -1,8 +1,12 @@
-#include <iostream>
+#include <memory>
 
-#include "interpreter/interpreter.h"
+#include "eagle.h"
+
+using namespace eagle;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    std::string source = ""; // test source
+    Eagle::run(source);
     return 0;
 }

@@ -5,12 +5,31 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(./src)
 
-set(SOURCE_FILES src/interpreter/interpreter.h src/interpreter/interpreter.cpp src/parser/parser.h src/parser/parser.cpp src/object.h)
+include_directories(./lib)
+
+set(LIB_FILES
+        lib/BigFloat.h
+        lib/BigFloat.cc
+		src/object.h)
+
+set(SOURCE_FILES
+        src/eagle.h
+        src/eagle.cpp
+        src/interpreter/interpreter.h
+        src/interpreter/interpreter.cpp
+        src/parser/parser.h
+        src/parser/parser.cpp
+        src/parser/lexer.h
+        src/parser/token.h
+        src/parser/lexer.cpp
+        src/parser/token.cpp
+		src/object.h)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
+add_library(big_float_lib STATIC ${LIB_FILES})
 
 add_executable(EagleInterpreter src/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib)
+target_link_libraries(EagleInterpreter eagle_lib big_float_lib)
 
 add_executable(test_simple test/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib)
+target_link_libraries(EagleInterpreter eagle_lib big_float_lib)
