@@ -33,8 +33,9 @@ InstanceSet 	: Expr object, Token name, Token operator, Expr value
 InstanceGet 	: Expr object, Token name
 ContainerSet 	: Expr container, Expr subscript, Token operator, Expr value
 ContainerGet 	: Expr container, Expr subscript
-Refer 			: Token type	// This and Super
-SequenceContainer 		: Token type, List<Expr> elements
-AssociativeContainer 	: Token type, List<Pair<Expr, Expr>> elements
+This 			: Token keyword
+Super 			: Token keyword, Token method
+Sequence 		: Token type, List<Expr> elements
+Associative 	: Token type, List<Pair<Expr, Expr>> elements
 ```
 
