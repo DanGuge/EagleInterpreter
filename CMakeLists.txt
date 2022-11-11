@@ -25,7 +25,11 @@ set(SOURCE_FILES
         src/parser/lexer.cpp
         src/parser/token.cpp
 		src/object.h
-		src/object.cpp)
+		src/object.cpp
+		src/ast/stmt.h
+		src/ast/stmt.cpp
+		src/ast/expr.h
+		src/ast/expr.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
