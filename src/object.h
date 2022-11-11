@@ -42,12 +42,29 @@ public:
 
     String(std::string str) : str(std::move(str)) {}
 
-    String(const char *str) : str(str) {}
+    String(const char* str) : str(str) {}
 
     std::string str;
 
-    std::string* operator -> () {
+    std::string* operator->() {
         return &str;
+    }
+};
+
+class Null : public Object {
+public:
+    Null() = default;
+};
+
+class Boolean : public Object {
+public:
+    bool value;
+    Boolean() : value(false){}
+
+    Boolean(bool value) : value(value){}
+
+    explicit operator bool() const {
+        return value;
     }
 };
 
