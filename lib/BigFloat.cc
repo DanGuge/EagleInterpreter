@@ -824,6 +824,11 @@ BigFloat BigFloat::Power(const BigFloat& left, const double& double_right, int d
     return BigFloat::Power(left, right, div_precision);
 };
 
+std::ostream& operator<<(std::ostream& out, BigFloat& b) {
+    out << b.ToString();
+    return out;
+}
+
 // Comparators
 bool BigFloat::operator==(const BigFloat& right) const {
     if ((error) || (right.error))

@@ -14,7 +14,7 @@
 
 namespace eagle {
 
-class BigFloat: public Object {
+class BigFloat : public Object {
 private:
     char sign;
     std::deque<char> number;
@@ -94,6 +94,8 @@ public:
     static BigFloat Power(const BigFloat& left, const BigFloat& right, int div_precision = 0);
     static BigFloat Power(const BigFloat& left, const int& int_right, int div_precision = 0);
     static BigFloat Power(const BigFloat& left, const double& double_right, int div_precision = 0);
+
+    friend std::ostream& operator<<(std::ostream& out, BigFloat& b);
 
     BigFloat& operator++(int i) {
         *this = *this + 1;

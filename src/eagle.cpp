@@ -4,6 +4,7 @@
 
 #include "eagle.h"
 
+#include <iomanip>
 #include <iostream>
 
 namespace eagle {
@@ -14,21 +15,25 @@ void Eagle::run(std::string source) {
     had_error = false;
 
     std::shared_ptr<Lexer> lexer = std::make_shared<Lexer>(std::move(source));
-    std::vector<std::shared_ptr<Token>> tokens = lexer->scanTokens();
+    std::vector<std::shared_ptr<Token>>& tokens = lexer->scanTokens();
 
+    const int print_literal_len = 30;
     for (const auto& token : tokens) {
         if (InstanceOf<String>(token->literal)) {
-            std::cout << "String Literal " << cast<String>(token->literal)->str << "\t";
+            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
+                      << "String Literal " + cast<String>(token->literal)->str;
         } else if (InstanceOf<Boolean>(token->literal)) {
-            std::cout << "Boolean Literal " << cast<Boolean>(token->literal)->value << "\t";
+            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
+                      << "Boolean Literal " + cast<Boolean>(token->literal)->ToString();
         } else if (InstanceOf<BigFloat>(token->literal)) {
-            std::cout << "BigFloat Literal " << cast<BigFloat>(token->literal)->ToString() << "\t";
+            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
+                      << "BigFloat Literal " + cast<BigFloat>(token->literal)->ToString();
         } else if (InstanceOf<Null>(token->literal)) {
-            std::cout << "Null Literal "
-                      << "\t";
+            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
+                      << "Null Literal ";
         } else {
-            std::cerr << "Error"
-                      << "\t";
+            std::cerr << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
+                      << "Error";
         }
         std::cout << token->toString() << std::endl;
     }

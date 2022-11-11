@@ -10,7 +10,8 @@ include_directories(./lib)
 set(LIB_FILES
         lib/BigFloat.h
         lib/BigFloat.cc
-		src/object.h)
+		src/object.h
+		src/object.cpp)
 
 set(SOURCE_FILES
         src/eagle.h
@@ -23,7 +24,8 @@ set(SOURCE_FILES
         src/parser/token.h
         src/parser/lexer.cpp
         src/parser/token.cpp
-		src/object.h)
+		src/object.h
+		src/object.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})

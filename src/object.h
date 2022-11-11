@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <iostream>
 #include <memory>
 
 namespace eagle {
@@ -49,23 +50,37 @@ public:
     std::string* operator->() {
         return &str;
     }
+
+    friend std::ostream& operator<<(std::ostream& out, String& s);
 };
 
 class Null : public Object {
 public:
     Null() = default;
+
+    friend std::ostream& operator<<(std::ostream& out, Null& n);
+
+    std::string ToString() const {
+        return "Nil";
+    }
 };
 
 class Boolean : public Object {
 public:
     bool value;
-    Boolean() : value(false){}
+    Boolean() : value(false) {}
 
-    Boolean(bool value) : value(value){}
+    Boolean(bool value) : value(value) {}
 
     explicit operator bool() const {
         return value;
     }
+
+    std::string ToString() const {
+        return value ? "true" : "false";
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, Boolean& b);
 };
 
 }  // namespace eagle
