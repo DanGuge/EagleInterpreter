@@ -70,7 +70,7 @@ factor ::= unary (("*"|"/"|"%") unary)* ;
 unary ::= ("!"|"-"|"not") unary | call ;
 call ::= subscript ( "(" arguments? ")" | "." identifier)* ;
 subscript ::= primary ("[" expression "]")* ;
-primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |ZZ
+primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
 						number | string | identifier | "(" expression ")" |
 						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
 						stream_expression | switch_expression ;
@@ -129,6 +129,7 @@ GREATER_EQUAL // >=
  IDENTIFIER
  NUMBER
  STRING
+ BOOLEAN
  LIST
  DICT
  TUPLE
@@ -143,8 +144,8 @@ GREATER_EQUAL // >=
  OR // or
  NOT // not
  
- TRUE // true
- FALSE // false
+ TRUE-->BOOLEAN // true
+ FALSE-->BOOLEAN // false
  NIL // nil
  
  FOR // for
