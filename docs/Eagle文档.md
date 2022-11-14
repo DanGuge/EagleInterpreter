@@ -77,7 +77,7 @@ primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
 
 list_elements ::= expression ("," expression)* ;
 dict_elements ::= expression ":" expression ("," expression ":" expression)* ;
-typle_elements ::= (expression ",")? | expression ("," expression)* ;
+typle_elements ::= (expression ",")? | expression ("," expression)+ ;
 
 stream_expression ::= "stream" "(" expression ")" ("." identifier "(" identifier? ")")* ;
 switch_expression ::= "switch" "(" expression ")" "{"
