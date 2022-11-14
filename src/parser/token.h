@@ -12,6 +12,9 @@
 
 namespace eagle {
 
+class Token;
+using TokenPtr = std::shared_ptr<Token>;
+
 enum TokenType {
     // Arithmetic operators
     MINUS,
@@ -85,14 +88,14 @@ enum TokenType {
 
 class Token {
 public:
-    Token(TokenType type, int line, std::string text, std::shared_ptr<Object> literal);
+    Token(TokenType type, int line, std::string text, ObjectPtr literal);
     std::string toString();
 
 public:
     const TokenType type;
     const int line;
     const std::string text;
-    const std::shared_ptr<Object> literal;
+    const ObjectPtr literal;
 
     static std::unordered_map<TokenType, std::string> type_to_string;
 };

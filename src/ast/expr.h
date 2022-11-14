@@ -13,8 +13,6 @@
 namespace eagle::ast {
 
 class Expr;
-using ObjectPtr = std::shared_ptr<Object>;
-using TokenPtr = std::shared_ptr<Token>;
 using ExprPtr = std::shared_ptr<Expr>;
 
 class Expr : public Object {

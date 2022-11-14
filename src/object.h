@@ -8,6 +8,9 @@
 
 namespace eagle {
 
+class Object;
+using ObjectPtr = std::shared_ptr<Object>;
+
 class Object {
 public:
     virtual void ObjectEmptyFunction() {}
@@ -20,7 +23,7 @@ V* cast(Object* o) {
 }
 
 template <class V>
-std::shared_ptr<V> cast(const std::shared_ptr<Object>& o) {
+std::shared_ptr<V> cast(const ObjectPtr& o) {
     std::shared_ptr<V> v = std::dynamic_pointer_cast<V>(o);
     return v;
 }
@@ -32,7 +35,7 @@ bool InstanceOf(Object* o) {
 }
 
 template <class V>
-bool InstanceOf(const std::shared_ptr<Object>& o) {
+bool InstanceOf(const ObjectPtr& o) {
     std::shared_ptr<V> v = std::dynamic_pointer_cast<V>(o);
     return (v != nullptr);
 }

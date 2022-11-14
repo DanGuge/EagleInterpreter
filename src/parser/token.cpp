@@ -71,7 +71,7 @@ std::unordered_map<TokenType, std::string> Token::type_to_string = {
     {RIGHT_BRACE, "RIGHT_BRACE"},
 };
 
-Token::Token(eagle::TokenType type, int line, std::string text, std::shared_ptr<Object> literal)
+Token::Token(eagle::TokenType type, int line, std::string text, ObjectPtr literal)
     : type(type), line(line), text(std::move(text)), literal(std::move(literal)) {}
 
 std::string Token::toString() {

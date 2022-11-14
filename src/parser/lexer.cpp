@@ -21,7 +21,7 @@ std::unordered_map<std::string, TokenType> Lexer::keywords = {
     {"extends", EXTENDS}, {"print", PRINT},       {"return", RETURN},
 };
 
-std::vector<std::shared_ptr<Token>>& Lexer::scanTokens() {
+std::vector<TokenPtr>& Lexer::scanTokens() {
     while (!isAtEnd()) {
         start = current;
         scanToken();
@@ -122,7 +122,7 @@ void Lexer::addIdentifier() {
         type = IDENTIFIER;
     }
 
-    std::shared_ptr<Object> object;
+    ObjectPtr object;
     if (identifier == "true")
         object = std::make_shared<Boolean>(true);
     else if (identifier == "false")
@@ -137,7 +137,7 @@ void Lexer::addToken(TokenType type) {
     addToken(type, std::make_shared<Null>());
 }
 
-void Lexer::addToken(TokenType type, std::shared_ptr<Object> literal) {
+void Lexer::addToken(TokenType type, ObjectPtr literal) {
     std::string sub_str = source.substr(start, current - start);
     tokens.emplace_back(
         std::make_shared<Token>(type, line, std::move(sub_str), std::move(literal)));
