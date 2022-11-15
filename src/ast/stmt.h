@@ -6,7 +6,7 @@
 
 #include "expr.h"
 
-namespace eagle::ast {
+namespace eagle {
 
 class Stmt;
 using StmtPtr = std::shared_ptr<Stmt>;
@@ -164,4 +164,4 @@ public:
     std::vector<StmtPtr> statements;
 };
 
-}  // namespace eagle::ast
+}  // namespace eagle

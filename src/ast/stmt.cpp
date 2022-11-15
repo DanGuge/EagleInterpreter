@@ -4,7 +4,7 @@
 
 #include "stmt.h"
 
-namespace eagle::ast {
+namespace eagle {
 
 Stmt::Class::Class(TokenPtr name, TokenPtr super_class, std::vector<std::shared_ptr<Var>> members,
                    std::vector<std::shared_ptr<Function>> methods)
@@ -83,4 +83,4 @@ ObjectPtr Stmt::Block::accept(Visitor &visitor) {
     return visitor.visitBlockStmt(shared_from_this());
 }
 
-}  // namespace eagle::ast
+}  // namespace eagle

@@ -10,7 +10,7 @@
 #include "object.h"
 #include "parser/token.h"
 
-namespace eagle::ast {
+namespace eagle {
 
 class Expr;
 using ExprPtr = std::shared_ptr<Expr>;
@@ -267,4 +267,4 @@ public:
     std::vector<std::pair<ExprPtr, ExprPtr>> elements;
 };
 
-}  // namespace eagle::ast
+}  // namespace eagle

@@ -40,18 +40,18 @@ void Lexer::scanToken() {
         case ']': addToken(RIGHT_BRACKET); break;
         case '{': addToken(LEFT_BRACE); break;
         case '}': addToken(RIGHT_BRACE); break;
-        case '+': addToken(match('=') ? PLUS_EQUAL : PLUS); break;
-        case '-': addToken(match('=') ? MINUS_EQUAL : MINUS); break;
-        case '*': addToken(match('=') ? MULTI_EQUAL : MULTI); break;
+        case '+': addToken(match('=') ? PLUS_ASSIGN : PLUS); break;
+        case '-': addToken(match('=') ? MINUS_ASSIGN : MINUS); break;
+        case '*': addToken(match('=') ? MULTI_ASSIGN : MULTI); break;
         case '/':
             if (match('/')) {
                 while (peekChar() != '\n' && !isAtEnd())
                     advance();
             } else {
-                addToken(match('=') ? DIV_EQUAL : DIV);
+                addToken(match('=') ? DIV_ASSIGN : DIV);
             }
             break;
-        case '%': addToken(match('=') ? MOD_EQUAL : MOD); break;
+        case '%': addToken(match('=') ? MOD_ASSIGN : MOD); break;
         case '=': addToken(match('=') ? EQUAL : ASSIGN); break;
         case '>': addToken(match('=') ? GREATER_EQUAL : GREATER); break;
         case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;

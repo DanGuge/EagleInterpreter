@@ -22,11 +22,11 @@ enum TokenType {
     MULTI,
     DIV,
     MOD,
-    MINUS_EQUAL,
-    PLUS_EQUAL,
-    MULTI_EQUAL,
-    DIV_EQUAL,
-    MOD_EQUAL,
+    MINUS_ASSIGN,
+    PLUS_ASSIGN,
+    MULTI_ASSIGN,
+    DIV_ASSIGN,
+    MOD_ASSIGN,
 
     // Logical operators
     EQUAL,

@@ -4,7 +4,7 @@
 
 #include "expr.h"
 
-namespace eagle::ast {
+namespace eagle {
 
 Expr::Assign::Assign(TokenPtr name, TokenPtr op, ExprPtr value)
     : name(std::move(name)), op(std::move(op)), value(std::move(value)) {}
@@ -139,4 +139,4 @@ ObjectPtr Expr::Associative::accept(Visitor &visitor) {
     return visitor.visitAssociativeExpr(shared_from_this());
 }
 
-}  // namespace eagle::ast
+}  // namespace eagle
