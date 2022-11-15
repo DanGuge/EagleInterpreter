@@ -56,9 +56,8 @@ block-statement ::= "{" (declaration|statement)* "}" ;
 // 表达式
 expression ::= assignment_expression ;
 
-assignment_expression ::= (call ".")? identifier ("[" assignment_expression "]")* 
-													("="|"+" "="|"-" "="|"*" "="|"/" "="|"%" "=") assignment_expression |
-													ternary_if_else ;
+assignment_expression ::= call ("="|"+" "="|"-" "="|"*" "="|"/" "="|"%" "=") assignment_expression |
+						  ternary_if_else ;
 
 ternary_if_else ::= logic_or ("?" ternary_if_else ":" ternary_if_else)? ;
 logic_or ::= logic_and ("or" logic_and)* ;
@@ -68,8 +67,7 @@ comparison ::= term ((">"|">="|"<"|"<=") term)* ;
 term ::= factor (("-"|"+") factor)* ;
 factor ::= unary (("*"|"/"|"%") unary)* ;
 unary ::= ("!"|"-"|"not") unary | call ;
-call ::= subscript ( "(" arguments? ")" | "." identifier)* ;
-subscript ::= primary ("[" expression "]")* ;
+call ::= primary ("." identifier | ("[" expression "]")+ | "(" arguments? ")")* ;
 primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
 						number | string | identifier | "(" expression ")" |
 						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
@@ -77,9 +75,9 @@ primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
 
 list_elements ::= expression ("," expression)* ;
 dict_elements ::= expression ":" expression ("," expression ":" expression)* ;
-typle_elements ::= (expression ",")? | expression ("," expression)+ ;
+tuple_elements ::= (expression ",")? | expression ("," expression)+ ;
 
-stream_expression ::= "stream" "(" expression ")" ("." identifier "(" identifier? ")")* ;
+stream_expression ::= "stream" "(" expression ")" ("." identifier "(" call? ")")* ;
 switch_expression ::= "switch" "(" expression ")" "{"
 											("case" expression ":" expression ",")*
 											"default" ":" expression "}" ;
@@ -105,11 +103,11 @@ PLUS // +
 MULTI // *
 DIV // /
 MOD // %
-MINUS_EQUAL // -=
-PLUS_EQUAL // +=
-MULTI_EQUAL // *=
-DIV_EQUAL // /=
-MOD_EQUAL // %=
+MINUS_ASSIGN // -=
+PLUS_ASSIGN // +=
+MULTI_ASSIGN // *=
+DIV_ASSIGN // /=
+MOD_ASSIGN // %=
 ```
 
 ### 关系运算符
