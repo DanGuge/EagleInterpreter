@@ -4,56 +4,60 @@
 
 #pragma once
 
-#include "token.h"
+#include <vector>
 
 #include "ast/expr.h"
 #include "ast/stmt.h"
 #include "object.h"
-
-#include <vector>
+#include "token.h"
 
 namespace eagle {
+
+
 
 class Parser {
 public:
     explicit Parser(std::vector<TokenPtr> tokens);
-    std::vector<ast::StmtPtr> parse();
+    std::vector<StmtPtr> parse();
+
 private:
-    class ParserError: std::exception {
-    };
+    class ParserError : std::exception {};
+
 private:
-    ast::StmtPtr declarationOrStatement();
+    StmtPtr declarationOrStatement();
     // declaration
-    ast::StmtPtr classDecl();
-    ast::StmtPtr function(std::string kind);
-    ast::StmtPtr varDecl();
+    StmtPtr classDecl();
+    StmtPtr function(const std::string& kind);
+    StmtPtr varDecl();
     // statement
-    ast::StmtPtr ifStmt();
-    ast::StmtPtr forStmt();
-    ast::StmtPtr whileStmt();
-    ast::StmtPtr expressionStmt();
-    ast::StmtPtr printStmt();
-    ast::StmtPtr returnStmt();
-    ast::StmtPtr breakStmt();
-    ast::StmtPtr continueStmt();
-    std::vector<ast::StmtPtr> block();
+    StmtPtr statement();
+    StmtPtr ifStmt();
+    StmtPtr forStmt();
+    StmtPtr whileStmt();
+    StmtPtr expressionStmt();
+    StmtPtr printStmt();
+    StmtPtr returnStmt();
+    StmtPtr breakStmt();
+    StmtPtr continueStmt();
+    std::vector<StmtPtr> block();
     // expression
-    ast::ExprPtr expression();
-    ast::ExprPtr assignmentExpr();
-    ast::ExprPtr ternary();
-    ast::ExprPtr logicOr();
-    ast::ExprPtr logicAnd();
-    ast::ExprPtr equality();
-    ast::ExprPtr comparison();
-    ast::ExprPtr term();
-    ast::ExprPtr factor();
-    ast::ExprPtr unary();
-    ast::ExprPtr call();
-    ast::ExprPtr subscript();
-    ast::ExprPtr primary();
-    ast::ExprPtr streamExpr();
-    ast::ExprPtr switchExpr();
+    ExprPtr expression();
+    ExprPtr assignmentExpr();
+    ExprPtr ternary();
+    ExprPtr logicOr();
+    ExprPtr logicAnd();
+    ExprPtr equality();
+    ExprPtr comparison();
+    ExprPtr term();
+    ExprPtr factor();
+    ExprPtr unary();
+    ExprPtr call();
+    ExprPtr primary();
+    ExprPtr parsePrimaryParen();
+    ExprPtr streamExpr();
+    ExprPtr switchExpr();
     // help function
+    bool match(const TokenType& type);
     bool match(const std::vector<TokenType>& types);
     TokenPtr consume(TokenType type, std::string message);
     bool check(TokenType type);
@@ -63,8 +67,9 @@ private:
     TokenPtr previous();
     // error handling
     ParserError error(TokenPtr token, std::string message);
+
 private:
-    std::vector<ast::StmtPtr> stmts;
+    std::vector<StmtPtr> stmts;
     std::vector<TokenPtr> tokens;
     int current;
 };

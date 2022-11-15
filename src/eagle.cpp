@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include "parser/parser.h"
+
 namespace eagle {
 bool Eagle::had_error = false;
 bool Eagle::had_runtime_error = false;
@@ -40,6 +42,9 @@ void Eagle::run(std::string source) {
 
     if (had_error)
         return;
+    std::shared_ptr<Parser> parser = std::make_shared<Parser>(tokens);
+    std::vector<StmtPtr> statements = parser->parse();
+
 }
 
 void Eagle::error(int line, const std::string& message) {
