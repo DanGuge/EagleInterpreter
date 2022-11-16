@@ -29,7 +29,9 @@ set(SOURCE_FILES
 		src/ast/stmt.h
 		src/ast/stmt.cpp
 		src/ast/expr.h
-		src/ast/expr.cpp)
+		src/ast/expr.cpp
+		src/interpreter/resolver.h
+		src/interpreter/resolver.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})

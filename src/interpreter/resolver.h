@@ -1,17 +1,20 @@
 //
-// Created by Akman on 2022/11/6.
+// Created by DanGuge on 2022/11/16.
 //
 
 #pragma once
 
+#include <stack>
+
 #include "ast/expr.h"
 #include "ast/stmt.h"
+#include "interpreter.h"
 
 namespace eagle {
 
-class Interpreter : Expr::Visitor, Stmt::Visitor {
+class Resolver : Expr::Visitor, Stmt::Visitor {
 public:
-    explicit Interpreter();
+    explicit Resolver(std::shared_ptr<Interpreter>& interpreter);
     // expressions
     ObjectPtr visitAssignExpr(std::shared_ptr<Expr::Assign> expr) override;
     ObjectPtr visitTernaryExpr(std::shared_ptr<Expr::Ternary> expr) override;
@@ -43,6 +46,10 @@ public:
     ObjectPtr visitBreakStmt(std::shared_ptr<Stmt::Break> expr) override;
     ObjectPtr visitContinueStmt(std::shared_ptr<Stmt::Continue> expr) override;
     ObjectPtr visitBlockStmt(std::shared_ptr<Stmt::Block> expr) override;
+
+private:
+    std::shared_ptr<Interpreter> interpreter;
+    std::stack<std::unordered_map<std::string, bool>> scopes;
 };
 
 }  // namespace eagle
