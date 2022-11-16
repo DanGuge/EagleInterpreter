@@ -59,14 +59,14 @@ private:
     // help function
     bool match(const TokenType& type);
     bool match(const std::vector<TokenType>& types);
-    TokenPtr consume(TokenType type, std::string message);
+    TokenPtr consume(TokenType type, const std::string& message);
     bool check(TokenType type);
     TokenPtr advance();
     bool isAtEnd();
     TokenPtr peek();
     TokenPtr previous();
     // error handling
-    ParserError error(TokenPtr token, std::string message);
+    static ParserError error(const TokenPtr& token, const std::string& message);
 
 private:
     std::vector<StmtPtr> stmts;

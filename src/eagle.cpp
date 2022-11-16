@@ -14,7 +14,6 @@ bool Eagle::had_error = false;
 bool Eagle::had_runtime_error = false;
 
 void Eagle::run(std::string source) {
-    had_error = false;
 
     std::shared_ptr<Lexer> lexer = std::make_shared<Lexer>(std::move(source));
     std::vector<std::shared_ptr<Token>>& tokens = lexer->scanTokens();
@@ -40,22 +39,26 @@ void Eagle::run(std::string source) {
         std::cout << token->toString() << std::endl;
     }
 
+    // if had lexer error then return
     if (had_error)
         return;
+
     std::shared_ptr<Parser> parser = std::make_shared<Parser>(tokens);
     std::vector<StmtPtr> statements = parser->parse();
-
+    // if had parser error then return
+    if (had_error)
+        return;
 }
 
 void Eagle::error(int line, const std::string& message) {
     errorReport(line, "", message);
 }
 
-void Eagle::error(const Token& token, const std::string& message) {
-    if (token.type == TokenType::END) {
-        errorReport(token.line, "At the end", message);
+void Eagle::error(const TokenPtr& token, const std::string& message) {
+    if (token->type == TokenType::END) {
+        errorReport(token->line, "At the end", message);
     } else {
-        errorReport(token.line, "At '" + token.text + "'", message);
+        errorReport(token->line, "At '" + token->text + "'", message);
     }
 }
 

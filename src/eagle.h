@@ -12,7 +12,7 @@ class Eagle {
 public:
     static void run(std::string source);
     static void error(int line, const std::string& message);
-    static void error(const Token& token, const std::string& message);
+    static void error(const TokenPtr& token, const std::string& message);
 
 private:
     static void errorReport(int line, const std::string& where, const std::string& message);

@@ -5,6 +5,8 @@
 
 #include <utility>
 
+#include "eagle.h"
+
 namespace eagle {
 
 Parser::Parser(std::vector<TokenPtr> tokens) : tokens(std::move(tokens)), current(0) {}
@@ -32,7 +34,7 @@ StmtPtr Parser::declarationOrStatement() {
             return function("function");
         return statement();
     } catch (std::exception& parser_exception) {
-        // TODO do something
+        return nullptr;
     }
 }
 
@@ -331,7 +333,7 @@ ExprPtr Parser::assignmentExpr() {
 ExprPtr Parser::ternary() {
     ExprPtr expr = logicOr();
 
-    if (!match(QUESTION_MARK)) {
+    if (match(QUESTION_MARK)) {
         ExprPtr then_expr = ternary();
         consume(COLON, "Expect ':' in ternary expression");
         ExprPtr else_expr = ternary();
@@ -625,11 +627,11 @@ bool Parser::match(const std::vector<TokenType>& types) {
     return false;
 }
 
-TokenPtr Parser::consume(TokenType type, std::string message) {
+TokenPtr Parser::consume(TokenType type, const std::string& message) {
     if (check(type))
         return advance();
 
-    error(peek(), std::move(message));
+    error(peek(), message);
     return nullptr;
 }
 
@@ -657,8 +659,8 @@ TokenPtr Parser::previous() {
     return tokens[current - 1];
 }
 
-Parser::ParserError Parser::error(TokenPtr token, std::string message) {
-    // TODO Eagle.error()
+Parser::ParserError Parser::error(const TokenPtr& token, const std::string& message) {
+    Eagle::error(token, message);
     throw Parser::ParserError();
 }
 
