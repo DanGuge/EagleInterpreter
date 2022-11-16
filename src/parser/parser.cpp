@@ -525,9 +525,9 @@ ExprPtr Parser::primary() {
         }
         consume(RIGHT_BRACE, "Expect '}' at the end of dict");
         return std::make_shared<Expr::Associative>(type, std::move(elements));
-    } else if (check(STREAM)) {
+    } else if (match(STREAM)) {
         return streamExpr();
-    } else if (check(SWITCH)) {
+    } else if (match(SWITCH)) {
         return switchExpr();
     } else {
         error(peek(), "Unexpected token: " + peek()->text);
