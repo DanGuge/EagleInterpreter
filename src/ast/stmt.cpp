@@ -6,7 +6,8 @@
 
 namespace eagle {
 
-Stmt::Class::Class(TokenPtr name, TokenPtr super_class, std::vector<std::shared_ptr<Var>> members,
+Stmt::Class::Class(TokenPtr name, std::shared_ptr<Expr::Variable> super_class,
+                   std::vector<std::shared_ptr<Var>> members,
                    std::vector<std::shared_ptr<Function>> methods)
     : name(std::move(name))
     , super_class(std::move(super_class))
@@ -59,7 +60,8 @@ ObjectPtr Stmt::Print::accept(Visitor &visitor) {
     return visitor.visitPrintStmt(shared_from_this());
 }
 
-Stmt::Return::Return(ExprPtr return_value) : return_value(std::move(return_value)) {}
+Stmt::Return::Return(ExprPtr return_value, int line)
+    : return_value(std::move(return_value)), line(line) {}
 
 ObjectPtr Stmt::Return::accept(Visitor &visitor) {
     return visitor.visitReturnStmt(shared_from_this());

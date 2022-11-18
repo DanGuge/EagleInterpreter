@@ -3,14 +3,14 @@
 ### Stmt
 
 ```
-Class 		: Token name, Token super_class, List<Var> members, List<Function> methods
+Class 		: Token name, Variable super_class, List<Var> members, List<Function> methods
 Function 	: Token name, List<Token> params, List<Stmt> body
 Var 		: Token name, Expr initializer
 If 			: Expr condition, Stmt then_branch, Stmt else_branch
 While 		: Expr condition, Stmt body
 Expression 	: Expr expression
 Print 		: Expr print_value
-Return 		: Expr return_value
+Return 		: Expr return_value, int line
 Break 		: Token keyword
 Continue 	: Token keyword
 Block 		: List<Stmt> statements

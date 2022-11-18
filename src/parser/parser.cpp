@@ -33,7 +33,7 @@ StmtPtr Parser::declarationOrStatement() {
         if (match(DEF))
             return function("function");
         return statement();
-    } catch (std::exception& parser_exception) {
+    } catch (ParserError& parser_exception) {
         return nullptr;
     }
 }
@@ -47,10 +47,10 @@ StmtPtr Parser::declarationOrStatement() {
 StmtPtr Parser::classDecl() {
     TokenPtr name = consume(IDENTIFIER, "Expect class name after 'class' keyword");
 
-    TokenPtr superclass = nullptr;
+    std::shared_ptr<Expr::Variable> superclass = nullptr;
     if (match(EXTENDS)) {
         consume(IDENTIFIER, "Expect superclass name after 'extends' keyword");
-        superclass = previous();
+        superclass = std::make_shared<Expr::Variable>(previous());
     }
 
     consume(LEFT_BRACE, "Expect '{' before class body");
@@ -246,13 +246,14 @@ StmtPtr Parser::printStmt() {
  * return-statement ::= "return" expression ";" ;
  */
 StmtPtr Parser::returnStmt() {
+    int line = previous()->line;
     ExprPtr return_value = nullptr;
     if (!check(SEMICOLON)) {
         return_value = expression();
     }
     consume(SEMICOLON, "Expect ';' after return statement");
 
-    return std::make_shared<Stmt::Return>(return_value);
+    return std::make_shared<Stmt::Return>(return_value, line);
 }
 
 /*

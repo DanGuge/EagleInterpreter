@@ -27,17 +27,17 @@ public:
 
     class Visitor {
     public:
-        virtual ObjectPtr visitClassStmt(std::shared_ptr<Class> expr) = 0;
-        virtual ObjectPtr visitFunctionStmt(std::shared_ptr<Function> expr) = 0;
-        virtual ObjectPtr visitVarStmt(std::shared_ptr<Var> expr) = 0;
-        virtual ObjectPtr visitIfStmt(std::shared_ptr<If> expr) = 0;
-        virtual ObjectPtr visitWhileStmt(std::shared_ptr<While> expr) = 0;
-        virtual ObjectPtr visitExpressionStmt(std::shared_ptr<Expression> expr) = 0;
-        virtual ObjectPtr visitPrintStmt(std::shared_ptr<Print> expr) = 0;
-        virtual ObjectPtr visitReturnStmt(std::shared_ptr<Return> expr) = 0;
-        virtual ObjectPtr visitBreakStmt(std::shared_ptr<Break> expr) = 0;
-        virtual ObjectPtr visitContinueStmt(std::shared_ptr<Continue> expr) = 0;
-        virtual ObjectPtr visitBlockStmt(std::shared_ptr<Block> expr) = 0;
+        virtual ObjectPtr visitClassStmt(std::shared_ptr<Class> stmt) = 0;
+        virtual ObjectPtr visitFunctionStmt(std::shared_ptr<Function> stmt) = 0;
+        virtual ObjectPtr visitVarStmt(std::shared_ptr<Var> stmt) = 0;
+        virtual ObjectPtr visitIfStmt(std::shared_ptr<If> stmt) = 0;
+        virtual ObjectPtr visitWhileStmt(std::shared_ptr<While> stmt) = 0;
+        virtual ObjectPtr visitExpressionStmt(std::shared_ptr<Expression> stmt) = 0;
+        virtual ObjectPtr visitPrintStmt(std::shared_ptr<Print> stmt) = 0;
+        virtual ObjectPtr visitReturnStmt(std::shared_ptr<Return> stmt) = 0;
+        virtual ObjectPtr visitBreakStmt(std::shared_ptr<Break> stmt) = 0;
+        virtual ObjectPtr visitContinueStmt(std::shared_ptr<Continue> stmt) = 0;
+        virtual ObjectPtr visitBlockStmt(std::shared_ptr<Block> stmt) = 0;
     };
 
 public:
@@ -46,14 +46,15 @@ public:
 
 class Stmt::Class : public Stmt, public std::enable_shared_from_this<Class> {
 public:
-    Class(TokenPtr name, TokenPtr super_class, std::vector<std::shared_ptr<Var>> members,
+    Class(TokenPtr name, std::shared_ptr<Expr::Variable> super_class,
+          std::vector<std::shared_ptr<Var>> members,
           std::vector<std::shared_ptr<Function>> methods);
 
     ObjectPtr accept(Visitor &visitor) override;
 
 public:
     TokenPtr name;
-    TokenPtr super_class;
+    std::shared_ptr<Expr::Variable> super_class;
     std::vector<std::shared_ptr<Var>> members;
     std::vector<std::shared_ptr<Function>> methods;
 };
@@ -126,12 +127,13 @@ public:
 
 class Stmt::Return : public Stmt, public std::enable_shared_from_this<Return> {
 public:
-    explicit Return(ExprPtr return_value);
+    explicit Return(ExprPtr return_value, int line);
 
     ObjectPtr accept(Visitor &visitor) override;
 
 public:
     ExprPtr return_value;
+    int line;
 };
 
 class Stmt::Break : public Stmt, public std::enable_shared_from_this<Break> {
