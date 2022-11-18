@@ -37,4 +37,10 @@ bool ErrorReporter::hasError() {
     return !error_info.empty();
 }
 
+void ErrorReporter::printErrors() {
+    for (auto &info : error_info) {
+        std::cout << info << std::endl;
+    }
+}
+
 }  // namespace eagle

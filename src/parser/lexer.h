@@ -13,10 +13,12 @@ namespace eagle {
 
 class Lexer {
 public:
-    explicit Lexer(std::string source);
-    std::vector<TokenPtr>& scanTokens();
+    Lexer() = default;
+    std::vector<TokenPtr> scanTokens(std::string source);
 
 private:
+    void reset();
+
     void scanToken();
     void addToken(TokenType type);
     void addToken(TokenType type, ObjectPtr literal);
@@ -32,7 +34,7 @@ private:
     char peekNextChar();
 
 private:
-    const std::string source;
+    std::string source;
     std::vector<TokenPtr> tokens;
     int start;
     int current;

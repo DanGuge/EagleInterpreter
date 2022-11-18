@@ -9,13 +9,19 @@
 
 namespace eagle {
 
-Parser::Parser(std::vector<TokenPtr> tokens) : tokens(std::move(tokens)), current(0) {}
+std::vector<StmtPtr> Parser::parse(std::vector<TokenPtr> tokens_) {
+    reset();
+    tokens = std::move(tokens_);
 
-std::vector<StmtPtr> Parser::parse() {
     while (!isAtEnd()) {
         stmts.emplace_back(declarationOrStatement());
     }
-    return stmts;
+    return std::move(stmts);
+}
+
+void Parser::reset() {
+    current = 0;
+    tokens.clear();
 }
 
 /*

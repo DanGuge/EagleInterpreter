@@ -1,12 +1,13 @@
-#include <memory>
-
 #include "eagle.h"
+#include "util/error_reporter.h"
 
 using namespace eagle;
 
 int main() {
-
-    std::string source = ""; // test source
-    Eagle::run(source);
+    Eagle eagle;
+    std::string source = "var a = 1;";  // test source
+    eagle.run(source);
+    ErrorReporter::getInstance().printErrors();
+    eagle.run(source);
     return 0;
 }

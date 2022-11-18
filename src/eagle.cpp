@@ -11,11 +11,10 @@
 
 namespace eagle {
 
-Eagle::Eagle() : interpreter(), resolver(interpreter) {}
+Eagle::Eagle() : lexer(), parser(), interpreter(), resolver(interpreter) {}
 
 void Eagle::run(std::string source) {
-    std::shared_ptr<Lexer> lexer = std::make_shared<Lexer>(std::move(source));
-    std::vector<std::shared_ptr<Token>>& tokens = lexer->scanTokens();
+    std::vector<TokenPtr> tokens = lexer.scanTokens(std::move(source));
 
     const int print_literal_len = 30;
     for (const auto& token : tokens) {
@@ -42,12 +41,12 @@ void Eagle::run(std::string source) {
     if (ErrorReporter::getInstance().hasError())
         return;
 
-    std::shared_ptr<Parser> parser = std::make_shared<Parser>(tokens);
-    std::vector<StmtPtr> statements = parser->parse();
+    std::vector<StmtPtr> statements = parser.parse(std::move(tokens));
     // if had parser error then return
     if (ErrorReporter::getInstance().hasError())
         return;
 
+    resolver.resolve(statements);
     // if had resolver error then return
     if (ErrorReporter::getInstance().hasError())
         return;

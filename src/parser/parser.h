@@ -15,13 +15,15 @@ namespace eagle {
 
 class Parser {
 public:
-    explicit Parser(std::vector<TokenPtr> tokens);
-    std::vector<StmtPtr> parse();
+    Parser() = default;
+    std::vector<StmtPtr> parse(std::vector<TokenPtr> tokens_);
 
 private:
-    class ParserError : std::exception {};
+    class ParserError : public std::exception {};
 
 private:
+    void reset();
+
     StmtPtr declarationOrStatement();
     // declaration
     StmtPtr classDecl();

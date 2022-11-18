@@ -15,9 +15,11 @@ class Eagle {
 public:
     Eagle();
 
-    static void run(std::string source);
+    void run(std::string source);
 
 private:
+    Lexer lexer;
+    Parser parser;
     Interpreter interpreter;
     Resolver resolver;
 };

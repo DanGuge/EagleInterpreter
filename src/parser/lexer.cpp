@@ -8,8 +8,6 @@
 
 namespace eagle {
 
-Lexer::Lexer(std::string source) : source(std::move(source)), start(0), current(0), line(1) {}
-
 std::unordered_map<std::string, TokenType> Lexer::keywords = {
     {"var", VAR},         {"and", AND},           {"or", OR},
     {"not", NOT},         {"true", BOOLEAN},      {"false", BOOLEAN},
@@ -21,14 +19,24 @@ std::unordered_map<std::string, TokenType> Lexer::keywords = {
     {"extends", EXTENDS}, {"print", PRINT},       {"return", RETURN},
 };
 
-std::vector<TokenPtr>& Lexer::scanTokens() {
+std::vector<TokenPtr> Lexer::scanTokens(std::string source_) {
+    reset();
+    source = std::move(source_);
+
     while (!isAtEnd()) {
         start = current;
         scanToken();
     }
 
     tokens.emplace_back(std::make_shared<Token>(END, line, "", std::make_shared<Null>()));
-    return tokens;
+    return std::move(tokens);
+}
+
+void Lexer::reset() {
+    start = 0;
+    current = 0;
+    line = 1;
+    source.clear();
 }
 
 void Lexer::scanToken() {

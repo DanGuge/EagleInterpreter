@@ -27,6 +27,8 @@ public:
 
     bool hasError();
 
+    void printErrors();
+
 private:
     ErrorReporter() = default;
 
