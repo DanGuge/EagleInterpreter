@@ -6,11 +6,10 @@
 
 #include "ast/expr.h"
 #include "ast/stmt.h"
-#include "eagle.h"
 
 namespace eagle {
 
-class Interpreter : Expr::Visitor, Stmt::Visitor {
+class Interpreter : public Expr::Visitor, public Stmt::Visitor {
 public:
     explicit Interpreter();
     // expressions

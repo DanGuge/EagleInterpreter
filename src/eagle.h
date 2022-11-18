@@ -11,20 +11,14 @@
 
 namespace eagle {
 
-class Interpreter;
-
 class Eagle {
 public:
+    Eagle();
+
     static void run(std::string source);
-    static void error(int line, const std::string& message);
-    static void error(const TokenPtr& token, const std::string& message);
 
 private:
-    static void errorReport(int line, const std::string& where, const std::string& message);
-
-private:
-    static bool had_error;
-    static bool had_runtime_error;
-    static std::shared_ptr<Interpreter> interpreter;
+    Interpreter interpreter;
+    Resolver resolver;
 };
 }  // namespace eagle

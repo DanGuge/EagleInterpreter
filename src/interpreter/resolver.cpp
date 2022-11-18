@@ -4,9 +4,11 @@
 
 #include "resolver.h"
 
+#include "util/error_reporter.h"
+
 namespace eagle {
 
-Resolver::Resolver(std::shared_ptr<Interpreter>& interpreter) : interpreter(interpreter) {
+Resolver::Resolver(Interpreter& interpreter) : interpreter(interpreter) {
     current_class_type = ClassType::NONE;
     current_function_type = FunctionType::NONE;
     current_loop_type = LoopType::NONE;
@@ -66,8 +68,8 @@ ObjectPtr Resolver::visitLiteralExpr(std::shared_ptr<Expr::Literal> expr) {
 
 ObjectPtr Resolver::visitVariableExpr(std::shared_ptr<Expr::Variable> expr) {
     if (!scopes.empty() && !scopes.back()[expr->name->text]) {
-        Eagle::error(expr->name,
-                     "local variable \'" + expr->name->text + "\' referenced before assignment");
+        ErrorReporter::getInstance().error(
+            expr->name, "local variable \'" + expr->name->text + "\' referenced before assignment");
     } else {
         resolveLocal(expr, expr->name);
     }
@@ -111,7 +113,7 @@ ObjectPtr Resolver::visitContainerGetExpr(std::shared_ptr<Expr::ContainerGet> ex
 }
 ObjectPtr Resolver::visitThisExpr(std::shared_ptr<Expr::This> expr) {
     if (current_class_type == ClassType::NONE) {
-        Eagle::error(expr->keyword, "Can't use 'this' keyword outside class");
+        ErrorReporter::getInstance().error(expr->keyword, "Can't use 'this' keyword outside class");
     } else {
         resolveLocal(expr, expr->keyword);
     }
@@ -119,9 +121,11 @@ ObjectPtr Resolver::visitThisExpr(std::shared_ptr<Expr::This> expr) {
 }
 ObjectPtr Resolver::visitSuperExpr(std::shared_ptr<Expr::Super> expr) {
     if (current_class_type == ClassType::NONE) {
-        Eagle::error(expr->keyword, "Can't use 'super' keyword outside class");
+        ErrorReporter::getInstance().error(expr->keyword,
+                                           "Can't use 'super' keyword outside class");
     } else if (current_class_type == ClassType::CLASS) {
-        Eagle::error(expr->keyword, "Can't use 'super' keyword in a class without superclass");
+        ErrorReporter::getInstance().error(
+            expr->keyword, "Can't use 'super' keyword in a class without superclass");
     } else {
         resolveLocal(expr, expr->keyword);
     }
@@ -152,7 +156,8 @@ ObjectPtr Resolver::visitClassStmt(std::shared_ptr<Stmt::Class> stmt) {
     std::shared_ptr<Expr::Variable> super_class = stmt->super_class;
 
     if (super_class != nullptr && (stmt->name->text == super_class->name->text)) {
-        Eagle::error(stmt->super_class->name, "Class can't inherit from itself");
+        ErrorReporter::getInstance().error(stmt->super_class->name,
+                                           "Class can't inherit from itself");
         return nullptr;
     }
 
@@ -229,11 +234,13 @@ ObjectPtr Resolver::visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) {
 }
 ObjectPtr Resolver::visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) {
     if (current_function_type == FunctionType::NONE) {
-        Eagle::error(stmt->line, "Can't use 'return' keyword outside function(method)");
+        ErrorReporter::getInstance().error(stmt->line,
+                                           "Can't use 'return' keyword outside function(method)");
     }
     if (stmt->return_value != nullptr) {
         if (current_function_type == FunctionType::INITIALIZER) {
-            Eagle::error(stmt->line, "Can't return value from an initializer method");
+            ErrorReporter::getInstance().error(stmt->line,
+                                               "Can't return value from an initializer method");
         }
         resolve(stmt->return_value);
     }
@@ -241,12 +248,13 @@ ObjectPtr Resolver::visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) {
 }
 ObjectPtr Resolver::visitBreakStmt(std::shared_ptr<Stmt::Break> stmt) {
     if (current_loop_type != LoopType::LOOP)
-        Eagle::error(stmt->keyword, "Can't use 'break' keyword outside loop");
+        ErrorReporter::getInstance().error(stmt->keyword, "Can't use 'break' keyword outside loop");
     return nullptr;
 }
 ObjectPtr Resolver::visitContinueStmt(std::shared_ptr<Stmt::Continue> stmt) {
     if (current_loop_type != LoopType::LOOP)
-        Eagle::error(stmt->keyword, "Can't use 'continue' keyword outside loop");
+        ErrorReporter::getInstance().error(stmt->keyword,
+                                           "Can't use 'continue' keyword outside loop");
     return nullptr;
 }
 ObjectPtr Resolver::visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) {
@@ -279,7 +287,8 @@ void Resolver::declareIdentifier(const TokenPtr& token) {
 
     Scope top_scope = scopes.back();
     if (top_scope.find(token->text) != top_scope.end()) {
-        Eagle::error(token, "Redeclaration of variable \'" + token->text + "\'");
+        ErrorReporter::getInstance().error(token,
+                                           "Redeclaration of variable \'" + token->text + "\'");
     }
 
     top_scope[token->text] = false;
@@ -294,7 +303,7 @@ void Resolver::defineIdentifier(const TokenPtr& token) {
 void Resolver::resolveLocal(const ExprPtr& expr, const TokenPtr& name) {
     for (int i = (int)scopes.size() - 1; i >= 0; i--) {
         if (scopes[i].find(name->text) != scopes[i].end()) {
-            interpreter->resolveLocal(expr, (int)scopes.size() - 1 - i);
+            interpreter.resolveLocal(expr, (int)scopes.size() - 1 - i);
             return;
         }
     }

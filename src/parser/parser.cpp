@@ -5,7 +5,7 @@
 
 #include <utility>
 
-#include "eagle.h"
+#include "util/error_reporter.h"
 
 namespace eagle {
 
@@ -661,7 +661,7 @@ TokenPtr Parser::previous() {
 }
 
 Parser::ParserError Parser::error(const TokenPtr& token, const std::string& message) {
-    Eagle::error(token, message);
+    ErrorReporter::getInstance().error(token, message);
     throw Parser::ParserError();
 }
 

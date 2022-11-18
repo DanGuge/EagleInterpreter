@@ -4,7 +4,7 @@
 
 #include "lexer.h"
 
-#include "eagle.h"
+#include "util/error_reporter.h"
 
 namespace eagle {
 
@@ -73,7 +73,7 @@ void Lexer::scanToken() {
             } else if (isAlpha(c)) {
                 addIdentifier();
             } else {
-                Eagle::error(line, "Unexpected character");
+                ErrorReporter::getInstance().error(line, "Unexpected character");
             }
             break;
     }
@@ -101,7 +101,7 @@ void Lexer::addString() {
     }
 
     if (isAtEnd()) {
-        Eagle::error(line, "Expect '\"' at the end of string");
+        ErrorReporter::getInstance().error(line, "Expect '\"' at the end of string");
         return;
     }
 

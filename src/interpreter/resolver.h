@@ -6,20 +6,19 @@
 
 #include "ast/expr.h"
 #include "ast/stmt.h"
-#include "eagle.h"
 #include "interpreter/interpreter.h"
 
 namespace eagle {
 
 using Scope = std::unordered_map<std::string, bool>;
 
-class Resolver : Expr::Visitor, Stmt::Visitor {
+class Resolver : public Expr::Visitor, public Stmt::Visitor {
     enum class ClassType;
     enum class FunctionType;
     enum class LoopType;
 
 public:
-    explicit Resolver(std::shared_ptr<Interpreter>& interpreter);
+    explicit Resolver(Interpreter& interpreter);
     // entrance function
     void resolve(const std::vector<StmtPtr>& stmts);
     // expressions
@@ -69,7 +68,7 @@ private:
     enum class ClassType { NONE, CLASS, SUBCLASS };
     enum class FunctionType { NONE, FUNCTION, METHOD, INITIALIZER };
     enum class LoopType { NONE, LOOP };
-    std::shared_ptr<Interpreter> interpreter;
+    Interpreter& interpreter;
     std::vector<Scope> scopes;
     ClassType current_class_type;
     FunctionType current_function_type;

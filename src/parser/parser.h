@@ -13,8 +13,6 @@
 
 namespace eagle {
 
-
-
 class Parser {
 public:
     explicit Parser(std::vector<TokenPtr> tokens);

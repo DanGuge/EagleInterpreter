@@ -7,10 +7,11 @@
 #include <iomanip>
 #include <iostream>
 
+#include "util/error_reporter.h"
+
 namespace eagle {
-bool Eagle::had_error = false;
-bool Eagle::had_runtime_error = false;
-std::shared_ptr<Interpreter> Eagle::interpreter = std::make_shared<Interpreter>();
+
+Eagle::Eagle() : interpreter(), resolver(interpreter) {}
 
 void Eagle::run(std::string source) {
     std::shared_ptr<Lexer> lexer = std::make_shared<Lexer>(std::move(source));
@@ -38,38 +39,18 @@ void Eagle::run(std::string source) {
     }
 
     // if had lexer error then return
-    if (had_error)
+    if (ErrorReporter::getInstance().hasError())
         return;
 
     std::shared_ptr<Parser> parser = std::make_shared<Parser>(tokens);
     std::vector<StmtPtr> statements = parser->parse();
     // if had parser error then return
-    if (had_error)
+    if (ErrorReporter::getInstance().hasError())
         return;
 
-    std::shared_ptr<Resolver> resolver = std::make_shared<Resolver>(interpreter);
-    resolver->resolve(statements);
     // if had resolver error then return
-    if (had_error)
+    if (ErrorReporter::getInstance().hasError())
         return;
-}
-
-void Eagle::error(int line, const std::string& message) {
-    errorReport(line, "", message);
-}
-
-void Eagle::error(const TokenPtr& token, const std::string& message) {
-    if (token->type == TokenType::END) {
-        errorReport(token->line, "At the end", message);
-    } else {
-        errorReport(token->line, "At '" + token->text + "'", message);
-    }
-}
-
-void Eagle::errorReport(int line, const std::string& where, const std::string& message) {
-    had_error = true;
-    std::cerr << "[Error at line " << std::to_string(line) << "] " + where + " " + message
-              << std::endl;
 }
 
 }  // namespace eagle
