@@ -34,7 +34,9 @@ set(SOURCE_FILES
 		src/interpreter/resolver.cpp
 		src/interpreter/modules/environment.h
 		src/interpreter/modules/eagle_class.h
-		)
+		src/util/error_reporter.h
+		src/interpreter/modules/eagle_exceptions.h
+		src/util/error_reporter.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
