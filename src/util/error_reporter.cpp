@@ -22,9 +22,9 @@ void ErrorReporter::error(int line, const std::string &message) {
 
 void ErrorReporter::error(const TokenPtr &token, const std::string &message) {
     if (token->type == TokenType::END) {
-        errorReport(token->line, "At the end", message);
+        errorReport(token->line, "At the end:", message);
     } else {
-        errorReport(token->line, "At '" + token->text + "'", message);
+        errorReport(token->line, "At '" + token->text + "':", message);
     }
 }
 

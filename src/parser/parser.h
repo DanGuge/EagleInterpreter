@@ -65,6 +65,7 @@ private:
     bool isAtEnd();
     TokenPtr peek();
     TokenPtr previous();
+    void synchronize();
     // error handling
     static ParserError error(const TokenPtr& token, const std::string& message);
 

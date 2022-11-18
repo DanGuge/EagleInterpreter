@@ -14,7 +14,9 @@ std::vector<StmtPtr> Parser::parse(std::vector<TokenPtr> tokens_) {
     tokens = std::move(tokens_);
 
     while (!isAtEnd()) {
-        stmts.emplace_back(declarationOrStatement());
+        StmtPtr stmt = declarationOrStatement();
+        if (stmt != nullptr)
+            stmts.emplace_back(stmt);
     }
     return std::move(stmts);
 }
@@ -40,6 +42,7 @@ StmtPtr Parser::declarationOrStatement() {
             return function("function");
         return statement();
     } catch (ParserError& parser_exception) {
+        synchronize();
         return nullptr;
     }
 }
@@ -102,7 +105,7 @@ StmtPtr Parser::function(const std::string& kind) {
     std::vector<TokenPtr> parameters{};
     if (!check(RIGHT_PAREN)) {
         do {
-            parameters.emplace_back(consume(IDENTIFIER, "Expect parameter name"));
+            parameters.emplace_back(consume(IDENTIFIER, "Expect function parameters name or ')'"));
         } while (match(COMMA));
     }
     consume(RIGHT_PAREN, "Expect ')' after parameters");
@@ -131,6 +134,8 @@ StmtPtr Parser::statement() {
         return continueStmt();
     if (match(LEFT_BRACE))
         return std::make_shared<Stmt::Block>(block());
+    if (match(SEMICOLON))
+        return nullptr;
     return expressionStmt();
 }
 
@@ -664,6 +669,27 @@ TokenPtr Parser::peek() {
 
 TokenPtr Parser::previous() {
     return tokens[current - 1];
+}
+
+void Parser::synchronize() {
+    advance();
+
+    while (!isAtEnd()) {
+        switch (peek()->type) {
+            case SEMICOLON: advance(); return;
+            case CLASS:
+            case DEF:
+            case VAR:
+            case IF:
+            case WHILE:
+            case FOR:
+            case PRINT:
+            case RETURN:
+            case BREAK:
+            case CONTINUE: return;
+            default: advance();
+        }
+    }
 }
 
 Parser::ParserError Parser::error(const TokenPtr& token, const std::string& message) {

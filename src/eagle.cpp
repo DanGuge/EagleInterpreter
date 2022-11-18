@@ -37,12 +37,8 @@ void Eagle::run(std::string source) {
         std::cout << token->toString() << std::endl;
     }
 
-    // if had lexer error then return
-    if (ErrorReporter::getInstance().hasError())
-        return;
-
     std::vector<StmtPtr> statements = parser.parse(std::move(tokens));
-    // if had parser error then return
+    // if had lexer or parser error then return
     if (ErrorReporter::getInstance().hasError())
         return;
 
