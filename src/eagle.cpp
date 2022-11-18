@@ -7,14 +7,12 @@
 #include <iomanip>
 #include <iostream>
 
-#include "parser/parser.h"
-
 namespace eagle {
 bool Eagle::had_error = false;
 bool Eagle::had_runtime_error = false;
+std::shared_ptr<Interpreter> Eagle::interpreter = std::make_shared<Interpreter>();
 
 void Eagle::run(std::string source) {
-
     std::shared_ptr<Lexer> lexer = std::make_shared<Lexer>(std::move(source));
     std::vector<std::shared_ptr<Token>>& tokens = lexer->scanTokens();
 
@@ -46,6 +44,12 @@ void Eagle::run(std::string source) {
     std::shared_ptr<Parser> parser = std::make_shared<Parser>(tokens);
     std::vector<StmtPtr> statements = parser->parse();
     // if had parser error then return
+    if (had_error)
+        return;
+
+    std::shared_ptr<Resolver> resolver = std::make_shared<Resolver>(interpreter);
+    resolver->resolve(statements);
+    // if had resolver error then return
     if (had_error)
         return;
 }

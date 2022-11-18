@@ -5,7 +5,9 @@
 #include "interpreter.h"
 
 namespace eagle {
-Interpreter::Interpreter() {}
+Interpreter::Interpreter() {
+    local_variables = {};
+}
 // expressions
 ObjectPtr Interpreter::visitAssignExpr(std::shared_ptr<Expr::Assign> expr) {
     return nullptr;
@@ -63,37 +65,40 @@ ObjectPtr Interpreter::visitAssociativeExpr(std::shared_ptr<Expr::Associative> e
 }
 
 // statements
-ObjectPtr Interpreter::visitClassStmt(std::shared_ptr<Stmt::Class> expr) {
+ObjectPtr Interpreter::visitClassStmt(std::shared_ptr<Stmt::Class> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitFunctionStmt(std::shared_ptr<Stmt::Function> expr) {
+ObjectPtr Interpreter::visitFunctionStmt(std::shared_ptr<Stmt::Function> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitVarStmt(std::shared_ptr<Stmt::Var> expr) {
+ObjectPtr Interpreter::visitVarStmt(std::shared_ptr<Stmt::Var> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitIfStmt(std::shared_ptr<Stmt::If> expr) {
+ObjectPtr Interpreter::visitIfStmt(std::shared_ptr<Stmt::If> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> expr) {
+ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitExpressionStmt(std::shared_ptr<Stmt::Expression> expr) {
+ObjectPtr Interpreter::visitExpressionStmt(std::shared_ptr<Stmt::Expression> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitPrintStmt(std::shared_ptr<Stmt::Print> expr) {
+ObjectPtr Interpreter::visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitReturnStmt(std::shared_ptr<Stmt::Return> expr) {
+ObjectPtr Interpreter::visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitBreakStmt(std::shared_ptr<Stmt::Break> expr) {
+ObjectPtr Interpreter::visitBreakStmt(std::shared_ptr<Stmt::Break> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitContinueStmt(std::shared_ptr<Stmt::Continue> expr) {
+ObjectPtr Interpreter::visitContinueStmt(std::shared_ptr<Stmt::Continue> stmt) {
     return nullptr;
 }
-ObjectPtr Interpreter::visitBlockStmt(std::shared_ptr<Stmt::Block> expr) {
+ObjectPtr Interpreter::visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) {
     return nullptr;
+}
+void Interpreter::resolveLocal(const ExprPtr& expr, int distance) {
+    local_variables[expr] = distance;
 }
 }  // namespace eagle

@@ -6,6 +6,7 @@
 
 #include "ast/expr.h"
 #include "ast/stmt.h"
+#include "eagle.h"
 
 namespace eagle {
 
@@ -32,17 +33,22 @@ public:
     ObjectPtr visitSequenceExpr(std::shared_ptr<Expr::Sequence> expr) override;
     ObjectPtr visitAssociativeExpr(std::shared_ptr<Expr::Associative> expr) override;
     // statements
-    ObjectPtr visitClassStmt(std::shared_ptr<Stmt::Class> expr) override;
-    ObjectPtr visitFunctionStmt(std::shared_ptr<Stmt::Function> expr) override;
-    ObjectPtr visitVarStmt(std::shared_ptr<Stmt::Var> expr) override;
-    ObjectPtr visitIfStmt(std::shared_ptr<Stmt::If> expr) override;
-    ObjectPtr visitWhileStmt(std::shared_ptr<Stmt::While> expr) override;
-    ObjectPtr visitExpressionStmt(std::shared_ptr<Stmt::Expression> expr) override;
-    ObjectPtr visitPrintStmt(std::shared_ptr<Stmt::Print> expr) override;
-    ObjectPtr visitReturnStmt(std::shared_ptr<Stmt::Return> expr) override;
-    ObjectPtr visitBreakStmt(std::shared_ptr<Stmt::Break> expr) override;
-    ObjectPtr visitContinueStmt(std::shared_ptr<Stmt::Continue> expr) override;
-    ObjectPtr visitBlockStmt(std::shared_ptr<Stmt::Block> expr) override;
+    ObjectPtr visitClassStmt(std::shared_ptr<Stmt::Class> stmt) override;
+    ObjectPtr visitFunctionStmt(std::shared_ptr<Stmt::Function> stmt) override;
+    ObjectPtr visitVarStmt(std::shared_ptr<Stmt::Var> stmt) override;
+    ObjectPtr visitIfStmt(std::shared_ptr<Stmt::If> stmt) override;
+    ObjectPtr visitWhileStmt(std::shared_ptr<Stmt::While> stmt) override;
+    ObjectPtr visitExpressionStmt(std::shared_ptr<Stmt::Expression> stmt) override;
+    ObjectPtr visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) override;
+    ObjectPtr visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) override;
+    ObjectPtr visitBreakStmt(std::shared_ptr<Stmt::Break> stmt) override;
+    ObjectPtr visitContinueStmt(std::shared_ptr<Stmt::Continue> stmt) override;
+    ObjectPtr visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) override;
+    // help functions
+    void resolveLocal(const ExprPtr& expr, int distance);
+
+private:
+    std::unordered_map<ExprPtr, int> local_variables;
 };
 
 }  // namespace eagle

@@ -4,9 +4,14 @@
 
 #pragma once
 
+#include "interpreter/interpreter.h"
+#include "interpreter/resolver.h"
 #include "parser/lexer.h"
+#include "parser/parser.h"
 
 namespace eagle {
+
+class Interpreter;
 
 class Eagle {
 public:
@@ -20,5 +25,6 @@ private:
 private:
     static bool had_error;
     static bool had_runtime_error;
+    static std::shared_ptr<Interpreter> interpreter;
 };
 }  // namespace eagle
