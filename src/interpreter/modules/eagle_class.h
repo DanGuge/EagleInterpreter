@@ -4,13 +4,17 @@
 
 #pragma once
 
+#include "object.h"
+
 namespace eagle {
-class EagleClass {
 
-};
+class EagleClass;
+class EagleInstance;
+using EagleClassPtr = std::shared_ptr<EagleClass>;
+using EagleInstancePtr = std::shared_ptr<EagleInstance>;
 
-class EagleInstance {
+class EagleClass {};
 
-};
+class EagleInstance {};
 
-}
+}  // namespace eagle
