@@ -38,7 +38,8 @@ set(SOURCE_FILES
         src/interpreter/modules/eagle_exceptions.h
         src/util/error_reporter.cpp
         src/interpreter/modules/environment.cpp
-        src/interpreter/modules/eagle_exceptions.cpp)
+        src/interpreter/modules/eagle_exceptions.cpp
+        src/interpreter/modules/eagle_callable.h)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
