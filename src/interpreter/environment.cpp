@@ -4,6 +4,7 @@
 
 #include "environment.h"
 
+#include "modules/eagle_exceptions.h"
 #include "util/error_reporter.h"
 
 namespace eagle {
@@ -61,4 +62,12 @@ void Environment::environmentError(const eagle::TokenPtr& name, std::string mess
                             std::move(message));
 }
 
+ScopedEnvironment::ScopedEnvironment(EnvironmentPtr& current_env, EnvironmentPtr block_env)
+    : reference_of_current_env(current_env), copy_of_previous_env(current_env) {
+    reference_of_current_env = std::move(block_env);
+}
+
+ScopedEnvironment::~ScopedEnvironment() {
+    reference_of_current_env = copy_of_previous_env;
+}
 }  // namespace eagle

@@ -35,4 +35,13 @@ private:
     std::unordered_map<std::string, ObjectPtr> name_object_map;
 };
 
+class ScopedEnvironment {
+public:
+    ScopedEnvironment(EnvironmentPtr& current_env, EnvironmentPtr block_env);
+    ~ScopedEnvironment();
+private:
+    EnvironmentPtr& reference_of_current_env;
+    EnvironmentPtr copy_of_previous_env;
+};
+
 }  // namespace eagle

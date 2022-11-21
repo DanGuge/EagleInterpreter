@@ -19,4 +19,8 @@ public:
 
 using EagleCallablePtr = std::shared_ptr<EagleCallable>;
 
+class EagleFunction : public EagleCallable {
+
+};
+
 }  // namespace eagle

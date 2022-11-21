@@ -6,6 +6,7 @@
 
 #include "ast/expr.h"
 #include "ast/stmt.h"
+#include "environment.h"
 
 namespace eagle {
 
@@ -45,8 +46,19 @@ public:
     ObjectPtr visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) override;
     // help functions
     void resolveLocal(const ExprPtr& expr, int distance);
+    void executeBlock(const std::vector<StmtPtr>& statements, const EnvironmentPtr& block_env);
 
 private:
+    // help functions
+    void evaluate(const ExprPtr& expr);
+    void execute(const StmtPtr& stmt);
+    void isTruthy(const ObjectPtr& object);
+    void isEqual(const ObjectPtr& left, const ObjectPtr& right);
+    std::string stringify(const ObjectPtr& object);
+
+private:
+    EnvironmentPtr global_env;
+    EnvironmentPtr current_env;
     std::unordered_map<ExprPtr, int> local_variables;
 };
 

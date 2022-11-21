@@ -6,6 +6,8 @@
 
 namespace eagle {
 Interpreter::Interpreter() {
+    global_env = std::make_shared<Environment>(nullptr);
+    current_env = global_env;
     local_variables = {};
 }
 // expressions
@@ -98,7 +100,21 @@ ObjectPtr Interpreter::visitContinueStmt(std::shared_ptr<Stmt::Continue> stmt) {
 ObjectPtr Interpreter::visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) {
     return nullptr;
 }
+
+// help functions
 void Interpreter::resolveLocal(const ExprPtr& expr, int distance) {
     local_variables[expr] = distance;
 }
+void Interpreter::executeBlock(const std::vector<StmtPtr>& statements,
+                               const EnvironmentPtr& block_env) {
+    ScopedEnvironment scoped(current_env, block_env);
+    for(const auto& stmt: statements) {
+        execute(stmt);
+    }
+}
+void Interpreter::evaluate(const ExprPtr& expr) {}
+void Interpreter::execute(const StmtPtr& stmt) {}
+void Interpreter::isTruthy(const ObjectPtr& object) {}
+void Interpreter::isEqual(const ObjectPtr& left, const ObjectPtr& right) {}
+std::string Interpreter::stringify(const ObjectPtr& object) {}
 }  // namespace eagle
