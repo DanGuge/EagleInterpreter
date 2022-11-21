@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "interpreter/modules/eagle_exceptions.h"
+#include "modules/eagle_exceptions.h"
 #include "parser/token.h"
 
 namespace eagle {

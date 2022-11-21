@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "modules/eagle_string.h"
 #include "util/error_reporter.h"
 
 namespace eagle {

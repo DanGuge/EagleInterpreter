@@ -6,11 +6,6 @@
 
 namespace eagle {
 
-std::ostream& operator<<(std::ostream& out, String& s) {
-    out << s.str;
-    return out;
-}
-
 std::ostream& operator<<(std::ostream& out, Null& n) {
     out << "Nil";
     return out;

@@ -40,23 +40,6 @@ bool InstanceOf(const ObjectPtr& o) {
     return (v != nullptr);
 }
 
-class String : public Object {
-public:
-    String() : str() {}
-
-    String(std::string str) : str(std::move(str)) {}
-
-    String(const char* str) : str(str) {}
-
-    std::string str;
-
-    std::string* operator->() {
-        return &str;
-    }
-
-    friend std::ostream& operator<<(std::ostream& out, String& s);
-};
-
 class Null : public Object {
 public:
     Null() = default;
