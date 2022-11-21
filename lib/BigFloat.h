@@ -146,6 +146,7 @@ public:
     // Transformation Methods
     double ToDouble() const;
     float ToFloat() const;
+    int ToInt() const;
     std::string ToString() const;
     void SetPrecision(int prec);  // Approximate number or Increase number decimals
 

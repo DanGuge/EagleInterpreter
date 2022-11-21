@@ -1017,13 +1017,13 @@ double BigFloat::ToDouble() const {
         var *= -1;
 
     return var;
-};
+}
 
 float BigFloat::ToFloat() const {
     float var = 0;
 
     if (error) {
-        var = std::nan("");
+        var = std::nanf("");
         return var;
     }
 
@@ -1045,7 +1045,27 @@ float BigFloat::ToFloat() const {
         var *= -1;
 
     return var;
-};
+}
+
+int BigFloat::ToInt() const {
+    int var = 0;
+
+    if (error) {
+        return var;
+    }
+
+    int dec = 1;
+
+    for (char i : number) {
+        var += CharToInt(i) * dec;
+        dec *= 10;
+    }
+
+    if (sign == '-')
+        var *= -1;
+
+    return var;
+}
 
 std::string BigFloat::ToString() const {
     std::string var;
