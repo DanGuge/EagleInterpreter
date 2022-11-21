@@ -14,6 +14,10 @@ using ObjectPtr = std::shared_ptr<Object>;
 class Object {
 public:
     virtual void ObjectEmptyFunction() {}
+
+    virtual size_t hashcode() {
+        return reinterpret_cast<size_t>(this);
+    }
 };
 
 template <class V>

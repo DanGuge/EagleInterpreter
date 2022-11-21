@@ -61,6 +61,10 @@ public:
 
     BuiltInClassMethodInfo GetMethod(const std::string& method_name) override;
 
+    size_t hashcode() override {
+        return std::hash<std::string>()(str);
+    }
+
     friend std::ostream& operator<<(std::ostream& out, String& s);
 };
 
