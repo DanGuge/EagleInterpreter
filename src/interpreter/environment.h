@@ -18,6 +18,7 @@ class Environment : public std::enable_shared_from_this<Environment> {
 public:
     explicit Environment(EnvironmentPtr enclosing);
     void define(const std::string& name, const ObjectPtr& object);
+    ObjectPtr getAt(int distance, const std::string& name);
     ObjectPtr getAt(int distance, const TokenPtr& name);
     ObjectPtr get(const TokenPtr& name);
     void assignAt(int distance, const TokenPtr& name, const ObjectPtr& object);

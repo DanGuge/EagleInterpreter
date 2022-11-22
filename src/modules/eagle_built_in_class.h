@@ -33,7 +33,7 @@ public:
     BuiltInClassCallable(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity)
         : instance(std::move(instance)), method(method), method_arity(method_arity) {}
 
-    ObjectPtr call(std::vector<ObjectPtr> &arguments) override {
+    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override {
         return method(instance, arguments);
     }
 

@@ -15,6 +15,10 @@ void Environment::define(const std::string& name, const ObjectPtr& object) {
     name_object_map[name] = object;
 }
 
+ObjectPtr Environment::getAt(int distance, const std::string& name) {
+    return ancestor(distance)->name_object_map[name];
+}
+
 ObjectPtr Environment::getAt(int distance, const TokenPtr& name) {
     return ancestor(distance)->name_object_map[name->text];
 }

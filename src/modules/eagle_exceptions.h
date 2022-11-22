@@ -23,7 +23,7 @@ class EagleReturn : public std::exception {
 public:
     explicit EagleReturn(ObjectPtr object);
 
-private:
+public:
     ObjectPtr return_value;
 };
 
