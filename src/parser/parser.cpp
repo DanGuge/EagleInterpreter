@@ -371,27 +371,12 @@ ExprPtr Parser::logicOr() {
 }
 
 /*
- * logic_and    ::= equality ("and" equality)* ;
+ * logic_and    ::= comparison ("and" comparison)* ;
  */
 ExprPtr Parser::logicAnd() {
-    ExprPtr expr = equality();
-
-    while (match(AND)) {
-        TokenPtr op = previous();
-        ExprPtr right = equality();
-        expr = std::make_shared<Expr::Binary>(expr, op, right);
-    }
-
-    return expr;
-}
-
-/*
- * equality ::= comparison (("!="|"==") comparison)* ;
- */
-ExprPtr Parser::equality() {
     ExprPtr expr = comparison();
 
-    while (match({NOT_EQUAL, EQUAL})) {
+    while (match(AND)) {
         TokenPtr op = previous();
         ExprPtr right = comparison();
         expr = std::make_shared<Expr::Binary>(expr, op, right);
@@ -401,15 +386,19 @@ ExprPtr Parser::equality() {
 }
 
 /*
- * comparison   ::= term ((">"|">="|"<"|"<=") term)* ;
+ * comparison   ::= term (("!="|"=="|">"|">="|"<"|"<=") term)* ;
  */
 ExprPtr Parser::comparison() {
     ExprPtr expr = term();
 
-    while (match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
-        TokenPtr op = previous();
-        ExprPtr right = term();
-        expr = std::make_shared<Expr::Binary>(expr, op, right);
+    if (match({EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
+        std::vector<std::pair<TokenPtr, ExprPtr>> others{};
+        do {
+            TokenPtr op = previous();
+            ExprPtr right = term();
+            others.emplace_back(std::pair<TokenPtr, ExprPtr>{op, right});
+        } while (match({EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL}));
+        expr = std::make_shared<Expr::Compare>(expr, others);
     }
 
     return expr;

@@ -46,7 +46,6 @@ private:
     ExprPtr ternary();
     ExprPtr logicOr();
     ExprPtr logicAnd();
-    ExprPtr equality();
     ExprPtr comparison();
     ExprPtr term();
     ExprPtr factor();
