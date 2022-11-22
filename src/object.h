@@ -5,6 +5,7 @@
 #pragma once
 #include <iostream>
 #include <memory>
+#include <string>
 
 namespace eagle {
 
@@ -15,9 +16,13 @@ class Object {
 public:
     virtual void ObjectEmptyFunction() {}
 
-    virtual size_t hashcode() {
-        return reinterpret_cast<size_t>(this);
-    }
+    virtual std::string toString();
+
+    virtual bool equals(ObjectPtr other);
+
+    virtual size_t hashcode();
+
+    virtual bool isTruthy();
 };
 
 template <class V>
@@ -50,6 +55,14 @@ public:
 
     friend std::ostream& operator<<(std::ostream& out, Null& n);
 
+    std::string toString() override;
+
+    bool equals(ObjectPtr other) override;
+
+    size_t hashcode() override;
+
+    bool isTruthy() override;
+
     std::string ToString() const {
         return "Nil";
     }
@@ -65,6 +78,14 @@ public:
     explicit operator bool() const {
         return value;
     }
+
+    std::string toString() override;
+
+    bool equals(ObjectPtr other) override;
+
+    size_t hashcode() override;
+
+    bool isTruthy() override;
 
     std::string ToString() const {
         return value ? "true" : "false";

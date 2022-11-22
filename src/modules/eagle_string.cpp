@@ -126,6 +126,25 @@ StringPtr String::CheckBuiltInClassType(BuiltInClassPtr instance) {
     return cast<String>(instance);
 }
 
+std::string String::toString() {
+    return str;
+}
+
+bool String::equals(ObjectPtr other) {
+    if (!InstanceOf<String>(other)) {
+        return false;
+    }
+    return str == cast<String>(other)->str;
+}
+
+size_t String::hashcode() {
+    return std::hash<std::string>()(str);
+}
+
+bool String::isTruthy() {
+    return !str.empty();
+}
+
 std::ostream& operator<<(std::ostream& out, String& s) {
     out << s.str;
     return out;

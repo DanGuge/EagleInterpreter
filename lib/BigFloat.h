@@ -175,5 +175,13 @@ public:
         return sizeof(*this) + number.size() * sizeof(char);
     };
     std::string Exp() const;
+
+    virtual std::string toString();
+
+    virtual bool equals(ObjectPtr other);
+
+    virtual size_t hashcode();
+
+    virtual bool isTruthy();
 };
 }  // namespace eagle

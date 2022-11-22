@@ -5,6 +5,8 @@
 
 #include "BigFloat.h"
 
+#include <algorithm>
+
 //------------------------Private Methods--------------------------------
 namespace eagle {
 // Comparator without sign, utilized by Comparators and Operations
@@ -1185,4 +1187,24 @@ std::string BigFloat::Exp() const {
     }
     return out.str();
 };
+
+std::string BigFloat::toString() {
+    return this->ToString();
+}
+
+bool BigFloat::equals(ObjectPtr other) {
+    if (!InstanceOf<BigFloat>(other)) {
+        return false;
+    }
+    return *this == *cast<BigFloat>(other);
+}
+
+size_t BigFloat::hashcode() {
+    return std::hash<std::string>()(this->ToString());
+}
+
+bool BigFloat::isTruthy() {
+    return std::any_of(number.begin(), number.end(), [](char c) { return c != '0'; });
+}
+
 }  // namespace eagle
