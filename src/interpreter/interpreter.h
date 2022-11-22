@@ -13,6 +13,7 @@ namespace eagle {
 class Interpreter : public Expr::Visitor, public Stmt::Visitor {
 public:
     explicit Interpreter();
+    void interpret(const std::vector<StmtPtr>& statements);
     // expressions
     ObjectPtr visitAssignExpr(std::shared_ptr<Expr::Assign> expr) override;
     ObjectPtr visitTernaryExpr(std::shared_ptr<Expr::Ternary> expr) override;
@@ -50,11 +51,27 @@ public:
 
 private:
     // help functions
-    void evaluate(const ExprPtr& expr);
+    ObjectPtr evaluate(const ExprPtr& expr);
     void execute(const StmtPtr& stmt);
-    void isTruthy(const ObjectPtr& object);
-    void isEqual(const ObjectPtr& left, const ObjectPtr& right);
-    std::string stringify(const ObjectPtr& object);
+    ObjectPtr assignVariable(const TokenPtr& name, const ExprPtr& expr, const ObjectPtr& value);
+    ObjectPtr getVariable(const TokenPtr& name, const ExprPtr& expr);
+    static bool checkNumber(const TokenPtr& op, const ObjectPtr& object, bool need_throw);
+    static bool checkTwoNumbers(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right,
+                                bool need_throw);
+    static bool checkTwoStrings(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right,
+                                bool need_throw);
+    static ObjectPtr plus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static ObjectPtr minus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static ObjectPtr multi(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static ObjectPtr div(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static ObjectPtr mod(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static bool less(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static bool lessEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static bool greater(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static bool greaterEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
+    static bool isTruthy(const ObjectPtr& object);
+    static bool isEqual(const ObjectPtr& left, const ObjectPtr& right);
+    static std::string stringify(const ObjectPtr& object);
 
 private:
     EnvironmentPtr global_env;

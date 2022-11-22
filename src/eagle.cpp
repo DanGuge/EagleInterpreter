@@ -47,6 +47,8 @@ void Eagle::run(std::string source) {
     // if had resolver error then return
     if (ErrorReporter::getInstance().hasError())
         return;
+
+    interpreter.interpret(statements);
 }
 
 }  // namespace eagle
