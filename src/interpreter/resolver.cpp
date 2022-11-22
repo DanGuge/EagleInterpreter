@@ -67,7 +67,8 @@ ObjectPtr Resolver::visitLiteralExpr(std::shared_ptr<Expr::Literal> expr) {
 }
 
 ObjectPtr Resolver::visitVariableExpr(std::shared_ptr<Expr::Variable> expr) {
-    if (!scopes.empty() && !scopes.back()[expr->name->text]) {
+    if (!scopes.empty() && scopes.back().find(expr->name->text) != scopes.back().end() &&
+        !scopes.back()[expr->name->text]) {
         ErrorReporter::getInstance().error(
             expr->name, "local variable '" + expr->name->text + "' referenced before assignment");
     } else {

@@ -66,10 +66,14 @@ StmtPtr Parser::classDecl() {
     std::vector<std::shared_ptr<Stmt::Var>> members{};
     std::vector<std::shared_ptr<Stmt::Function>> methods{};
     while (!check(RIGHT_BRACE) && !isAtEnd()) {
-        if (match(VAR))
+        if (match(VAR)) {
             members.emplace_back(cast<Stmt::Var>(varDecl()));
-        if (match(DEF))
+        } else if (match(DEF)) {
             methods.emplace_back(cast<Stmt::Function>(function("method")));
+        } else {
+            throw error(peek(), "Illegal token '" + peek()->text +
+                                    "' in class declaration, Expect 'def' or 'var'");
+        }
     }
     consume(RIGHT_BRACE, "Expect '}' after class body");
 
@@ -332,7 +336,7 @@ ExprPtr Parser::assignmentExpr() {
             ExprPtr subscript = cast<Expr::ContainerGet>(expr)->subscript;
             return std::make_shared<Expr::ContainerSet>(container, subscript, op, value);
         } else {
-            error(op, "Invalid assignment target");
+            throw error(op, "Invalid assignment target");
         }
     }
 
@@ -531,8 +535,7 @@ ExprPtr Parser::primary() {
     } else if (match(SWITCH)) {
         return switchExpr();
     } else {
-        error(peek(), "Unexpected token: " + peek()->text);
-        return nullptr;
+        throw error(peek(), "Unexpected token: " + peek()->text);
     }
 }
 
@@ -555,8 +558,7 @@ ExprPtr Parser::parsePrimaryParen() {
         } else if (match(RIGHT_PAREN)) {
             return expr;
         } else {
-            error(peek(), "Unexpected token: " + peek()->text);
-            return nullptr;
+            throw error(peek(), "Unexpected token: " + peek()->text);
         }
     }
 }
@@ -632,8 +634,7 @@ TokenPtr Parser::consume(TokenType type, const std::string& message) {
     if (check(type))
         return advance();
 
-    error(peek(), message);
-    return nullptr;
+    throw error(peek(), message);
 }
 
 bool Parser::check(TokenType type) {
@@ -683,7 +684,7 @@ void Parser::synchronize() {
 
 Parser::ParserError Parser::error(const TokenPtr& token, const std::string& message) {
     ErrorReporter::getInstance().error(token, message);
-    throw Parser::ParserError();
+    return {};
 }
 
 }  // namespace eagle
