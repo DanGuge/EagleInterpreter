@@ -74,18 +74,20 @@ EagleFunctionPtr EagleClass::getMethodLocal(const std::string& method_name) {
 EagleInstance::EagleInstance(EagleClassPtr klass, EagleInstancePtr super_instance)
     : klass(std::move(klass)), super_instance(std::move(super_instance)), fields({}) {}
 
-ObjectPtr EagleInstance::get(const TokenPtr& name) {
+ObjectPtr EagleInstance::get(const TokenPtr& name, const EagleInstancePtr& instance) {
     // 1. find in field
     if (fields.find(name->text) != fields.end()) {
         return fields[name->text];
     }
+
     // 2. find in local method
     if (klass->getMethodLocal(name->text) != nullptr) {
-        return klass->getMethodLocal(name->text);
+        return klass->getMethodLocal(name->text)->bind(instance);
     }
+
     // 3. find super instance
     if (super_instance != nullptr) {
-        return super_instance->get(name);
+        return super_instance->get(name, instance);
     }
     return nullptr;
 }

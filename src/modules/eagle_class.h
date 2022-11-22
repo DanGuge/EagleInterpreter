@@ -38,7 +38,7 @@ public:
 class EagleInstance : public Object {
 public:
     EagleInstance(EagleClassPtr klass, EagleInstancePtr super_instance);
-    ObjectPtr get(const TokenPtr& name);
+    ObjectPtr get(const TokenPtr& name, const EagleInstancePtr& instance);
     void set(const std::string& name, ObjectPtr value);
     std::string ToString();
 

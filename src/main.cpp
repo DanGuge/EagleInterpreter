@@ -13,7 +13,11 @@ int main() {
                          "      print this.b;\n"
                          "  }\n"
                          "}\n"
-                         "A().printB();";  // test source
+                         "A().printB();\n"
+                         "class B extends A {"
+                         "  var b = 2;\n"
+                         "};\n"
+                         "B().printB();\n";  // test source
     eagle.run(source);
     ErrorReporter::getInstance().printErrors();
     return 0;

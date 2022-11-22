@@ -162,8 +162,9 @@ ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> e
         throw interpreterRuntimeError(expr->name->line,
                                       "Only instances have fields to set property");
     }
+    EagleInstancePtr instance = cast<EagleInstance>(object);
 
-    ObjectPtr name_value = cast<EagleInstance>(object)->get(expr->name);
+    ObjectPtr name_value = instance->get(expr->name, instance);
     ObjectPtr value = evaluate(expr->value);
     switch (expr->op->type) {
         case ASSIGN: break;
@@ -185,7 +186,8 @@ ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> e
     if (!InstanceOf<EagleInstance>(object)) {
         throw interpreterRuntimeError(expr->name->line, "Only instances have properties");
     }
-    return cast<EagleInstance>(object)->get(expr->name);
+    EagleInstancePtr instance = cast<EagleInstance>(object);
+    return instance->get(expr->name, instance);
 }
 
 ObjectPtr Interpreter::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
