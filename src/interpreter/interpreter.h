@@ -7,6 +7,7 @@
 #include "ast/expr.h"
 #include "ast/stmt.h"
 #include "environment.h"
+#include "modules/eagle_exceptions.h"
 
 namespace eagle {
 
@@ -55,11 +56,10 @@ private:
     void execute(const StmtPtr& stmt);
     ObjectPtr assignVariable(const TokenPtr& name, const ExprPtr& expr, const ObjectPtr& value);
     ObjectPtr getVariable(const TokenPtr& name, const ExprPtr& expr);
-    static bool checkNumber(const TokenPtr& op, const ObjectPtr& object, bool need_throw);
+    static bool checkNumber(const TokenPtr& op, const ObjectPtr& object);
     static bool checkTwoNumbers(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right,
                                 bool need_throw);
-    static bool checkTwoStrings(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right,
-                                bool need_throw);
+    static bool checkTwoStrings(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
     static ObjectPtr plus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
     static ObjectPtr minus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
     static ObjectPtr multi(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right);
@@ -72,6 +72,7 @@ private:
     static bool isTruthy(const ObjectPtr& object);
     static bool isEqual(const ObjectPtr& left, const ObjectPtr& right);
     static std::string stringify(const ObjectPtr& object);
+    static EagleRuntimeError interpreterRuntimeError(int line, const std::string& message);
 
 private:
     EnvironmentPtr global_env;

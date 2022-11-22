@@ -5,7 +5,7 @@
 #include "interpreter.h"
 
 #include "BigFloat.h"
-#include "modules/eagle_exceptions.h"
+#include "modules/eagle_class.h"
 #include "modules/eagle_string.h"
 #include "util/error_reporter.h"
 
@@ -41,8 +41,8 @@ ObjectPtr Interpreter::visitAssignExpr(std::shared_ptr<Expr::Assign> expr) {
         case DIV_ASSIGN: return assignVariable(expr->name, expr, div(name_value, expr->op, value));
         case MOD_ASSIGN: return assignVariable(expr->name, expr, mod(name_value, expr->op, value));
         default:
-            throw EagleRuntimeError("[RuntimeError at line " + std::to_string(expr->op->line) +
-                                    "] " + "Undefined behavior of operator " + expr->op->text);
+            throw interpreterRuntimeError(expr->op->line,
+                                          "Undefined behavior of operator " + expr->op->text);
     }
 }
 
@@ -68,9 +68,8 @@ ObjectPtr Interpreter::visitCompareExpr(std::shared_ptr<Expr::Compare> expr) {
             case GREATER: is_true = greater(left, other.first, right); break;
             case GREATER_EQUAL: is_true = greaterEqual(left, other.first, right); break;
             default:
-                throw EagleRuntimeError("[RuntimeError at line " +
-                                        std::to_string(other.first->line) + "] " +
-                                        "Undefined behavior of operator " + other.first->text);
+                throw interpreterRuntimeError(
+                    other.first->line, "Undefined behavior of operator " + other.first->text);
         }
         if (!is_true) {
             return std::make_shared<Boolean>(false);
@@ -99,8 +98,8 @@ ObjectPtr Interpreter::visitBinaryExpr(std::shared_ptr<Expr::Binary> expr) {
         case DIV: return div(left, expr->op, right);
         case MOD: return mod(left, expr->op, right);
         default:
-            throw EagleRuntimeError("[RuntimeError at line " + std::to_string(expr->op->line) +
-                                    "] " + "Undefined behavior of operator " + expr->op->text);
+            throw interpreterRuntimeError(expr->op->line,
+                                          "Undefined behavior of operator " + expr->op->text);
     }
 }
 
@@ -110,7 +109,7 @@ ObjectPtr Interpreter::visitUnaryExpr(std::shared_ptr<Expr::Unary> expr) {
         case EXCLAMATION_MARK:
         case NOT: return std::make_shared<Boolean>(!isTruthy(value));
         case MINUS:
-            checkNumber(expr->op, value, true);
+            checkNumber(expr->op, value);
             return std::make_shared<BigFloat>(0 - (*cast<BigFloat>(value)));
         default:
             throw EagleRuntimeError("[RuntimeError at line " + std::to_string(expr->op->line) +
@@ -119,7 +118,26 @@ ObjectPtr Interpreter::visitUnaryExpr(std::shared_ptr<Expr::Unary> expr) {
 }
 
 ObjectPtr Interpreter::visitCallExpr(std::shared_ptr<Expr::Call> expr) {
-    return nullptr;
+    ObjectPtr callee = evaluate(expr->callee);
+
+    std::vector<ObjectPtr> arguments{};
+    for (const auto& argument : expr->arguments) {
+        arguments.emplace_back(evaluate(argument));
+    }
+
+    if (!InstanceOf<EagleCallable>(callee)) {
+        throw interpreterRuntimeError(expr->line, "Only functions and classes can be called");
+    }
+
+    EagleCallablePtr function = cast<EagleCallable>(callee);
+    if (arguments.size() != function->arity()) {
+        throw interpreterRuntimeError(
+            expr->line, "Expect arguments size is" + std::to_string(function->arity()) + " But " +
+                            std::to_string(arguments.size()) + " argument(s) is(are) given");
+    }
+
+    // TODO Built in Functions
+    return function->call(*this, arguments);
 }
 
 ObjectPtr Interpreter::visitLiteralExpr(std::shared_ptr<Expr::Literal> expr) {
@@ -139,11 +157,35 @@ ObjectPtr Interpreter::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
 }
 
 ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> expr) {
-    return nullptr;
+    ObjectPtr object = evaluate(expr->object);
+    if (!InstanceOf<EagleInstance>(object)) {
+        throw interpreterRuntimeError(expr->name->line,
+                                      "Only instances have fields to set property");
+    }
+
+    ObjectPtr name_value = cast<EagleInstance>(object)->get(expr->name);
+    ObjectPtr value = evaluate(expr->value);
+    switch (expr->op->type) {
+        case ASSIGN: break;
+        case PLUS_ASSIGN: value = plus(name_value, expr->op, value); break;
+        case MINUS_ASSIGN: value = minus(name_value, expr->op, value); break;
+        case MULTI_ASSIGN: value = multi(name_value, expr->op, value); break;
+        case DIV_ASSIGN: value = div(name_value, expr->op, value); break;
+        case MOD_ASSIGN: value = mod(name_value, expr->op, value); break;
+        default:
+            throw interpreterRuntimeError(expr->op->line,
+                                          "Undefined behavior of operator " + expr->op->text);
+    }
+    cast<EagleInstance>(object)->set(expr->name->text, value);
+    return value;
 }
 
 ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> expr) {
-    return nullptr;
+    ObjectPtr object = evaluate(expr->object);
+    if (!InstanceOf<EagleInstance>(object)) {
+        throw interpreterRuntimeError(expr->name->line, "Only instances have properties");
+    }
+    return cast<EagleInstance>(object)->get(expr->name);
 }
 
 ObjectPtr Interpreter::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
@@ -155,11 +197,20 @@ ObjectPtr Interpreter::visitContainerGetExpr(std::shared_ptr<Expr::ContainerGet>
 }
 
 ObjectPtr Interpreter::visitThisExpr(std::shared_ptr<Expr::This> expr) {
-    return nullptr;
+    return getVariable(expr->keyword, expr);
 }
 
 ObjectPtr Interpreter::visitSuperExpr(std::shared_ptr<Expr::Super> expr) {
-    return nullptr;
+    int distance = local_variables[expr];
+    EagleClassPtr super_class = cast<EagleClass>(current_env->getAt(distance, "super"));
+    EagleInstancePtr instance = cast<EagleInstance>(current_env->getAt(distance - 1, "this"));
+    EagleFunctionPtr method = super_class->getMethodRecursive(expr->method->text);
+
+    if (method == nullptr) {
+        throw interpreterRuntimeError(expr->method->line,
+                                      "Undefined super class method '" + expr->method->text + "'");
+    }
+    return method->bind(instance);
 }
 
 ObjectPtr Interpreter::visitSequenceExpr(std::shared_ptr<Expr::Sequence> expr) {
@@ -172,9 +223,55 @@ ObjectPtr Interpreter::visitAssociativeExpr(std::shared_ptr<Expr::Associative> e
 
 // statements
 ObjectPtr Interpreter::visitClassStmt(std::shared_ptr<Stmt::Class> stmt) {
+    ObjectPtr super_class = nullptr;
+    if (stmt->super_class != nullptr) {
+        super_class = evaluate(stmt->super_class);
+        if (!InstanceOf<EagleClass>(super_class)) {
+            throw interpreterRuntimeError(stmt->super_class->name->line,
+                                          "Superclass must be a class");
+        }
+    }
+    current_env->define(stmt->name->text, nullptr);
+
+    if (super_class != nullptr) {
+        current_env = std::make_shared<Environment>(current_env);
+        current_env->define("super", super_class);
+    }
+
+    // members
+    std::unordered_map<std::string, ObjectPtr> members{};
+    for (const auto& member : stmt->members) {
+        ObjectPtr value;
+        if (member->initializer != nullptr) {
+            value = evaluate(member->initializer);
+        } else {
+            value = std::make_shared<Null>();
+        }
+        members[member->name->text] = value;
+    }
+
+    // methods
+    std::unordered_map<std::string, EagleFunctionPtr> methods{};
+    for (const auto& method : stmt->methods) {
+        EagleFunctionPtr function =
+            std::make_shared<EagleFunction>(method, current_env, method->name->text == "init");
+        methods[method->name->text] = function;
+    }
+
+    EagleClassPtr klass = std::make_shared<EagleClass>(
+        stmt->name->text, cast<EagleClass>(super_class), members, methods);
+
+    if (super_class != nullptr) {
+        current_env = current_env->enclosing;
+    }
+
+    current_env->assign(stmt->name, klass);
     return nullptr;
 }
+
 ObjectPtr Interpreter::visitFunctionStmt(std::shared_ptr<Stmt::Function> stmt) {
+    EagleFunctionPtr function = std::make_shared<EagleFunction>(stmt, current_env, false);
+    current_env->define(stmt->name->text, function);
     return nullptr;
 }
 
@@ -280,15 +377,12 @@ ObjectPtr Interpreter::getVariable(const TokenPtr& name, const ExprPtr& expr) {
     }
 }
 
-bool Interpreter::checkNumber(const TokenPtr& op, const ObjectPtr& object, bool need_throw) {
+bool Interpreter::checkNumber(const TokenPtr& op, const ObjectPtr& object) {
     if (InstanceOf<BigFloat>(object)) {
         return true;
     } else {
-        if (need_throw) {
-            throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                    "Operator " + op->text + " needs object to be digit");
-        }
-        return false;
+        throw interpreterRuntimeError(op->line,
+                                      "Operator " + op->text + " needs object to be digit");
     }
 }
 
@@ -298,36 +392,30 @@ bool Interpreter::checkTwoNumbers(const ObjectPtr& left, const TokenPtr& op, con
         return true;
     } else {
         if (need_throw) {
-            throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                    "Operator " + op->text +
-                                    " needs both left and right to be digits");
+            throw interpreterRuntimeError(
+                op->line, "Operator " + op->text + " needs both left and right to be digits");
         }
         return false;
     }
 }
 
-bool Interpreter::checkTwoStrings(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right,
-                                  bool need_throw) {
+bool Interpreter::checkTwoStrings(const ObjectPtr& left, const TokenPtr& op,
+                                  const ObjectPtr& right) {
     if (InstanceOf<String>(left) && InstanceOf<String>(right)) {
         return true;
     } else {
-        if (need_throw) {
-            throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                    "Operator " + op->text +
-                                    " needs both left and right to be strings");
-        }
         return false;
     }
 }
 ObjectPtr Interpreter::plus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return std::make_shared<BigFloat>((*cast<BigFloat>(left)) + (*cast<BigFloat>(right)));
-    } else if (checkTwoStrings(left, op, right, false)) {
+    } else if (checkTwoStrings(left, op, right)) {
         return std::make_shared<String>(cast<String>(left)->str + cast<String>(right)->str);
     } else {
-        throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                "Operator " + op->text +
-                                " needs both left and right to be digits or strings");
+        throw interpreterRuntimeError(
+            op->line,
+            "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
 
@@ -353,46 +441,46 @@ ObjectPtr Interpreter::mod(const ObjectPtr& left, const TokenPtr& op, const Obje
 bool Interpreter::less(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return (*cast<BigFloat>(left)) < (*cast<BigFloat>(right));
-    } else if (checkTwoStrings(left, op, right, false)) {
+    } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str < cast<String>(right)->str;
     } else {
-        throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                "Operator " + op->text +
-                                " needs both left and right to be digits or strings");
+        throw interpreterRuntimeError(
+            op->line,
+            "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
 
 bool Interpreter::lessEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return (*cast<BigFloat>(left)) <= (*cast<BigFloat>(right));
-    } else if (checkTwoStrings(left, op, right, false)) {
+    } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str <= cast<String>(right)->str;
     } else {
-        throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                "Operator " + op->text +
-                                " needs both left and right to be digits or strings");
+        throw interpreterRuntimeError(
+            op->line,
+            "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
 bool Interpreter::greater(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return (*cast<BigFloat>(left)) > (*cast<BigFloat>(right));
-    } else if (checkTwoStrings(left, op, right, false)) {
+    } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str > cast<String>(right)->str;
     } else {
-        throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                "Operator " + op->text +
-                                " needs both left and right to be digits or strings");
+        throw interpreterRuntimeError(
+            op->line,
+            "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
 bool Interpreter::greaterEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return (*cast<BigFloat>(left)) >= (*cast<BigFloat>(right));
-    } else if (checkTwoStrings(left, op, right, false)) {
+    } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str >= cast<String>(right)->str;
     } else {
-        throw EagleRuntimeError("[RuntimeError at line " + std::to_string(op->line) + "] " +
-                                "Operator " + op->text +
-                                " needs both left and right to be digits or strings");
+        throw interpreterRuntimeError(
+            op->line,
+            "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
 
@@ -417,12 +505,13 @@ bool Interpreter::isTruthy(const ObjectPtr& object) {
 bool Interpreter::isEqual(const ObjectPtr& left, const ObjectPtr& right) {
     if (InstanceOf<Null>(left) && InstanceOf<Null>(right))
         return true;
-    if (InstanceOf<Null>(left))
-        return false;
+
     if (InstanceOf<BigFloat>(left) && InstanceOf<BigFloat>(right))
         return *cast<BigFloat>(left) == *cast<BigFloat>(right);
+
     if (InstanceOf<String>(left) && InstanceOf<String>(right))
         return cast<String>(left)->str == cast<String>(right)->str;
+
     // TODO Containers
 
     return left == right;
@@ -441,8 +530,21 @@ std::string Interpreter::stringify(const ObjectPtr& object) {
     if (InstanceOf<String>(object))
         return cast<String>(object)->str;
 
-    // TODO Containers && Function && Class && Instance
+    if (InstanceOf<EagleInstance>(object))
+        return cast<EagleInstance>(object)->ToString();
+
+    if (InstanceOf<EagleClass>(object))
+        return cast<EagleClass>(object)->ToString();
+
+    if (InstanceOf<EagleFunction>(object))
+        return cast<EagleFunction>(object)->ToString();
+
+    // TODO Containers && Function
     return "666";
+}
+
+EagleRuntimeError Interpreter::interpreterRuntimeError(int line, const std::string& message) {
+    return EagleRuntimeError("[RuntimeError at line " + std::to_string(line) + "] " + message);
 }
 
 }  // namespace eagle

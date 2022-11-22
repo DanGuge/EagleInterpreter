@@ -42,7 +42,8 @@ set(SOURCE_FILES
         src/modules/eagle_callable.h
         src/modules/eagle_built_in_class.h
         src/modules/eagle_string.h
-        src/modules/eagle_string.cpp)
+        src/modules/eagle_string.cpp
+        src/modules/eagle_class.cpp src/modules/eagle_function.h src/modules/eagle_function.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
