@@ -18,23 +18,23 @@ using StringPtr = std::shared_ptr<String>;
 
 class String : public BuiltInClass {
 public:
-    static ObjectPtr size(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr empty(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr char_at(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr count(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr find(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr upper(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr lower(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr split(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr split(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
-    static ObjectPtr replace(BuiltInClassPtr instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
 
 private:
     static StringPtr CheckBuiltInClassType(BuiltInClassPtr instance);

@@ -15,7 +15,7 @@ namespace eagle {
 
 class BuiltInClass;
 using BuiltInClassPtr = std::shared_ptr<BuiltInClass>;
-using BuiltInClassMethod = ObjectPtr (*)(BuiltInClassPtr instance,
+using BuiltInClassMethod = ObjectPtr (*)(const BuiltInClassPtr& instance,
                                          std::vector<ObjectPtr>& arguments);
 
 struct BuiltInClassMethodInfo {
