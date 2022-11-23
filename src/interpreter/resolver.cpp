@@ -208,6 +208,11 @@ ObjectPtr Resolver::visitVarStmt(std::shared_ptr<Stmt::Var> stmt) {
         resolve(stmt->initializer);
     }
     defineIdentifier(stmt->name);
+    if (current_class_type != ClassType::NONE &&
+        current_function_type != FunctionType::METHOD &&
+         current_function_type != FunctionType::INITIALIZER) {
+        scopes.back().erase(stmt->name->text);
+    }
     return nullptr;
 }
 ObjectPtr Resolver::visitIfStmt(std::shared_ptr<Stmt::If> stmt) {
@@ -286,7 +291,7 @@ void Resolver::declareIdentifier(const TokenPtr& token) {
     if (scopes.empty())
         return;
 
-    Scope top_scope = scopes.back();
+    Scope& top_scope = scopes.back();
     if (top_scope.find(token->text) != top_scope.end()) {
         ErrorReporter::getInstance().error(token,
                                            "Redeclaration of variable \'" + token->text + "\'");

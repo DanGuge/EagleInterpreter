@@ -164,18 +164,23 @@ ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> e
     }
     EagleInstancePtr instance = cast<EagleInstance>(object);
 
-    ObjectPtr name_value = instance->get(expr->name, instance);
     ObjectPtr value = evaluate(expr->value);
-    switch (expr->op->type) {
-        case ASSIGN: break;
-        case PLUS_ASSIGN: value = plus(name_value, expr->op, value); break;
-        case MINUS_ASSIGN: value = minus(name_value, expr->op, value); break;
-        case MULTI_ASSIGN: value = multi(name_value, expr->op, value); break;
-        case DIV_ASSIGN: value = div(name_value, expr->op, value); break;
-        case MOD_ASSIGN: value = mod(name_value, expr->op, value); break;
-        default:
-            throw interpreterRuntimeError(expr->op->line,
-                                          "Undefined behavior of operator " + expr->op->text);
+    if (expr->op->type != ASSIGN) {
+        ObjectPtr name_value = instance->get(expr->name, instance);
+        if (name_value == nullptr) {
+            throw interpreterRuntimeError(expr->name->line,
+                                          "Undefined property '" + expr->name->text + "'.");
+        }
+        switch (expr->op->type) {
+            case PLUS_ASSIGN: value = plus(name_value, expr->op, value); break;
+            case MINUS_ASSIGN: value = minus(name_value, expr->op, value); break;
+            case MULTI_ASSIGN: value = multi(name_value, expr->op, value); break;
+            case DIV_ASSIGN: value = div(name_value, expr->op, value); break;
+            case MOD_ASSIGN: value = mod(name_value, expr->op, value); break;
+            default:
+                throw interpreterRuntimeError(expr->op->line,
+                                              "Undefined behavior of operator " + expr->op->text);
+        }
     }
     cast<EagleInstance>(object)->set(expr->name->text, value);
     return value;
@@ -187,7 +192,12 @@ ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> e
         throw interpreterRuntimeError(expr->name->line, "Only instances have properties");
     }
     EagleInstancePtr instance = cast<EagleInstance>(object);
-    return instance->get(expr->name, instance);
+    ObjectPtr value = instance->get(expr->name, instance);
+    if (value == nullptr) {
+        throw interpreterRuntimeError(expr->name->line,
+                                      "Undefined property '" + expr->name->text + "'.");
+    }
+    return value;
 }
 
 ObjectPtr Interpreter::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
@@ -289,7 +299,7 @@ ObjectPtr Interpreter::visitVarStmt(std::shared_ptr<Stmt::Var> stmt) {
 ObjectPtr Interpreter::visitIfStmt(std::shared_ptr<Stmt::If> stmt) {
     if (isTruthy(evaluate(stmt->condition))) {
         execute(stmt->then_branch);
-    } else {
+    } else if (stmt->else_branch != nullptr) {
         execute(stmt->else_branch);
     }
     return nullptr;
