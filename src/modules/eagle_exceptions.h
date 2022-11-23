@@ -19,6 +19,8 @@ public:
     std::string message;
 };
 
+EagleRuntimeError RuntimeError(int line, const std::string& message);
+
 class EagleReturn : public std::exception {
 public:
     explicit EagleReturn(ObjectPtr object);
