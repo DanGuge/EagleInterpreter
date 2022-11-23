@@ -18,26 +18,36 @@ using StringPtr = std::shared_ptr<String>;
 
 class String : public BuiltInClass {
 public:
-    static ObjectPtr size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                          int line);
 
-    static ObjectPtr empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                           int line);
 
-    static ObjectPtr char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                             int line);
 
-    static ObjectPtr count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                           int line);
 
-    static ObjectPtr find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                          int line);
 
-    static ObjectPtr upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                           int line);
 
-    static ObjectPtr lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                           int line);
 
-    static ObjectPtr split(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr split(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                           int line);
 
-    static ObjectPtr replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments);
+    static ObjectPtr replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                             int line);
 
 private:
-    static StringPtr CheckBuiltInClassType(BuiltInClassPtr instance);
+    static StringPtr CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+                                           const std::string& method_name);
 
 private:
     static const std::unordered_map<std::string, BuiltInClassMethodInfo> built_in_methods;
@@ -59,7 +69,7 @@ public:
         return &str;
     }
 
-    BuiltInClassMethodInfo GetMethod(const std::string& method_name) override;
+    BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) override;
 
     virtual std::string toString() override;
 

@@ -16,7 +16,7 @@ namespace eagle {
 class BuiltInClass;
 using BuiltInClassPtr = std::shared_ptr<BuiltInClass>;
 using BuiltInClassMethod = ObjectPtr (*)(const BuiltInClassPtr& instance,
-                                         std::vector<ObjectPtr>& arguments);
+                                         std::vector<ObjectPtr>& arguments, int line);
 
 struct BuiltInClassMethodInfo {
     BuiltInClassMethod method;
@@ -25,16 +25,17 @@ struct BuiltInClassMethodInfo {
 
 class BuiltInClass : public Object {
 public:
-    virtual BuiltInClassMethodInfo GetMethod(const std::string& method_name) = 0;
+    virtual BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) = 0;
 };
 
 class BuiltInClassCallable : public EagleCallable {
 public:
-    BuiltInClassCallable(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity)
-        : instance(std::move(instance)), method(method), method_arity(method_arity) {}
+    BuiltInClassCallable(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity,
+                         int line)
+        : instance(std::move(instance)), method(method), method_arity(method_arity), line(line) {}
 
     ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override {
-        return method(instance, arguments);
+        return method(instance, arguments, line);
     }
 
     int arity() override {
@@ -45,6 +46,7 @@ private:
     BuiltInClassPtr instance;
     BuiltInClassMethod method;
     int method_arity;
+    int line;
 };
 
 }  // namespace eagle

@@ -8,40 +8,43 @@ namespace eagle {
 
 const std::unordered_map<std::string, BuiltInClassMethodInfo> String::built_in_methods = {
     {"size", {size, 0}},   {"empty", {empty, 0}}, {"char_at", {char_at, 1}},
-    {"count", {find, 1}},  {"find", {find, 1}},   {"upper", {upper, 0}},
+    {"count", {count, 1}},  {"find", {find, 1}},   {"upper", {upper, 0}},
     {"lower", {lower, 0}}, {"split", {split, 1}}, {"replace", {replace, 2}}};
 
-BuiltInClassMethodInfo String::GetMethod(const std::string& method_name) {
-    auto method_found = built_in_methods.find(method_name);
+BuiltInClassMethodInfo String::GetMethod(const TokenPtr& method_name) {
+    auto method_found = built_in_methods.find(method_name->text);
     if (method_found != built_in_methods.end()) {
         return method_found->second;
     } else {
-        throw EagleRuntimeError{"String has no method named " + method_name};
+        throw RuntimeError(method_name->line, "String has no method named " + method_name->text);
     }
 }
 
-ObjectPtr String::size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                       int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "size");
     return std::make_shared<BigFloat>((int)str->str.size());
 }
 
-ObjectPtr String::empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                        int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "empty");
     return std::make_shared<Boolean>(str->str.empty());
 }
 
-ObjectPtr String::char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                          int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "char_at");
     if (!InstanceOf<BigFloat>(arguments[0])) {
-        throw EagleRuntimeError{"parameter of method char_at must be integer"};
+        throw RuntimeError(line, "Parameter of method char_at must be integer");
     }
     std::shared_ptr<BigFloat> index = cast<BigFloat>(arguments[0]);
     if (index->Decimals() != 0) {
-        throw EagleRuntimeError{"parameter of method char_at must be integer, not float"};
+        throw RuntimeError(line, "Parameter of method char_at must be integer, not float");
     }
     int index_ = index->ToInt(), str_size = (int)str->str.size();
     if (index_ < -str_size || index_ >= str_size) {
-        throw EagleRuntimeError{"string index out of range"};
+        throw RuntimeError(line, "String index out of range.");
     }
     if (index_ < 0) {
         index_ += str_size;
@@ -49,10 +52,11 @@ ObjectPtr String::char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr
     return std::make_shared<String>(str->str[index_]);
 }
 
-ObjectPtr String::count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                        int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "count");
     if (!InstanceOf<String>(arguments[0])) {
-        throw EagleRuntimeError{"parameter of method count must be string"};
+        throw RuntimeError(line, "Parameter of method count must be string");
     }
     StringPtr substr = cast<String>(arguments[0]);
     size_t pos = 0;
@@ -66,10 +70,11 @@ ObjectPtr String::count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>&
     return std::make_shared<BigFloat>(found_count);
 }
 
-ObjectPtr String::find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                       int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "find");
     if (!InstanceOf<String>(arguments[0])) {
-        throw EagleRuntimeError{"parameter of method find must be string"};
+        throw RuntimeError(line, "Parameter of method find must be string");
     }
     StringPtr substr = cast<String>(arguments[0]);
     auto found = str->str.find(substr->str);
@@ -77,8 +82,9 @@ ObjectPtr String::find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& 
     return std::make_shared<BigFloat>(position);
 }
 
-ObjectPtr String::upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                        int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "upper");
     std::string new_str = str->str;
     for (char& ch : new_str) {
         ch = (char)std::toupper(ch);
@@ -86,8 +92,9 @@ ObjectPtr String::upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>&
     return std::make_shared<String>(new_str);
 }
 
-ObjectPtr String::lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                        int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "lower");
     std::string new_str = str->str;
     for (char& ch : new_str) {
         ch = (char)std::tolower(ch);
@@ -95,15 +102,17 @@ ObjectPtr String::lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>&
     return std::make_shared<String>(new_str);
 }
 
-ObjectPtr String::split(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
+ObjectPtr String::split(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                        int line) {
     // TODO: Need to implement list first
     return nullptr;
 }
 
-ObjectPtr String::replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments) {
-    StringPtr str = CheckBuiltInClassType(instance);
+ObjectPtr String::replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
+                          int line) {
+    StringPtr str = CheckBuiltInClassType(instance, line, "replace");
     if (!InstanceOf<String>(arguments[0]) || !InstanceOf<String>(arguments[1])) {
-        throw EagleRuntimeError{"parameters of method replace must be string"};
+        throw RuntimeError(line, "Parameters of method replace must be string");
     }
     StringPtr target_str = cast<String>(arguments[0]);
     StringPtr new_str = cast<String>(arguments[1]);
@@ -119,9 +128,10 @@ ObjectPtr String::replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr
     return std::make_shared<String>(result_str);
 }
 
-StringPtr String::CheckBuiltInClassType(BuiltInClassPtr instance) {
+StringPtr String::CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+                                        const std::string& method_name) {
     if (!InstanceOf<String>(instance)) {
-        throw EagleRuntimeError{"expected callee type String for method size."};
+        throw RuntimeError(line, "Expect callee type String for method " + method_name + ".");
     }
     return cast<String>(instance);
 }
