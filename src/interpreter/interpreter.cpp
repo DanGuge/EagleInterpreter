@@ -74,6 +74,7 @@ ObjectPtr Interpreter::visitCompareExpr(std::shared_ptr<Expr::Compare> expr) {
         if (!is_true) {
             return std::make_shared<Boolean>(false);
         }
+        left = right;
     }
     return std::make_shared<Boolean>(true);
 }
@@ -149,11 +150,20 @@ ObjectPtr Interpreter::visitVariableExpr(std::shared_ptr<Expr::Variable> expr) {
 }
 
 ObjectPtr Interpreter::visitStreamExpr(std::shared_ptr<Expr::Stream> expr) {
+    // TODO Stream
     return nullptr;
 }
 
 ObjectPtr Interpreter::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
-    return nullptr;
+    ObjectPtr condition = evaluate(expr->expr);
+    ObjectPtr value = nullptr;
+    for (const auto& case_result : expr->case_results) {
+        if (isEqual(condition, evaluate(case_result.first))) {
+            value = evaluate(case_result.second);
+            break;
+        }
+    }
+    return value != nullptr ? value : evaluate(expr->default_results);
 }
 
 ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> expr) {
@@ -201,10 +211,12 @@ ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> e
 }
 
 ObjectPtr Interpreter::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
+    // TODO Containers
     return nullptr;
 }
 
 ObjectPtr Interpreter::visitContainerGetExpr(std::shared_ptr<Expr::ContainerGet> expr) {
+    // TODO Containers
     return nullptr;
 }
 
@@ -226,10 +238,12 @@ ObjectPtr Interpreter::visitSuperExpr(std::shared_ptr<Expr::Super> expr) {
 }
 
 ObjectPtr Interpreter::visitSequenceExpr(std::shared_ptr<Expr::Sequence> expr) {
+    // TODO create List Or Tuple
     return nullptr;
 }
 
 ObjectPtr Interpreter::visitAssociativeExpr(std::shared_ptr<Expr::Associative> expr) {
+    // TODO create Dict
     return nullptr;
 }
 
@@ -313,6 +327,26 @@ ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
             break;
         } catch (EagleContinue& eagle_continue) {
             continue;
+        }
+    }
+    return nullptr;
+}
+
+ObjectPtr Interpreter::visitForStmt(std::shared_ptr<Stmt::For> stmt) {
+    EnvironmentPtr for_env = std::make_shared<Environment>(current_env);
+    ScopedEnvironment scoped(current_env, for_env);
+    if (stmt->initializer != nullptr) {
+        execute(stmt->initializer);
+    }
+    while (isTruthy(evaluate(stmt->condition))) {
+        try {
+            execute(stmt->body);
+        } catch (EagleBreak& eagle_break) {
+            break;
+        } catch (EagleContinue& eagle_continue) {}
+
+        if (stmt->increment != nullptr) {
+            execute(stmt->increment);
         }
     }
     return nullptr;
