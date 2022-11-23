@@ -17,7 +17,21 @@ int main() {
                          "class B extends A {"
                          "  var b = 2;\n"
                          "};\n"
-                         "B().printB();\n";  // test source
+                         "B().printB();\n"
+                         "def getA() {\n"
+                         "      var b = B();\n"
+                         "      print b.b;\n"
+                         "      b.c = 10;\n"
+                         "      print b.c;\n"
+                         "      b.printB();"
+                         "      print b;\n"
+                         "      return b;\n"
+                         "}\n"
+                         "var c = getA;\n"
+                         "print c().c;\n"
+                         "c();\n"
+                         "print A;\n"
+                         "print getA;";  // test source
     eagle.run(source);
     ErrorReporter::getInstance().printErrors();
     return 0;

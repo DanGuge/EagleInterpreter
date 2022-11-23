@@ -42,6 +42,6 @@ EagleFunctionPtr EagleFunction::bind(const EagleInstancePtr& instance) {
 }
 
 std::string EagleFunction::ToString() {
-    return "<function " + declaration->name->text + " >";
+    return "<function " + declaration->name->text + ">";
 }
 }  // namespace eagle

@@ -19,7 +19,7 @@ EagleClass::EagleClass(std::string name, EagleClassPtr super_class,
     , methods(std::move(methods)) {}
 
 std::string EagleClass::ToString() const {
-    return "<class " + name + " >";
+    return "<class " + name + ">";
 }
 
 int EagleClass::arity() {
@@ -97,7 +97,7 @@ void EagleInstance::set(const std::string& name, ObjectPtr value) {
 }
 
 std::string EagleInstance::ToString() {
-    return "< instance of class " + klass->name + " >";
+    return "<instance of class " + klass->name + ">";
 }
 
 }  // namespace eagle
