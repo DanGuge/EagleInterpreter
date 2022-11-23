@@ -48,6 +48,16 @@ ObjectPtr Stmt::While::accept(Visitor &visitor) {
     return visitor.visitWhileStmt(shared_from_this());
 }
 
+Stmt::For::For(StmtPtr initializer, ExprPtr condition, StmtPtr increment, StmtPtr body)
+    : initializer(std::move(initializer))
+    , condition(std::move(condition))
+    , increment(std::move(increment))
+    , body(std::move(body)) {}
+
+ObjectPtr Stmt::For::accept(Visitor &visitor) {
+    return visitor.visitForStmt(shared_from_this());
+}
+
 Stmt::Expression::Expression(ExprPtr expression) : expression(std::move(expression)) {}
 
 ObjectPtr Stmt::Expression::accept(Visitor &visitor) {

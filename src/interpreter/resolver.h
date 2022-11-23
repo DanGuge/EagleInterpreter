@@ -46,6 +46,7 @@ public:
     ObjectPtr visitVarStmt(std::shared_ptr<Stmt::Var> stmt) override;
     ObjectPtr visitIfStmt(std::shared_ptr<Stmt::If> stmt) override;
     ObjectPtr visitWhileStmt(std::shared_ptr<Stmt::While> stmt) override;
+    ObjectPtr visitForStmt(std::shared_ptr<Stmt::For> stmt) override;
     ObjectPtr visitExpressionStmt(std::shared_ptr<Stmt::Expression> stmt) override;
     ObjectPtr visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) override;
     ObjectPtr visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) override;

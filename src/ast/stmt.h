@@ -18,6 +18,7 @@ public:
     class Var;
     class If;
     class While;
+    class For;
     class Expression;
     class Print;
     class Return;
@@ -32,6 +33,7 @@ public:
         virtual ObjectPtr visitVarStmt(std::shared_ptr<Var> stmt) = 0;
         virtual ObjectPtr visitIfStmt(std::shared_ptr<If> stmt) = 0;
         virtual ObjectPtr visitWhileStmt(std::shared_ptr<While> stmt) = 0;
+        virtual ObjectPtr visitForStmt(std::shared_ptr<For> stmt) = 0;
         virtual ObjectPtr visitExpressionStmt(std::shared_ptr<Expression> stmt) = 0;
         virtual ObjectPtr visitPrintStmt(std::shared_ptr<Print> stmt) = 0;
         virtual ObjectPtr visitReturnStmt(std::shared_ptr<Return> stmt) = 0;
@@ -102,6 +104,19 @@ public:
 
 public:
     ExprPtr condition;
+    StmtPtr body;
+};
+
+class Stmt::For : public Stmt, public std::enable_shared_from_this<For> {
+public:
+    For(StmtPtr initializer, ExprPtr condition, StmtPtr increment, StmtPtr body);
+
+    ObjectPtr accept(Visitor &visitor) override;
+
+public:
+    StmtPtr initializer;
+    ExprPtr condition;
+    StmtPtr increment;
     StmtPtr body;
 };
 

@@ -166,17 +166,6 @@ StmtPtr Parser::ifStmt() {
  * for-statement    ::= "for" "(" (variable-declaration | expression-statement | ";")?
  *                      expression? ";" expression? ")"
  *                      statement ;
- *
- * modify for_statement to while_statement
- * for (initializer; condition; increment) body
- * ==>
- * {
- *     init
- *     while (condition) {
- *         body;
- *         increment;
- *     }
- * }
  */
 StmtPtr Parser::forStmt() {
     consume(LEFT_PAREN, "Expect '(' after 'for' keyword");
@@ -190,35 +179,23 @@ StmtPtr Parser::forStmt() {
         initializer = expressionStmt();
     }
 
-    ExprPtr condition = nullptr;
+    ExprPtr condition;
     if (!check(SEMICOLON)) {
         condition = expression();
+    } else {
+        condition = std::make_shared<Expr::Literal>(std::make_shared<Boolean>(true));
     }
     consume(SEMICOLON, "Expect ';' after 'for' condition");
 
-    ExprPtr increment = nullptr;
+    StmtPtr increment = nullptr;
     if (!check(RIGHT_PAREN)) {
-        increment = expression();
+        increment = std::make_shared<Stmt::Expression>(expression());
     }
     consume(RIGHT_PAREN, "Expect ')' after 'for' declaration");
 
     StmtPtr body = statement();
 
-    if (increment != nullptr) {
-        body = std::make_shared<Stmt::Block>(
-            std::vector<StmtPtr>{body, std::make_shared<Stmt::Expression>(increment)});
-    }
-
-    if (condition == nullptr) {
-        condition = std::make_shared<Expr::Literal>(std::make_shared<Boolean>(true));
-    }
-    body = std::make_shared<Stmt::While>(condition, body);
-
-    if (initializer != nullptr) {
-        body = std::make_shared<Stmt::Block>(std::vector<StmtPtr>{initializer, body});
-    }
-
-    return body;
+    return std::make_shared<Stmt::For>(initializer, condition, increment, body);
 }
 
 /*

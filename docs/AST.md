@@ -8,6 +8,7 @@ Function 	: Token name, List<Token> params, List<Stmt> body
 Var 		: Token name, Expr initializer
 If 			: Expr condition, Stmt then_branch, Stmt else_branch
 While 		: Expr condition, Stmt body
+For         : Stmt initializer, Expr condition, Stmt increment, Stmt body 
 Expression 	: Expr expression
 Print 		: Expr print_value
 Return 		: Expr return_value, int line

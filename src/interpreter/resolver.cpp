@@ -76,6 +76,7 @@ ObjectPtr Resolver::visitVariableExpr(std::shared_ptr<Expr::Variable> expr) {
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitStreamExpr(std::shared_ptr<Expr::Stream> expr) {
     for (const auto& operation : expr->operations) {
         if (operation.second != nullptr)
@@ -83,6 +84,7 @@ ObjectPtr Resolver::visitStreamExpr(std::shared_ptr<Expr::Stream> expr) {
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
     resolve(expr->expr);
     for (const auto& case_result : expr->case_results) {
@@ -92,26 +94,31 @@ ObjectPtr Resolver::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
     resolve(expr->default_results);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> expr) {
     resolve(expr->object);
     resolve(expr->value);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> expr) {
     resolve(expr->object);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
     resolve(expr->container);
     resolve(expr->subscript);
     resolve(expr->value);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitContainerGetExpr(std::shared_ptr<Expr::ContainerGet> expr) {
     resolve(expr->container);
     resolve(expr->subscript);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitThisExpr(std::shared_ptr<Expr::This> expr) {
     if (current_class_type == ClassType::NONE) {
         ErrorReporter::getInstance().error(expr->keyword, "Can't use 'this' keyword outside class");
@@ -120,6 +127,7 @@ ObjectPtr Resolver::visitThisExpr(std::shared_ptr<Expr::This> expr) {
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitSuperExpr(std::shared_ptr<Expr::Super> expr) {
     if (current_class_type == ClassType::NONE) {
         ErrorReporter::getInstance().error(expr->keyword,
@@ -132,12 +140,14 @@ ObjectPtr Resolver::visitSuperExpr(std::shared_ptr<Expr::Super> expr) {
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitSequenceExpr(std::shared_ptr<Expr::Sequence> expr) {
     for (const auto& element : expr->elements) {
         resolve(element);
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitAssociativeExpr(std::shared_ptr<Expr::Associative> expr) {
     for (const auto& key_value : expr->elements) {
         resolve(key_value.first);
@@ -196,25 +206,27 @@ ObjectPtr Resolver::visitClassStmt(std::shared_ptr<Stmt::Class> stmt) {
     current_class_type = enclosing_class_type;
     return nullptr;
 }
+
 ObjectPtr Resolver::visitFunctionStmt(std::shared_ptr<Stmt::Function> stmt) {
     declareIdentifier(stmt->name);
     defineIdentifier(stmt->name);
     resolveFunction(stmt, FunctionType::FUNCTION);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitVarStmt(std::shared_ptr<Stmt::Var> stmt) {
     declareIdentifier(stmt->name);
     if (stmt->initializer != nullptr) {
         resolve(stmt->initializer);
     }
     defineIdentifier(stmt->name);
-    if (current_class_type != ClassType::NONE &&
-        current_function_type != FunctionType::METHOD &&
-         current_function_type != FunctionType::INITIALIZER) {
+    if (current_class_type != ClassType::NONE && current_function_type != FunctionType::METHOD &&
+        current_function_type != FunctionType::INITIALIZER) {
         scopes.back().erase(stmt->name->text);
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitIfStmt(std::shared_ptr<Stmt::If> stmt) {
     resolve(stmt->condition);
     resolve(stmt->then_branch);
@@ -222,6 +234,7 @@ ObjectPtr Resolver::visitIfStmt(std::shared_ptr<Stmt::If> stmt) {
         resolve(stmt->else_branch);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
     resolve(stmt->condition);
     LoopType enclosing_loop_type = current_loop_type;
@@ -230,14 +243,34 @@ ObjectPtr Resolver::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
     current_loop_type = enclosing_loop_type;
     return nullptr;
 }
+
+ObjectPtr Resolver::visitForStmt(std::shared_ptr<Stmt::For> stmt) {
+    beginScope();
+    if (stmt->initializer != nullptr) {
+        resolve(stmt->initializer);
+    }
+    resolve(stmt->condition);
+    if (stmt->increment != nullptr) {
+        resolve(stmt->increment);
+    }
+    LoopType enclosing_loop_type = current_loop_type;
+    current_loop_type = LoopType::LOOP;
+    resolve(stmt->body);
+    current_loop_type = enclosing_loop_type;
+    endScope();
+    return nullptr;
+}
+
 ObjectPtr Resolver::visitExpressionStmt(std::shared_ptr<Stmt::Expression> stmt) {
     resolve(stmt->expression);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) {
     resolve(stmt->print_value);
     return nullptr;
 }
+
 ObjectPtr Resolver::visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) {
     if (current_function_type == FunctionType::NONE) {
         ErrorReporter::getInstance().error(stmt->line,
@@ -252,17 +285,20 @@ ObjectPtr Resolver::visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) {
     }
     return nullptr;
 }
+
 ObjectPtr Resolver::visitBreakStmt(std::shared_ptr<Stmt::Break> stmt) {
     if (current_loop_type != LoopType::LOOP)
         ErrorReporter::getInstance().error(stmt->keyword, "Can't use 'break' keyword outside loop");
     return nullptr;
 }
+
 ObjectPtr Resolver::visitContinueStmt(std::shared_ptr<Stmt::Continue> stmt) {
     if (current_loop_type != LoopType::LOOP)
         ErrorReporter::getInstance().error(stmt->keyword,
                                            "Can't use 'continue' keyword outside loop");
     return nullptr;
 }
+
 ObjectPtr Resolver::visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) {
     beginScope();
     resolve(stmt->statements);
