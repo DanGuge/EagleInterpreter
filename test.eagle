@@ -1,0 +1,57 @@
+class A {
+  def init() {
+      this.b = 1;
+  }
+  def printB() {
+      print this.b;
+  }
+}
+A().printB();
+class B extends A {
+  var b = 2;
+};
+B().printB();
+def getA() {
+      var b = B();
+      print b.b;
+      b.c = 10;
+      print b.c;
+      b.printB();
+      print b;
+      return b;
+}
+var c = getA;
+print c().c;
+c();
+print A;
+print getA;
+for(var a = 1; a < 10; a += 1) {
+  if (a == 5 or a == 7 or a == 8 + 1) continue;
+  if (1 < 2 < a > 3 < 5) print a*a;
+  print a;
+}
+print c;
+c = 10;
+var d = switch(c) {
+  case 1 + 1: 2, 
+  case 1 + 3 / 3 + 8 * 11: 22, 
+  default: getA};
+print d;
+
+
+var a1 = {[1, 2, 3, 4]:"list", (1, 2, 3, 4):"tuple", {1:2, 3:4}:"dict"};
+print a1;
+var b1 = [1, 2, 3, 4];
+var c1 = (1, 2, 3, 4);
+var d1 = {1:2, 3:4};
+print a1[b1];
+print a1[c1];
+print a1[d1];
+print a1.get([1, 3, 2, 4]);
+print a1.get((3, 4, 1, 2));
+print a1.get({3:4, 1:2});
+var e1 = {};
+e1.put(b1, "list");
+e1.put(c1, "tuple");
+e1.put(d1, "dict");
+print (a1 == e1);
