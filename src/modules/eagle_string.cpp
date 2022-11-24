@@ -4,11 +4,13 @@
 
 #include "eagle_string.h"
 
+#include "eagle_container.h"
+
 namespace eagle {
 
 const std::unordered_map<std::string, BuiltInClassMethodInfo> String::built_in_methods = {
     {"size", {size, 0}},   {"empty", {empty, 0}}, {"char_at", {char_at, 1}},
-    {"count", {count, 1}},  {"find", {find, 1}},   {"upper", {upper, 0}},
+    {"count", {count, 1}}, {"find", {find, 1}},   {"upper", {upper, 0}},
     {"lower", {lower, 0}}, {"split", {split, 1}}, {"replace", {replace, 2}}};
 
 BuiltInClassMethodInfo String::GetMethod(const TokenPtr& method_name) {
@@ -104,8 +106,21 @@ ObjectPtr String::lower(const BuiltInClassPtr& instance, std::vector<ObjectPtr>&
 
 ObjectPtr String::split(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
                         int line) {
-    // TODO: Need to implement list first
-    return nullptr;
+    StringPtr str = CheckBuiltInClassType(instance, line, "split");
+    if (!InstanceOf<String>(arguments[0])) {
+        throw RuntimeError(line, "Parameters of method split must be string");
+    }
+    StringPtr substr = cast<String>(arguments[0]);
+    std::vector<ObjectPtr> split_strings;
+    size_t pos = 0;
+    auto found = str->str.find(substr->str, pos);
+    while (found != std::string::npos) {
+        split_strings.emplace_back(std::make_shared<String>(str->str.substr(pos, found - pos)));
+        pos = found + substr->str.size();
+        found = str->str.find(substr->str, pos);
+    }
+    split_strings.emplace_back(std::make_shared<String>(str->str.substr(pos)));
+    return std::make_shared<EagleList>(std::move(split_strings));
 }
 
 ObjectPtr String::replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
