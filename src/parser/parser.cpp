@@ -440,9 +440,10 @@ ExprPtr Parser::call() {
             expr = std::make_shared<Expr::InstanceGet>(expr, name);
         } else if (match(LEFT_BRACKET)) {
             do {
+                int line = peek()->line;
                 ExprPtr subscript = expression();
                 consume(RIGHT_BRACKET, "Expect ']' after subscript");
-                expr = std::make_shared<Expr::ContainerGet>(expr, subscript);
+                expr = std::make_shared<Expr::ContainerGet>(expr, subscript, line);
             } while (match(LEFT_BRACKET));
         } else if (match(LEFT_PAREN)) {
             std::vector<ExprPtr> arguments{};

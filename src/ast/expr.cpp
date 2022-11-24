@@ -105,8 +105,8 @@ ObjectPtr Expr::ContainerSet::accept(Visitor &visitor) {
     return visitor.visitContainerSetExpr(shared_from_this());
 }
 
-Expr::ContainerGet::ContainerGet(ExprPtr container, ExprPtr subscript)
-    : container(std::move(container)), subscript(std::move(subscript)) {}
+Expr::ContainerGet::ContainerGet(ExprPtr container, ExprPtr subscript, int line)
+    : container(std::move(container)), subscript(std::move(subscript)), line(line) {}
 
 ObjectPtr Expr::ContainerGet::accept(Visitor &visitor) {
     return visitor.visitContainerGetExpr(shared_from_this());

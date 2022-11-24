@@ -215,13 +215,14 @@ public:
 
 class Expr::ContainerGet : public Expr, public std::enable_shared_from_this<ContainerGet> {
 public:
-    ContainerGet(ExprPtr container, ExprPtr subscript);
+    ContainerGet(ExprPtr container, ExprPtr subscript, int line);
 
     ObjectPtr accept(Visitor &visitor) override;
 
 public:
     ExprPtr container;
     ExprPtr subscript;
+    int line;
 };
 
 class Expr::This : public Expr, public std::enable_shared_from_this<This> {
