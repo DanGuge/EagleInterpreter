@@ -152,7 +152,7 @@ StringPtr String::CheckBuiltInClassType(BuiltInClassPtr instance, int line,
 }
 
 std::string String::toString() {
-    return str;
+    return "\"" + str + "\"";
 }
 
 bool String::equals(ObjectPtr other) {

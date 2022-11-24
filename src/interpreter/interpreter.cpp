@@ -6,6 +6,7 @@
 
 #include "BigFloat.h"
 #include "modules/eagle_class.h"
+#include "modules/eagle_container.h"
 #include "modules/eagle_string.h"
 #include "util/error_reporter.h"
 
@@ -133,11 +134,9 @@ ObjectPtr Interpreter::visitCallExpr(std::shared_ptr<Expr::Call> expr) {
     EagleCallablePtr function = cast<EagleCallable>(callee);
     if (arguments.size() != function->arity()) {
         throw interpreterRuntimeError(
-            expr->line, "Expect arguments size is" + std::to_string(function->arity()) + " But " +
+            expr->line, "Expect arguments size is " + std::to_string(function->arity()) + " But " +
                             std::to_string(arguments.size()) + " argument(s) is(are) given");
     }
-
-    // TODO Built in Functions
     return function->call(*this, arguments);
 }
 
@@ -198,26 +197,58 @@ ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> e
 
 ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> expr) {
     ObjectPtr object = evaluate(expr->object);
-    if (!InstanceOf<EagleInstance>(object)) {
+    if (InstanceOf<EagleInstance>(object)) {
+        EagleInstancePtr instance = cast<EagleInstance>(object);
+        ObjectPtr value = instance->get(expr->name, instance);
+        if (value == nullptr) {
+            throw interpreterRuntimeError(expr->name->line,
+                                          "Undefined property '" + expr->name->text + "'.");
+        }
+        return value;
+    } else if (InstanceOf<BuiltInClass>(object)) {
+        BuiltInClassPtr instance = cast<BuiltInClass>(object);
+        BuiltInClassMethodInfo method_info = instance->GetMethod(expr->name);
+        return std::make_shared<BuiltInClassCallable>(std::move(instance), method_info.method,
+                                                      method_info.method_arity, expr->name->line);
+    } else {
         throw interpreterRuntimeError(expr->name->line, "Only instances have properties");
     }
-    EagleInstancePtr instance = cast<EagleInstance>(object);
-    ObjectPtr value = instance->get(expr->name, instance);
-    if (value == nullptr) {
-        throw interpreterRuntimeError(expr->name->line,
-                                      "Undefined property '" + expr->name->text + "'.");
-    }
-    return value;
+    // TODO : Stream
 }
 
 ObjectPtr Interpreter::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
-    // TODO Containers
-    return nullptr;
+    ObjectPtr object = evaluate(expr->container);
+    if (!InstanceOf<EagleContainer>(object)) {
+        throw interpreterRuntimeError(expr->op->line, "Only containers have elements");
+    }
+    EagleContainerPtr container = cast<EagleContainer>(object);
+    ObjectPtr subscript = evaluate(expr->subscript);
+    ObjectPtr value = evaluate(expr->value);
+    if (expr->op->type != ASSIGN) {
+        ObjectPtr stored_value = container->get(subscript, expr->op->line);
+        switch (expr->op->type) {
+            case PLUS_ASSIGN: value = plus(stored_value, expr->op, value); break;
+            case MINUS_ASSIGN: value = minus(stored_value, expr->op, value); break;
+            case MULTI_ASSIGN: value = multi(stored_value, expr->op, value); break;
+            case DIV_ASSIGN: value = div(stored_value, expr->op, value); break;
+            case MOD_ASSIGN: value = mod(stored_value, expr->op, value); break;
+            default:
+                throw interpreterRuntimeError(expr->op->line,
+                                              "Undefined behavior of operator " + expr->op->text);
+        }
+    }
+    container->set(subscript, value, expr->op->line);
+    return value;
 }
 
 ObjectPtr Interpreter::visitContainerGetExpr(std::shared_ptr<Expr::ContainerGet> expr) {
-    // TODO Containers
-    return nullptr;
+    ObjectPtr object = evaluate(expr->container);
+    if (!InstanceOf<EagleContainer>(object)) {
+        throw interpreterRuntimeError(expr->line, "Only containers have elements");
+    }
+    EagleContainerPtr container = cast<EagleContainer>(object);
+    ObjectPtr subscript = evaluate(expr->subscript);
+    return container->get(subscript, expr->line);
 }
 
 ObjectPtr Interpreter::visitThisExpr(std::shared_ptr<Expr::This> expr) {
@@ -238,13 +269,33 @@ ObjectPtr Interpreter::visitSuperExpr(std::shared_ptr<Expr::Super> expr) {
 }
 
 ObjectPtr Interpreter::visitSequenceExpr(std::shared_ptr<Expr::Sequence> expr) {
-    // TODO create List Or Tuple
-    return nullptr;
+    std::vector<ObjectPtr> elements;
+    for (auto& ele_expr : expr->elements) {
+        elements.emplace_back(evaluate(ele_expr));
+    }
+    if (expr->type->type == LIST) {
+        return std::make_shared<EagleList>(std::move(elements));
+    } else if (expr->type->type == TUPLE) {
+        return std::make_shared<EagleTuple>(std::move(elements));
+    } else {
+        throw interpreterRuntimeError(expr->type->line,
+                                      "No sequence container called: " + expr->type->text);
+    }
 }
 
 ObjectPtr Interpreter::visitAssociativeExpr(std::shared_ptr<Expr::Associative> expr) {
-    // TODO create Dict
-    return nullptr;
+    std::vector<EagleDictEntry> elements;
+    for (auto& entry_expr : expr->elements) {
+        ObjectPtr key = evaluate(entry_expr.first);
+        ObjectPtr value = evaluate(entry_expr.second);
+        elements.emplace_back(EagleDictEntry{std::move(key), std::move(value)});
+    }
+    if (expr->type->type == DICT) {
+        return std::make_shared<EagleDict>(std::move(elements));
+    } else {
+        throw interpreterRuntimeError(expr->type->line,
+                                      "No associative container called: " + expr->type->text);
+    }
 }
 
 // statements
@@ -543,9 +594,7 @@ bool Interpreter::isTruthy(const ObjectPtr& object) {
     if (InstanceOf<String>(object))
         return cast<String>(object)->str.empty();
 
-    // TODO Containers
-
-    return true;
+    return object->isTruthy();
 }
 
 bool Interpreter::isEqual(const ObjectPtr& left, const ObjectPtr& right) {
@@ -558,9 +607,7 @@ bool Interpreter::isEqual(const ObjectPtr& left, const ObjectPtr& right) {
     if (InstanceOf<String>(left) && InstanceOf<String>(right))
         return cast<String>(left)->str == cast<String>(right)->str;
 
-    // TODO Containers
-
-    return left == right;
+    return left->equals(right);
 }
 
 std::string Interpreter::stringify(const ObjectPtr& object) {
@@ -574,7 +621,7 @@ std::string Interpreter::stringify(const ObjectPtr& object) {
         return cast<Boolean>(object)->ToString();
 
     if (InstanceOf<String>(object))
-        return cast<String>(object)->str;
+        return "\"" + cast<String>(object)->str + "\"";
 
     if (InstanceOf<EagleInstance>(object))
         return cast<EagleInstance>(object)->ToString();
@@ -585,8 +632,7 @@ std::string Interpreter::stringify(const ObjectPtr& object) {
     if (InstanceOf<EagleFunction>(object))
         return cast<EagleFunction>(object)->ToString();
 
-    // TODO Containers && Function
-    return "666";
+    return object->toString();
 }
 
 EagleRuntimeError Interpreter::interpreterRuntimeError(int line, const std::string& message) {
