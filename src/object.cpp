@@ -31,7 +31,7 @@ bool Null::equals(ObjectPtr other) {
 }
 
 size_t Null::hashcode() {
-    return std::hash<std::nullptr_t>()(nullptr);
+    return 0;
 }
 
 bool Null::isTruthy() {
