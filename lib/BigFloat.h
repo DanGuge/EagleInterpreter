@@ -14,6 +14,9 @@
 
 namespace eagle {
 
+class BigFloat;
+using BigFloatPtr = std::shared_ptr<BigFloat>;
+
 class BigFloat : public Object {
 private:
     char sign;
@@ -143,6 +146,11 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const BigFloat& right);
     friend std::istream& operator>>(std::istream& in, BigFloat& right);
 
+    // Check Methods
+    bool isInteger() const {
+        return Decimals() == 0;
+    }
+
     // Transformation Methods
     double ToDouble() const;
     float ToFloat() const;
@@ -176,6 +184,7 @@ public:
     };
     std::string Exp() const;
 
+    // object methods
     virtual std::string toString();
 
     virtual bool equals(ObjectPtr other);
