@@ -21,7 +21,7 @@ public:
     EagleClass(std::string name, EagleClassPtr super_class,
                std::unordered_map<std::string, ObjectPtr> members,
                std::unordered_map<std::string, EagleFunctionPtr> methods);
-    std::string ToString() const;
+    std::string toString() override;
     int arity() override;
     ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override;
     EagleInstancePtr instanceVarInit();
@@ -40,7 +40,7 @@ public:
     EagleInstance(EagleClassPtr klass, EagleInstancePtr super_instance);
     ObjectPtr get(const TokenPtr& name, const EagleInstancePtr& instance);
     void set(const std::string& name, ObjectPtr value);
-    std::string ToString();
+    std::string toString() override;
 
 private:
     EagleClassPtr klass;

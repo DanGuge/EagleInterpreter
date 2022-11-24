@@ -41,7 +41,8 @@ EagleFunctionPtr EagleFunction::bind(const EagleInstancePtr& instance) {
     return std::make_shared<EagleFunction>(declaration, instance_env, is_init);
 }
 
-std::string EagleFunction::ToString() {
+std::string EagleFunction::toString() {
     return "<function " + declaration->name->text + ">";
 }
+
 }  // namespace eagle

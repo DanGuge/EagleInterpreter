@@ -18,7 +18,7 @@ EagleClass::EagleClass(std::string name, EagleClassPtr super_class,
     , members(std::move(members))
     , methods(std::move(methods)) {}
 
-std::string EagleClass::ToString() const {
+std::string EagleClass::toString() {
     return "<class " + name + ">";
 }
 
@@ -96,7 +96,7 @@ void EagleInstance::set(const std::string& name, ObjectPtr value) {
     fields[name] = std::move(value);
 }
 
-std::string EagleInstance::ToString() {
+std::string EagleInstance::toString() {
     return "<instance of class " + klass->name + ">";
 }
 

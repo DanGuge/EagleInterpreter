@@ -504,6 +504,7 @@ bool Interpreter::checkTwoStrings(const ObjectPtr& left, const TokenPtr& op,
         return false;
     }
 }
+
 ObjectPtr Interpreter::plus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return std::make_shared<BigFloat>((*cast<BigFloat>(left)) + (*cast<BigFloat>(right)));
@@ -520,6 +521,7 @@ ObjectPtr Interpreter::minus(const ObjectPtr& left, const TokenPtr& op, const Ob
     checkTwoNumbers(left, op, right, true);
     return std::make_shared<BigFloat>((*cast<BigFloat>(left)) - (*cast<BigFloat>(right)));
 }
+
 ObjectPtr Interpreter::multi(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     checkTwoNumbers(left, op, right, true);
     return std::make_shared<BigFloat>((*cast<BigFloat>(left)) * (*cast<BigFloat>(right)));
@@ -558,6 +560,7 @@ bool Interpreter::lessEqual(const ObjectPtr& left, const TokenPtr& op, const Obj
             "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
+
 bool Interpreter::greater(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return (*cast<BigFloat>(left)) > (*cast<BigFloat>(right));
@@ -569,6 +572,7 @@ bool Interpreter::greater(const ObjectPtr& left, const TokenPtr& op, const Objec
             "Operator " + op->text + " needs both left and right to be digits or strings");
     }
 }
+
 bool Interpreter::greaterEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
         return (*cast<BigFloat>(left)) >= (*cast<BigFloat>(right));
@@ -581,57 +585,23 @@ bool Interpreter::greaterEqual(const ObjectPtr& left, const TokenPtr& op, const 
     }
 }
 
+/* isTruthy(), isEqual(), stringify()
+ * Need to support:
+ * 1. Null & BigFloat & Boolean
+ * 2. String
+ * 3. Class & Instance
+ * 4. Function
+ * 5. List & Tuple & Dict
+ */
 bool Interpreter::isTruthy(const ObjectPtr& object) {
-    if (InstanceOf<Null>(object))
-        return false;
-
-    if (InstanceOf<Boolean>(object))
-        return cast<Boolean>(object)->value;
-
-    if (InstanceOf<BigFloat>(object))
-        return *cast<BigFloat>(object) == 0;
-
-    if (InstanceOf<String>(object))
-        return cast<String>(object)->str.empty();
-
     return object->isTruthy();
 }
 
 bool Interpreter::isEqual(const ObjectPtr& left, const ObjectPtr& right) {
-    if (InstanceOf<Null>(left) && InstanceOf<Null>(right))
-        return true;
-
-    if (InstanceOf<BigFloat>(left) && InstanceOf<BigFloat>(right))
-        return *cast<BigFloat>(left) == *cast<BigFloat>(right);
-
-    if (InstanceOf<String>(left) && InstanceOf<String>(right))
-        return cast<String>(left)->str == cast<String>(right)->str;
-
     return left->equals(right);
 }
 
 std::string Interpreter::stringify(const ObjectPtr& object) {
-    if (InstanceOf<Null>(object))
-        return "nil";
-
-    if (InstanceOf<BigFloat>(object))
-        return cast<BigFloat>(object)->ToString();
-
-    if (InstanceOf<Boolean>(object))
-        return cast<Boolean>(object)->ToString();
-
-    if (InstanceOf<String>(object))
-        return "\"" + cast<String>(object)->str + "\"";
-
-    if (InstanceOf<EagleInstance>(object))
-        return cast<EagleInstance>(object)->ToString();
-
-    if (InstanceOf<EagleClass>(object))
-        return cast<EagleClass>(object)->ToString();
-
-    if (InstanceOf<EagleFunction>(object))
-        return cast<EagleFunction>(object)->ToString();
-
     return object->toString();
 }
 

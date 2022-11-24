@@ -20,7 +20,7 @@ public:
     int arity() override;
     ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override;
     EagleFunctionPtr bind(const EagleInstancePtr& instance);
-    std::string ToString();
+    std::string toString() override;
 
 private:
     std::shared_ptr<Stmt::Function> declaration;
