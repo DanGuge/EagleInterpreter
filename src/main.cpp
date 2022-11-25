@@ -25,14 +25,14 @@ bool checkParen(const std::string& input) {
 }
 
 std::string getLine(EagleShell& eagle_shell) {
-    pretty_print::PrettyPrint::print(pretty_print::Front::Color::YELLOW, ">>> ");
+    pretty_print::PrettyPrint::print(pretty_print::Front::Color::YELLOW, ">>> ", false);
     std::string input;
     std::string line = eagle_shell.readLine();
     printf("\n");
     input.append(line);
     if (checkParen(input)) {
         while (true) {
-            pretty_print::PrettyPrint::print(pretty_print::Front::Color::BLUE, "... ");
+            pretty_print::PrettyPrint::print(pretty_print::Front::Color::BLUE, "... ", false);
             line = eagle_shell.readLine();
             if (line.empty()) {
                 printf("\n");
@@ -73,13 +73,18 @@ int main(int argc, char* argv[]) {
 
         if_stream.close();
     } else {
-        pretty_print::PrettyPrint::print(pretty_print::Front::Color::GREEN,
-                                         pretty_print::Back::BLUE,
-                                         {pretty_print::BOLD, pretty_print::ITALIC},
-                                         "usage: eagle [eagle_file_name]\n"
-                                         "Help: You Should Run Eagle with 0 or 1 parameter\n"
-                                         "0 para: Run EagleShell\n"
-                                         "1 para: Interpret EagleFile\n");
+        pretty_print::PrettyPrint::print(
+            pretty_print::Front::Color::RED,
+            std::vector<pretty_print::DisplayStyle>{pretty_print::BOLD, pretty_print::ITALIC,
+                                                    pretty_print::UNDERLINE},
+            "WRONG USAGE OF EAGLE");
+        pretty_print::PrettyPrint::print(
+            pretty_print::Front::Color::GREEN,
+            std::vector<pretty_print::DisplayStyle>{pretty_print::BOLD, pretty_print::ITALIC},
+            "usage: eagle [eagle_file_name]\n"
+            "Help: You Should Run Eagle with 0 or 1 parameter\n"
+            "0 parameter: Run EagleShell\n"
+            "1 parameter: Interpret EagleFile");
     }
     return 0;
 }

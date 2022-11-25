@@ -41,17 +41,20 @@ enum DisplayStyle { NORMAL = 0, BOLD = 1, ITALIC = 3, UNDERLINE = 4, SLOW_BLINK 
 
 class PrettyPrint {
 public:
-    static void print(const std::string& output);
-    static void print(const std::vector<DisplayStyle>& display_styles, const std::string& output);
-    static void print(Front::Color front_color, const std::string& output);
-    static void print(Back::Color back_color, const std::string& output);
-    static void print(Front::Color front_color, Back::Color back_color, const std::string& output);
+    static void print(const std::string& output, bool newline = true);
+    static void print(const std::vector<DisplayStyle>& display_styles, const std::string& output,
+                      bool newline = true);
+    static void print(Front::Color front_color, const std::string& output, bool newline = true);
+    static void print(Back::Color back_color, const std::string& output, bool newline = true);
+    static void print(Front::Color front_color, Back::Color back_color, const std::string& output,
+                      bool newline = true);
     static void print(Front::Color front_color, const std::vector<DisplayStyle>& display_styles,
-               const std::string& output);
+                      const std::string& output, bool newline = true);
     static void print(Back::Color back_color, const std::vector<DisplayStyle>& display_styles,
-               const std::string& output);
+                      const std::string& output, bool newline = true);
     static void print(Front::Color front_color, Back::Color back_color,
-               const std::vector<DisplayStyle>& display_styles, const std::string& output);
+                      const std::vector<DisplayStyle>& display_styles, const std::string& output,
+                      bool newline = true);
 
 private:
     static std::string ansi_prefix;

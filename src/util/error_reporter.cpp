@@ -47,7 +47,7 @@ void ErrorReporter::printErrors() {
     for (auto &info : error_info) {
         pretty_print::PrettyPrint::print(
             pretty_print::Front::Color::RED,
-            {pretty_print::BOLD, pretty_print::ITALIC, pretty_print::UNDERLINE}, info + "\n");
+            {pretty_print::BOLD, pretty_print::ITALIC, pretty_print::UNDERLINE}, info);
     }
 }
 

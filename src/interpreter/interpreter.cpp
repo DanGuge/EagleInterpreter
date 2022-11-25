@@ -431,7 +431,7 @@ ObjectPtr Interpreter::visitExpressionStmt(std::shared_ptr<Stmt::Expression> stm
 
 ObjectPtr Interpreter::visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) {
     ObjectPtr value = evaluate(stmt->print_value);
-    pretty_print::PrettyPrint::print(pretty_print::Front::BLUE, stringify(value) + "\n");
+    pretty_print::PrettyPrint::print(pretty_print::Front::BLUE, stringify(value));
     return nullptr;
 }
 

@@ -13,41 +13,41 @@ std::string PrettyPrint::ansi_suffix = "m";
 std::string PrettyPrint::ansi_csi = "[";
 std::string PrettyPrint::ansi_delimiter = ";";
 
-void PrettyPrint::print(const std::string& output) {
-    print(Front::Color::NONE, Back::Color::NONE, {}, output);
+void PrettyPrint::print(const std::string& output, bool newline) {
+    print(Front::Color::NONE, Back::Color::NONE, {}, output, newline);
 }
 
-void PrettyPrint::print(const std::vector<DisplayStyle>& display_styles,
-                        const std::string& output) {
-    print(Front::Color::NONE, Back::Color::NONE, display_styles, output);
+void PrettyPrint::print(const std::vector<DisplayStyle>& display_styles, const std::string& output,
+                        bool newline) {
+    print(Front::Color::NONE, Back::Color::NONE, display_styles, output, newline);
 }
 
-void PrettyPrint::print(Front::Color front_color, const std::string& output) {
-    print(front_color, Back::Color::NONE, {}, output);
+void PrettyPrint::print(Front::Color front_color, const std::string& output, bool newline) {
+    print(front_color, Back::Color::NONE, {}, output, newline);
 }
 
-void PrettyPrint::print(Back::Color back_color, const std::string& output) {
-    print(Front::Color::NONE, back_color, {}, output);
+void PrettyPrint::print(Back::Color back_color, const std::string& output, bool newline) {
+    print(Front::Color::NONE, back_color, {}, output, newline);
 }
 
-void PrettyPrint::print(Front::Color front_color, Back::Color back_color,
-                        const std::string& output) {
-    print(front_color, back_color, {}, output);
+void PrettyPrint::print(Front::Color front_color, Back::Color back_color, const std::string& output,
+                        bool newline) {
+    print(front_color, back_color, {}, output, newline);
 }
 
 void PrettyPrint::print(Front::Color front_color, const std::vector<DisplayStyle>& display_styles,
-                        const std::string& output) {
-    print(front_color, Back::Color::NONE, display_styles, output);
+                        const std::string& output, bool newline) {
+    print(front_color, Back::Color::NONE, display_styles, output, newline);
 }
 
 void PrettyPrint::print(Back::Color back_color, const std::vector<DisplayStyle>& display_styles,
-                        const std::string& output) {
-    print(Front::Color::NONE, back_color, display_styles, output);
+                        const std::string& output, bool newline) {
+    print(Front::Color::NONE, back_color, display_styles, output, newline);
 }
 
 void PrettyPrint::print(Front::Color front_color, Back::Color back_color,
-                        const std::vector<DisplayStyle>& display_styles,
-                        const std::string& output) {
+                        const std::vector<DisplayStyle>& display_styles, const std::string& output,
+                        bool newline) {
     std::string prefix = ansi_prefix;
     std::string tmp = ansi_csi;
 
@@ -66,8 +66,12 @@ void PrettyPrint::print(Front::Color front_color, Back::Color back_color,
     }
 
     prefix += ansi_suffix;
-
-    std::cout << prefix << output << "\e[95;21;23;24m";
+    if (newline) {
+        std::cout << prefix << output << "\e[95;21;23;24;49m"
+                  << "\n";
+    } else {
+        std::cout << prefix << output << "\e[95;21;23;24;49m";
+    }
 }
 
 }  // namespace pretty_print
