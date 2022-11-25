@@ -13,6 +13,9 @@ set(LIB_FILES
         src/object.h
         src/object.cpp)
 
+set(PRETTY_PRINT_FILES
+        src/pretty_print/pretty_print.h src/pretty_print/pretty_print.cpp)
+
 set(SOURCE_FILES
         src/eagle.h
         src/eagle.cpp
@@ -55,9 +58,10 @@ set(SOURCE_FILES
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
+add_library(pretty_print_lib STATIC ${PRETTY_PRINT_FILES})
 
 add_executable(EagleInterpreter src/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib big_float_lib)
+target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib)
 
 add_executable(test_simple test/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib big_float_lib)
+target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib)

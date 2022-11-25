@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "eagle.h"
+#include "pretty_print/pretty_print.h"
 #include "shell/eagle_shell.h"
 #include "util/error_reporter.h"
 using namespace eagle;
@@ -23,14 +24,14 @@ bool checkParen(const std::string& input) {
 }
 
 std::string getLine(EagleShell& eagle_shell) {
-    printf(">>> ");
+    pretty_print::PrettyPrint::print(pretty_print::Front::Color::YELLOW, ">>> ");
     std::string input;
     std::string line = eagle_shell.readLine();
     printf("\n");
     input.append(line);
     if (checkParen(input)) {
         while (true) {
-            printf("... ");
+            pretty_print::PrettyPrint::print(pretty_print::Front::Color::BLUE, "... ");
             line = eagle_shell.readLine();
             if (line.empty()) {
                 printf("\n");
@@ -71,10 +72,13 @@ int main(int argc, char* argv[]) {
 
         if_stream.close();
     } else {
-        std::cout << "usage: eagle [eagle_file_name]\n"
-                     "Help: You Should Run Eagle with 0 or 1 parameter\n"
-                     "0 para: Run EagleShell\n"
-                     "1 para: Interpret EagleFile";
+        pretty_print::PrettyPrint::print(pretty_print::Front::Color::GREEN,
+                                         pretty_print::Back::BLUE,
+                                         {pretty_print::BOLD, pretty_print::ITALIC},
+                                         "usage: eagle [eagle_file_name]\n"
+                                         "Help: You Should Run Eagle with 0 or 1 parameter\n"
+                                         "0 para: Run EagleShell\n"
+                                         "1 para: Interpret EagleFile\n");
     }
     return 0;
 }

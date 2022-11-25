@@ -4,6 +4,8 @@
 
 #include "error_reporter.h"
 
+#include "pretty_print/pretty_print.h"
+
 namespace eagle {
 
 ErrorReporter &ErrorReporter::getInstance() {
@@ -43,7 +45,9 @@ void ErrorReporter::reset() {
 
 void ErrorReporter::printErrors() {
     for (auto &info : error_info) {
-        std::cout << info << std::endl;
+        pretty_print::PrettyPrint::print(
+            pretty_print::Front::Color::RED,
+            {pretty_print::BOLD, pretty_print::ITALIC, pretty_print::UNDERLINE}, info + "\n");
     }
 }
 

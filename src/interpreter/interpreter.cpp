@@ -8,6 +8,7 @@
 #include "modules/eagle_class.h"
 #include "modules/eagle_container.h"
 #include "modules/eagle_string.h"
+#include "pretty_print/pretty_print.h"
 #include "util/error_reporter.h"
 
 namespace eagle {
@@ -410,7 +411,7 @@ ObjectPtr Interpreter::visitExpressionStmt(std::shared_ptr<Stmt::Expression> stm
 
 ObjectPtr Interpreter::visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) {
     ObjectPtr value = evaluate(stmt->print_value);
-    std::cout << stringify(value) << std::endl;
+    pretty_print::PrettyPrint::print(pretty_print::Front::BLUE, stringify(value) + "\n");
     return nullptr;
 }
 
