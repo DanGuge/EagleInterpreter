@@ -63,3 +63,15 @@ print test == 1 ? 1 :
       test != 9 ? -9 :
       test - 9 == 1 ? e1:
       e1;
+var a2 = [1, 2, 3, 4, 5];
+def f2(x) {
+    return x*x;
+}
+def g2(x) {
+    return x > 4;
+}
+def h2(x) {
+    return (x, x);
+}
+var b2 = stream(a2).map(f2).filter(g2).map(h2).to_dict();
+print b2;

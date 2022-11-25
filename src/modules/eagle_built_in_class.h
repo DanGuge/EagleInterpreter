@@ -28,9 +28,9 @@ public:
     virtual BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) = 0;
 };
 
-class BuiltInClassCallable : public EagleCallable {
+class BuiltInClassCall : public EagleCallable {
 public:
-    BuiltInClassCallable(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity,
+    BuiltInClassCall(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity,
                          int line)
         : instance(std::move(instance)), method(method), method_arity(method_arity), line(line) {}
 

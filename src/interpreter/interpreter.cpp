@@ -7,6 +7,7 @@
 #include "BigFloat.h"
 #include "modules/eagle_class.h"
 #include "modules/eagle_container.h"
+#include "modules/eagle_stream.h"
 #include "modules/eagle_string.h"
 #include "pretty_print/pretty_print.h"
 #include "util/error_reporter.h"
@@ -133,7 +134,8 @@ ObjectPtr Interpreter::visitCallExpr(std::shared_ptr<Expr::Call> expr) {
     }
 
     EagleCallablePtr function = cast<EagleCallable>(callee);
-    if (arguments.size() != function->arity()) {
+    // It means do not check parameters number when function->arity() return -1
+    if (arguments.size() != function->arity() && function->arity() != -1) {
         throw interpreterRuntimeError(
             expr->line, "Expect arguments size is " + std::to_string(function->arity()) + " But " +
                             std::to_string(arguments.size()) + " argument(s) is(are) given");
@@ -150,8 +152,22 @@ ObjectPtr Interpreter::visitVariableExpr(std::shared_ptr<Expr::Variable> expr) {
 }
 
 ObjectPtr Interpreter::visitStreamExpr(std::shared_ptr<Expr::Stream> expr) {
-    // TODO Stream
-    return nullptr;
+    ObjectPtr object = evaluate(expr->expr);
+    if (!InstanceOf<EagleContainer>(object)) {
+        throw interpreterRuntimeError(expr->line,
+                                      "Only containers can be executed 'stream()' operation");
+    }
+    EagleContainerPtr init_expr = cast<EagleContainer>(object);
+    std::vector<std::pair<TokenPtr, ObjectPtr>> operations;
+    for (auto& expr_operation : expr->operations) {
+        ObjectPtr para =
+            expr_operation.second == nullptr ? nullptr : evaluate(expr_operation.second);
+        operations.emplace_back(
+            std::pair<TokenPtr, ObjectPtr>{expr_operation.first, std::move(para)});
+    }
+    EagleStreamPtr stream =
+        std::make_shared<EagleStream>(std::move(init_expr), std::move(operations));
+    return stream->run(*this, expr->line);
 }
 
 ObjectPtr Interpreter::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
@@ -209,12 +225,16 @@ ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> e
     } else if (InstanceOf<BuiltInClass>(object)) {
         BuiltInClassPtr instance = cast<BuiltInClass>(object);
         BuiltInClassMethodInfo method_info = instance->GetMethod(expr->name);
-        return std::make_shared<BuiltInClassCallable>(std::move(instance), method_info.method,
-                                                      method_info.method_arity, expr->name->line);
+        return std::make_shared<BuiltInClassCall>(std::move(instance), method_info.method,
+                                                  method_info.method_arity, expr->name->line);
+    } else if (InstanceOf<EagleStream>(object)) {
+        EagleStreamPtr stream = cast<EagleStream>(object);
+        EagleStreamPtr new_stream = stream->copy(expr->name->line);
+        stream->execute();
+        return std::make_shared<EagleStreamCall>(new_stream, expr->name, expr->name->line);
     } else {
         throw interpreterRuntimeError(expr->name->line, "Only instances have properties");
     }
-    // TODO : Stream
 }
 
 ObjectPtr Interpreter::visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) {
