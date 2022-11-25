@@ -27,6 +27,8 @@ public:
 
     bool hasError();
 
+    void reset();
+
     void printErrors();
 
 private:
