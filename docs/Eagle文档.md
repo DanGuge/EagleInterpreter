@@ -200,7 +200,7 @@ RIGHT_BRACE // }
     * map：将元素进行映射
     * filter：通过check的方法，对元素进行过滤
     * limit：取出前k个元素
-    * sorted：对元素进行排序
+    * sorted：对元素进行排序（需要先实现Comparable）
   * 终结方法：to_list/to_dict/to_tuple/for_each/count
     * to_list/to_tuple：将流元素转换为对应的可迭代类型，返回值为list/tuple
     * to_dict：对二元流元素转换为对应的可迭代类型，返回值为dict
