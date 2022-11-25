@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "modules/eagle_stream.h"
 #include "util/error_reporter.h"
 
 namespace eagle {
@@ -546,6 +547,7 @@ ExprPtr Parser::parsePrimaryParen() {
  * stream_expression ::= "stream" "(" expression ")" ("." identifier "(" call? ")")* ;
  */
 ExprPtr Parser::streamExpr() {
+    int line = previous()->line;
     consume(LEFT_PAREN, "Expect '(' after 'stream'");
     ExprPtr expr = expression();
     consume(RIGHT_PAREN, "Expect ')' after stream initial expression");
@@ -561,8 +563,11 @@ ExprPtr Parser::streamExpr() {
             consume(RIGHT_PAREN, "Expect ')' after expression in stream");
         }
         operations.emplace_back(std::pair<TokenPtr, ExprPtr>(stream_method, inner_method));
+        if (EagleStream::isFinalMethod(stream_method->text)) {
+            break;
+        }
     }
-    return std::make_shared<Expr::Stream>(expr, std::move(operations));
+    return std::make_shared<Expr::Stream>(expr, std::move(operations), line);
 }
 
 /*
