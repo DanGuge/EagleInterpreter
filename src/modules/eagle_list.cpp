@@ -35,6 +35,10 @@ void EagleList::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, i
     elements[index_num] = std::move(value);
 }
 
+std::vector<ObjectPtr> EagleList::iterator() {
+    return elements;
+}
+
 BuiltInClassMethodInfo EagleList::GetMethod(const eagle::TokenPtr &method_name) {
     auto method_found = built_in_methods.find(method_name->text);
     if (method_found != built_in_methods.end()) {
@@ -71,7 +75,6 @@ bool EagleList::equals(eagle::ObjectPtr other) {
 }
 
 size_t EagleList::hashcode() {
-    // TODO: 参考的java的数组hash算法，待商榷
     size_t h = 0;
     for (auto &element : elements) {
         h = 31 * h + element->hashcode();

@@ -48,6 +48,16 @@ void EagleDict::set(const eagle::ObjectPtr &key, eagle::ObjectPtr value, int lin
     InsertDictEntry(key->hashcode(), key, std::move(value));
 }
 
+std::vector<ObjectPtr> EagleDict::iterator() {
+    std::vector<ObjectPtr> keys;
+    for (auto &node : elements) {
+        for (auto &entry : node.second) {
+            keys.emplace_back(entry.first);
+        }
+    }
+    return std::move(keys);
+}
+
 BuiltInClassMethodInfo EagleDict::GetMethod(const eagle::TokenPtr &method_name) {
     auto method_found = built_in_methods.find(method_name->text);
     if (method_found != built_in_methods.end()) {
@@ -98,7 +108,6 @@ bool EagleDict::equals(eagle::ObjectPtr other) {
 }
 
 size_t EagleDict::hashcode() {
-    // TODO: 参考的java的数组hash算法，待商榷
     size_t h = 0;
     for (auto &node : elements) {
         for (auto &entry : node.second) {
@@ -149,12 +158,15 @@ ObjectPtr EagleDict::clear(const BuiltInClassPtr &object, std::vector<ObjectPtr>
     return nullptr;
 }
 
-ObjectPtr EagleDict::get_value(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
+ObjectPtr EagleDict::get_value(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
+                               int line) {
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "get");
     try {
         ObjectPtr value = dict->get(args[0], line);
         return value;
-    } catch (EagleRuntimeError &error) { return std::make_shared<Null>(); }
+    } catch (EagleRuntimeError &error) {
+        return std::make_shared<Null>();
+    }
 }
 
 ObjectPtr EagleDict::put(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
@@ -191,6 +203,7 @@ ObjectPtr EagleDict::remove(const BuiltInClassPtr &object, std::vector<ObjectPtr
         for (auto it = list.begin(); it != list.end(); it++) {
             if (key->equals(it->first)) {
                 list.erase(it);
+                dict->element_cnt--;
                 return nullptr;
             }
         }

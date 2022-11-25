@@ -27,6 +27,10 @@ void EagleTuple::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, 
     throw RuntimeError(line, "'Tuple does not support item assignment");
 }
 
+std::vector<ObjectPtr> EagleTuple::iterator() {
+    return elements;
+}
+
 BuiltInClassMethodInfo EagleTuple::GetMethod(const eagle::TokenPtr &method_name) {
     auto method_found = built_in_methods.find(method_name->text);
     if (method_found != built_in_methods.end()) {
@@ -63,7 +67,6 @@ bool EagleTuple::equals(eagle::ObjectPtr other) {
 }
 
 size_t EagleTuple::hashcode() {
-    // TODO: 参考的java的数组hash算法，待商榷
     size_t h = 0;
     for (auto &element : elements) {
         h = 31 * h + element->hashcode();
