@@ -84,7 +84,9 @@ int main(int argc, char* argv[]) {
             "usage: eagle [eagle_file_name]\n"
             "Help: You Should Run Eagle with 0 or 1 parameter\n"
             "0 parameter: Run EagleShell\n"
-            "1 parameter: Interpret EagleFile");
+            "\texample: ./EagleInterpreter\n"
+            "1 parameter: Interpret EagleFile\n"
+            "\texample: ./EagleInterpreter ./test.eagle");
     }
     return 0;
 }

@@ -5,7 +5,6 @@
 #include "environment.h"
 
 #include "modules/eagle_exceptions.h"
-#include "util/error_reporter.h"
 
 namespace eagle {
 

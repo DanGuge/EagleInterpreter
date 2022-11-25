@@ -46,7 +46,7 @@ public:
                              int line);
 
 private:
-    static StringPtr CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+    static StringPtr CheckBuiltInClassType(const BuiltInClassPtr& instance, int line,
                                            const std::string& method_name);
 
 private:

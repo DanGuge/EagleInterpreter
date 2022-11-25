@@ -4,7 +4,6 @@
 
 #include "token.h"
 
-#include <memory>
 #include <utility>
 
 namespace eagle {

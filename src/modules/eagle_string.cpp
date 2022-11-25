@@ -143,7 +143,7 @@ ObjectPtr String::replace(const BuiltInClassPtr& instance, std::vector<ObjectPtr
     return std::make_shared<String>(result_str);
 }
 
-StringPtr String::CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+StringPtr String::CheckBuiltInClassType(const BuiltInClassPtr& instance, int line,
                                         const std::string& method_name) {
     if (!InstanceOf<String>(instance)) {
         throw RuntimeError(line, "Expect callee type String for method " + method_name + ".");

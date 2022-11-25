@@ -32,7 +32,7 @@ public:
 
 class EagleList : public EagleContainer {
 public:
-    EagleList(std::vector<ObjectPtr> elements);
+    explicit EagleList(std::vector<ObjectPtr> elements);
 
     ObjectPtr get(const eagle::ObjectPtr& subscript, int line) override;
     void set(const eagle::ObjectPtr& subscript, eagle::ObjectPtr value, int line) override;
@@ -65,7 +65,7 @@ public:
     static ObjectPtr reverse(const BuiltInClassPtr& object, std::vector<ObjectPtr>& args, int line);
 
 private:
-    static EagleListPtr CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+    static EagleListPtr CheckBuiltInClassType(const BuiltInClassPtr& instance, int line,
                                               const std::string& method_name);
 
 private:
@@ -74,7 +74,7 @@ private:
 
 class EagleTuple : public EagleContainer {
 public:
-    EagleTuple(std::vector<ObjectPtr> elements);
+    explicit EagleTuple(std::vector<ObjectPtr> elements);
 
     ObjectPtr get(const eagle::ObjectPtr& subscript, int line) override;
     void set(const eagle::ObjectPtr& subscript, eagle::ObjectPtr value, int line) override;
@@ -101,7 +101,7 @@ public:
                               int line);
 
 private:
-    static EagleTuplePtr CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+    static EagleTuplePtr CheckBuiltInClassType(const BuiltInClassPtr& instance, int line,
                                                const std::string& method_name);
 
 private:
@@ -110,7 +110,7 @@ private:
 
 class EagleDict : public EagleContainer {
 public:
-    EagleDict(const std::vector<EagleDictEntry>& elements);
+    explicit EagleDict(const std::vector<EagleDictEntry>& elements);
 
     ObjectPtr get(const eagle::ObjectPtr& key, int line) override;
     void set(const eagle::ObjectPtr& key, eagle::ObjectPtr value, int line) override;
@@ -148,7 +148,7 @@ public:
     static ObjectPtr items(const BuiltInClassPtr& object, std::vector<ObjectPtr>& args, int line);
 
 private:
-    static EagleDictPtr CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+    static EagleDictPtr CheckBuiltInClassType(const BuiltInClassPtr& instance, int line,
                                               const std::string& method_name);
 
 private:

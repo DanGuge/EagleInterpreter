@@ -245,7 +245,7 @@ ObjectPtr EagleDict::items(const BuiltInClassPtr &object, std::vector<ObjectPtr>
     return std::make_shared<EagleTuple>(std::move(ele_items));
 }
 
-EagleDictPtr EagleDict::CheckBuiltInClassType(BuiltInClassPtr instance, int line,
+EagleDictPtr EagleDict::CheckBuiltInClassType(const BuiltInClassPtr &instance, int line,
                                               const std::string &method_name) {
     if (!InstanceOf<EagleDict>(instance)) {
         throw RuntimeError(line, "Expect callee type: Dict, for method: " + method_name + ".");

@@ -18,12 +18,13 @@ namespace eagle {
 
 class EagleStream;
 using EagleStreamPtr = std::shared_ptr<EagleStream>;
-using StreamOneToOneMethod = ObjectPtr (*)(ObjectPtr para, ObjectPtr element,
+using StreamOneToOneMethod = ObjectPtr (*)(const ObjectPtr& para, const eagle::ObjectPtr& element,
                                            Interpreter& interpreter, int line);
-using StreamManyToManyMethod = std::vector<ObjectPtr> (*)(ObjectPtr para,
+using StreamManyToManyMethod = std::vector<ObjectPtr> (*)(const ObjectPtr& para,
                                                           const std::vector<ObjectPtr>& elements,
                                                           Interpreter& interpreter, int line);
-using StreamFinalMethod = ObjectPtr (*)(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+using StreamFinalMethod = ObjectPtr (*)(const ObjectPtr& para,
+                                        const std::vector<ObjectPtr>& elements,
                                         Interpreter& interpreter, int line);
 
 class EagleStream : public Object, public std::enable_shared_from_this<EagleStream> {
@@ -56,21 +57,24 @@ public:
 
 private:
     // non-final methods
-    static ObjectPtr map(ObjectPtr para, ObjectPtr element, Interpreter& interpreter, int line);
-    static ObjectPtr filter(ObjectPtr para, ObjectPtr element, Interpreter& interpreter, int line);
-    static std::vector<ObjectPtr> limit(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+    static ObjectPtr map(const ObjectPtr& para, const ObjectPtr& element, Interpreter& interpreter,
+                         int line);
+    static ObjectPtr filter(const ObjectPtr& para, const ObjectPtr& element,
+                            Interpreter& interpreter, int line);
+    static std::vector<ObjectPtr> limit(const ObjectPtr& para,
+                                        const std::vector<ObjectPtr>& elements,
                                         Interpreter& interpreter, int line);
 
     // final methods
-    static ObjectPtr to_list(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+    static ObjectPtr to_list(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
                              Interpreter& interpreter, int line);
-    static ObjectPtr to_tuple(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+    static ObjectPtr to_tuple(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
                               Interpreter& interpreter, int line);
-    static ObjectPtr to_dict(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+    static ObjectPtr to_dict(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
                              Interpreter& interpreter, int line);
-    static ObjectPtr for_each(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+    static ObjectPtr for_each(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
                               Interpreter& interpreter, int line);
-    static ObjectPtr count(ObjectPtr para, const std::vector<ObjectPtr>& elements,
+    static ObjectPtr count(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
                            Interpreter& interpreter, int line);
 
 private:

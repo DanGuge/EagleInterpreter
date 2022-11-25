@@ -13,5 +13,5 @@ EagleRuntimeError RuntimeError(int line, const std::string& message) {
     return EagleRuntimeError("[RuntimeError at line " + std::to_string(line) + "] " + message);
 }
 
-EagleReturn::EagleReturn(ObjectPtr object): return_value(std::move(object)) {}
+EagleReturn::EagleReturn(ObjectPtr object) : return_value(std::move(object)) {}
 }  // namespace eagle

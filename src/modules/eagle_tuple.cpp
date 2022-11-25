@@ -124,7 +124,7 @@ ObjectPtr EagleTuple::contains(const eagle::BuiltInClassPtr &object, std::vector
     return std::make_shared<Boolean>(contain);
 }
 
-EagleTuplePtr EagleTuple::CheckBuiltInClassType(eagle::BuiltInClassPtr instance, int line,
+EagleTuplePtr EagleTuple::CheckBuiltInClassType(const eagle::BuiltInClassPtr& instance, int line,
                                                 const std::string &method_name) {
     if (!InstanceOf<EagleTuple>(instance)) {
         throw RuntimeError(line, "Expect callee type: Tuple, for method: " + method_name + ".");

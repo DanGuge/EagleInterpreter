@@ -11,17 +11,10 @@
 namespace eagle {
 
 const std::unordered_map<std::string, BuiltInClassMethodInfo> EagleList::built_in_methods = {
-    {"size", {size, 0}},
-    {"empty", {empty, 0}},
-    {"append", {append, 1}},
-    {"clear", {clear, 0}},
-    {"contains", {contains, 1}},
-    {"count", {count, 1}},
-    {"insert", {insert, 2}},
-    {"remove", {remove, 1}},
-    {"pop", {pop, 0}},
-    {"reverse", {reverse, 0}}
-};
+    {"size", {size, 0}},      {"empty", {empty, 0}},       {"append", {append, 1}},
+    {"clear", {clear, 0}},    {"contains", {contains, 1}}, {"count", {count, 1}},
+    {"insert", {insert, 2}},  {"remove", {remove, 1}},     {"pop", {pop, 0}},
+    {"reverse", {reverse, 0}}};
 
 EagleList::EagleList(std::vector<ObjectPtr> elements) : elements(std::move(elements)) {}
 
@@ -146,7 +139,8 @@ ObjectPtr EagleList::count(const eagle::BuiltInClassPtr &object, std::vector<Obj
     return std::make_shared<BigFloat>(cnt);
 }
 
-ObjectPtr EagleList::insert(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
+ObjectPtr EagleList::insert(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
+                            int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "insert");
     if (!InstanceOf<BigFloat>(args[0])) {
         throw RuntimeError(line, "List subscript must be integer.");
@@ -167,7 +161,8 @@ ObjectPtr EagleList::insert(const eagle::BuiltInClassPtr &object, std::vector<Ob
     return nullptr;
 }
 
-ObjectPtr EagleList::remove(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
+ObjectPtr EagleList::remove(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
+                            int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "remove");
     for (auto it = list->elements.begin(); it != list->elements.end(); it++) {
         if ((*it)->equals(args[0])) {
@@ -178,7 +173,8 @@ ObjectPtr EagleList::remove(const eagle::BuiltInClassPtr &object, std::vector<Ob
     return nullptr;
 }
 
-ObjectPtr EagleList::pop(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
+ObjectPtr EagleList::pop(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
+                         int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "pop");
     if (!list->elements.empty()) {
         list->elements.pop_back();
@@ -186,13 +182,14 @@ ObjectPtr EagleList::pop(const eagle::BuiltInClassPtr &object, std::vector<Objec
     return nullptr;
 }
 
-ObjectPtr EagleList::reverse(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
+ObjectPtr EagleList::reverse(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
+                             int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "reverse");
     std::reverse(list->elements.begin(), list->elements.end());
     return nullptr;
 }
 
-EagleListPtr EagleList::CheckBuiltInClassType(eagle::BuiltInClassPtr instance, int line,
+EagleListPtr EagleList::CheckBuiltInClassType(const eagle::BuiltInClassPtr &instance, int line,
                                               const std::string &method_name) {
     if (!InstanceOf<EagleList>(instance)) {
         throw RuntimeError(line, "Expect callee type: List, for method: " + method_name + ".");
