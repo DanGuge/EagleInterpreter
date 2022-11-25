@@ -54,7 +54,9 @@ set(SOURCE_FILES
         src/modules/eagle_tuple.cpp
         src/modules/eagle_dict.cpp
         src/shell/eagle_shell.cpp
-        src/shell/eagle_shell.h)
+        src/shell/eagle_shell.h
+        src/modules/eagle_stream.h
+        src/modules/eagle_stream.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
