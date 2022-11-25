@@ -154,13 +154,14 @@ public:
 
 class Expr::Stream : public Expr, public std::enable_shared_from_this<Stream> {
 public:
-    Stream(ExprPtr expr, std::vector<std::pair<TokenPtr, ExprPtr>> operations);
+    Stream(ExprPtr expr, std::vector<std::pair<TokenPtr, ExprPtr>> operations, int line);
 
     ObjectPtr accept(Visitor &visitor) override;
 
 public:
     ExprPtr expr;
     std::vector<std::pair<TokenPtr, ExprPtr>> operations;
+    int line;
 };
 
 class Expr::Switch : public Expr, public std::enable_shared_from_this<Switch> {

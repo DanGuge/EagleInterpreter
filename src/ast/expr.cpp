@@ -61,8 +61,8 @@ ObjectPtr Expr::Variable::accept(Visitor &visitor) {
     return visitor.visitVariableExpr(shared_from_this());
 }
 
-Expr::Stream::Stream(ExprPtr expr, std::vector<std::pair<TokenPtr, ExprPtr>> operations)
-    : expr(std::move(expr)), operations(std::move(operations)) {}
+Expr::Stream::Stream(ExprPtr expr, std::vector<std::pair<TokenPtr, ExprPtr>> operations, int line)
+    : expr(std::move(expr)), operations(std::move(operations)), line(line) {}
 
 ObjectPtr Expr::Stream::accept(Visitor &visitor) {
     return visitor.visitStreamExpr(shared_from_this());
