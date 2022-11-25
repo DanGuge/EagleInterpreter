@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <stack>
 
 #include "eagle.h"
 #include "pretty_print/pretty_print.h"
