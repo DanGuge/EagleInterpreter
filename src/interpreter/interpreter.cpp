@@ -22,11 +22,35 @@ Interpreter::Interpreter() {
 }
 
 void Interpreter::init_built_in_functions() {
+    // built-in functions
     global_env->define("str", std::make_shared<built_in_functions::Str>());
     global_env->define("num", std::make_shared<built_in_functions::Num>());
     global_env->define("read_from_file", std::make_shared<built_in_functions::ReadFromFile>());
     global_env->define("write_to_file", std::make_shared<built_in_functions::WriteToFile>());
     global_env->define("input", std::make_shared<built_in_functions::Input>());
+    global_env->define("help", std::make_shared<built_in_functions::Help>());
+    global_env->define("bool", std::make_shared<built_in_functions::Bool>());
+    global_env->define("class_method", std::make_shared<built_in_functions::ClassMethod>());
+    global_env->define("globals", std::make_shared<built_in_functions::Globals>());
+    global_env->define("id", std::make_shared<built_in_functions::Id>());
+    global_env->define("len", std::make_shared<built_in_functions::Len>());
+    // built-in class
+    global_env->define("list_info", std::make_shared<EagleList>(std::vector<ObjectPtr>{}));
+    global_env->define("tuple_info", std::make_shared<EagleTuple>(std::vector<ObjectPtr>{}));
+    global_env->define("dict_info", std::make_shared<EagleDict>(std::vector<EagleDictEntry>{}));
+    global_env->define("stream_info", std::make_shared<EagleStream>(
+                                          std::make_shared<EagleList>(std::vector<ObjectPtr>{}),
+                                          std::vector<std::pair<TokenPtr, ObjectPtr>>{}));
+}
+
+EagleDictPtr Interpreter::getGlobals() {
+    std::vector<EagleDictEntry> elements;
+    for (const auto& entry : global_env->get_name_object_map()) {
+        ObjectPtr key = std::make_shared<String>(entry.first);
+        ObjectPtr value = entry.second;
+        elements.emplace_back(EagleDictEntry{std::move(key), std::move(value)});
+    }
+    return std::make_shared<EagleDict>(std::move(elements));
 }
 
 void Interpreter::interpret(const std::vector<StmtPtr>& statements) {
