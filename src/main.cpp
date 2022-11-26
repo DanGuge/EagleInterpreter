@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iostream>
 #include <stack>
 
 #include "eagle.h"
