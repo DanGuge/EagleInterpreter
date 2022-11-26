@@ -72,6 +72,20 @@ EagleFunctionPtr EagleClass::getMethodLocal(const std::string& method_name) {
     return nullptr;
 }
 
+std::string EagleClass::getLocalMethodInfo() {
+    std::string method_str;
+    bool is_last = true;
+    for (const auto& method : methods) {
+        if (!is_last) {
+            method_str.append("\n");
+        }
+        method_str.append("method " + method.first + " with " +
+                          std::to_string(method.second->arity()) + " parameter(s)");
+        is_last = false;
+    }
+    return std::move(method_str);
+}
+
 EagleInstance::EagleInstance(EagleClassPtr klass, EagleInstancePtr super_instance)
     : klass(std::move(klass)), super_instance(std::move(super_instance)), fields({}) {}
 

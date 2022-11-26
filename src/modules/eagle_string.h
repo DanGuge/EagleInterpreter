@@ -71,6 +71,8 @@ public:
 
     BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) override;
 
+    std::string GetBuiltInClassInfo() override;
+
     virtual std::string toString() override;
 
     virtual bool equals(ObjectPtr other) override;

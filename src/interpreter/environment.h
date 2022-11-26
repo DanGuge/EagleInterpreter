@@ -21,6 +21,7 @@ public:
     ObjectPtr getAt(int distance, const std::string& name);
     ObjectPtr getAt(int distance, const TokenPtr& name);
     ObjectPtr get(const TokenPtr& name);
+    const std::unordered_map<std::string, ObjectPtr>& get_name_object_map();
     void assignAt(int distance, const TokenPtr& name, const ObjectPtr& object);
     void assign(const TokenPtr& name, const ObjectPtr& object);
 

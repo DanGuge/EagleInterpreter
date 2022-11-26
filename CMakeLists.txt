@@ -14,8 +14,8 @@ set(LIB_FILES
         src/object.cpp)
 
 set(BUILT_IN_FUNCTIONS
-        src/built_in_functions/file_io.h
-        src/built_in_functions/type_cast.h src/built_in_functions/io.h src/built_in_functions/type_cast.cpp src/built_in_functions/eagle_built_in_functions.h src/built_in_functions/file_io.cpp src/built_in_functions/io.cpp)
+        src/built_in_functions/eagle_built_in_functions.h
+        src/built_in_functions/eagle_built_in_functions.cpp)
 
 set(PRETTY_PRINT_FILES
         src/pretty_print/pretty_print.h

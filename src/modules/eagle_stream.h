@@ -42,6 +42,8 @@ public:
 
     std::string toString() override;
 
+    static std::string GetStreamInfo();
+
 private:
     std::vector<std::pair<int, int>> GetProcessSegments();
 

@@ -26,15 +26,17 @@ struct BuiltInClassMethodInfo {
 class BuiltInClass : public Object {
 public:
     virtual BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) = 0;
+    virtual std::string GetBuiltInClassInfo() = 0;
 };
 
 class BuiltInClassCall : public EagleCallable {
 public:
     BuiltInClassCall(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity,
-                         int line)
+                     int line)
         : instance(std::move(instance)), method(method), method_arity(method_arity), line(line) {}
 
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) override {
+    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
+                   int call_line) override {
         return method(instance, arguments, line);
     }
 

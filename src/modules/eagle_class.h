@@ -27,6 +27,7 @@ public:
     EagleInstancePtr instanceVarInit();
     EagleFunctionPtr getMethodRecursive(const std::string& method_name);
     EagleFunctionPtr getMethodLocal(const std::string& method_name);
+    std::string getLocalMethodInfo();
 
 public:
     std::string name;

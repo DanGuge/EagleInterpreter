@@ -34,6 +34,10 @@ ObjectPtr Environment::get(const TokenPtr& name) {
     return nullptr;
 }
 
+const std::unordered_map<std::string, ObjectPtr>& Environment::get_name_object_map() {
+    return name_object_map;
+}
+
 void Environment::assignAt(int distance, const TokenPtr& name, const ObjectPtr& object) {
     ancestor(distance)->name_object_map[name->text] = object;
 }

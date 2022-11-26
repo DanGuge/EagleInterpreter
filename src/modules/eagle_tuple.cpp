@@ -27,6 +27,10 @@ void EagleTuple::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, 
     throw RuntimeError(line, "'Tuple does not support item assignment");
 }
 
+ObjectPtr EagleTuple::size() {
+    return std::make_shared<BigFloat>((int)elements.size());
+}
+
 std::vector<ObjectPtr> EagleTuple::iterator() {
     return elements;
 }
@@ -38,6 +42,22 @@ BuiltInClassMethodInfo EagleTuple::GetMethod(const eagle::TokenPtr &method_name)
     } else {
         throw RuntimeError(method_name->line, "Tuple has no method named " + method_name->text);
     }
+}
+
+std::string EagleTuple::GetBuiltInClassInfo() {
+    return "built-in class tuple methods:\n"
+
+           "size()->Number\n"
+           "\tusage: return the size of tuple\n"
+
+           "empty()->Boolean\n"
+           "\tusage: return whether tuple is empty\n"
+
+           "count(element: Object)->Number\n"
+           "\tusage: if tuple contains the object, then return 1 else return 0\n"
+
+           "contains(element: Object)->Boolean\n"
+           "\tusage: return whether tuple contains the object";
 }
 
 std::string EagleTuple::toString() {
@@ -124,7 +144,7 @@ ObjectPtr EagleTuple::contains(const eagle::BuiltInClassPtr &object, std::vector
     return std::make_shared<Boolean>(contain);
 }
 
-EagleTuplePtr EagleTuple::CheckBuiltInClassType(const eagle::BuiltInClassPtr& instance, int line,
+EagleTuplePtr EagleTuple::CheckBuiltInClassType(const eagle::BuiltInClassPtr &instance, int line,
                                                 const std::string &method_name) {
     if (!InstanceOf<EagleTuple>(instance)) {
         throw RuntimeError(line, "Expect callee type: Tuple, for method: " + method_name + ".");

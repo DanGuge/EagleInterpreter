@@ -22,6 +22,37 @@ BuiltInClassMethodInfo String::GetMethod(const TokenPtr& method_name) {
     }
 }
 
+std::string String::GetBuiltInClassInfo() {
+    return "built-in class string methods:\n"
+
+           "size()->Number\n"
+           "\tusage: return the size of string\n"
+
+           "empty()->Boolean\n"
+           "\tusage: return whether string is empty\n"
+
+           "char_at(index: Number)->String\n"
+           "\tusage: return the char at index"
+
+           "count(substr: String)->Number\n"
+           "\tusage: return the number of occurrences of the substr\n"
+
+           "find(substr: String)->Number\n"
+           "\tusage: if string contains substr then return the position of substr else -1\n"
+
+           "upper()->String\n"
+           "\tusage: return string with all letters in uppercase\n"
+
+           "lower()->String\n"
+           "\tusage: return string with all letters in lowercase\n"
+
+           "split(substr: String)->List\n"
+           "\tusage: return a list with string split by substr\n"
+
+           "replace(target_str: String, new_str: String)->String\n"
+           "\tusage: return string with all target_str replaced by new_str";
+}
+
 ObjectPtr String::size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
                        int line) {
     StringPtr str = CheckBuiltInClassType(instance, line, "size");

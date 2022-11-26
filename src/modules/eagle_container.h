@@ -27,6 +27,7 @@ class EagleContainer : public BuiltInClass {
 public:
     virtual ObjectPtr get(const ObjectPtr& subscript, int line) = 0;
     virtual void set(const ObjectPtr& subscript, ObjectPtr value, int line) = 0;
+    virtual ObjectPtr size() = 0;
     virtual std::vector<ObjectPtr> iterator() = 0;
 };
 
@@ -36,9 +37,11 @@ public:
 
     ObjectPtr get(const eagle::ObjectPtr& subscript, int line) override;
     void set(const eagle::ObjectPtr& subscript, eagle::ObjectPtr value, int line) override;
+    ObjectPtr size() override;
     std::vector<ObjectPtr> iterator() override;
 
     BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) override;
+    std::string GetBuiltInClassInfo() override;
 
     std::string toString() override;
     bool equals(ObjectPtr other) override;
@@ -78,9 +81,11 @@ public:
 
     ObjectPtr get(const eagle::ObjectPtr& subscript, int line) override;
     void set(const eagle::ObjectPtr& subscript, eagle::ObjectPtr value, int line) override;
+    ObjectPtr size() override;
     std::vector<ObjectPtr> iterator() override;
 
     BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) override;
+    std::string GetBuiltInClassInfo() override;
 
     std::string toString() override;
     bool equals(ObjectPtr other) override;
@@ -114,9 +119,11 @@ public:
 
     ObjectPtr get(const eagle::ObjectPtr& key, int line) override;
     void set(const eagle::ObjectPtr& key, eagle::ObjectPtr value, int line) override;
+    ObjectPtr size() override;
     std::vector<ObjectPtr> iterator() override;
 
     BuiltInClassMethodInfo GetMethod(const TokenPtr& method_name) override;
+    std::string GetBuiltInClassInfo() override;
 
     std::string toString() override;
     bool equals(ObjectPtr other) override;
