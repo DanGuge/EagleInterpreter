@@ -29,6 +29,7 @@
    5. Visitor模式
    6. shell
    7. pretty_print
+   8. 支持用户自定义toString, equals, hashcode, isTruthy
 7. 验证与测试
    1. 基本功能
       1. 类使用
