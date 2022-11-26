@@ -93,6 +93,13 @@ std::string EagleStream::toString() {
     return "<stream at " + std::to_string(reinterpret_cast<size_t>(this)) + ">";
 }
 
+std::string EagleStream::GetStreamInfo() {
+    return "stream methods:\n"
+
+           "size()->Number\n"
+           "\tusage: return the size of string";
+}
+
 std::vector<std::pair<int, int>> EagleStream::GetProcessSegments() {
     std::vector<std::pair<int, int>> process_segments;
     int start = 0, cur = 0;

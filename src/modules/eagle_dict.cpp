@@ -48,6 +48,10 @@ void EagleDict::set(const eagle::ObjectPtr &key, eagle::ObjectPtr value, int lin
     InsertDictEntry(key->hashcode(), key, std::move(value));
 }
 
+ObjectPtr EagleDict::size() {
+    return std::make_shared<BigFloat>(this->element_cnt);
+}
+
 std::vector<ObjectPtr> EagleDict::iterator() {
     std::vector<ObjectPtr> keys;
     for (auto &node : elements) {
@@ -65,6 +69,13 @@ BuiltInClassMethodInfo EagleDict::GetMethod(const eagle::TokenPtr &method_name) 
     } else {
         throw RuntimeError(method_name->line, "Dict has no method named " + method_name->text);
     }
+}
+
+std::string EagleDict::GetBuiltInClassInfo() {
+    return "built-in class dict methods:\n"
+
+           "size()->Number\n"
+           "\tusage: return the size of dict";
 }
 
 std::string EagleDict::toString() {

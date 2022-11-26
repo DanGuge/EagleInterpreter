@@ -28,6 +28,10 @@ void EagleList::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, i
     elements[index_num] = std::move(value);
 }
 
+ObjectPtr EagleList::size() {
+    return std::make_shared<BigFloat>((int)elements.size());
+}
+
 std::vector<ObjectPtr> EagleList::iterator() {
     return elements;
 }
@@ -39,6 +43,13 @@ BuiltInClassMethodInfo EagleList::GetMethod(const eagle::TokenPtr &method_name) 
     } else {
         throw RuntimeError(method_name->line, "List has no method named " + method_name->text);
     }
+}
+
+std::string EagleList::GetBuiltInClassInfo() {
+    return "built-in class list methods:\n"
+
+           "size()->Number\n"
+           "\tusage: return the size of list";
 }
 
 std::string EagleList::toString() {
