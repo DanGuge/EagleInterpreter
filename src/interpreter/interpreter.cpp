@@ -374,9 +374,11 @@ ObjectPtr Interpreter::visitFunctionStmt(std::shared_ptr<Stmt::Function> stmt) {
 }
 
 ObjectPtr Interpreter::visitVarStmt(std::shared_ptr<Stmt::Var> stmt) {
-    ObjectPtr value = nullptr;
+    ObjectPtr value;
     if (stmt->initializer != nullptr) {
         value = evaluate(stmt->initializer);
+    } else {
+        value = std::make_shared<Null>();
     }
     current_env->define(stmt->name->text, value);
     return nullptr;
@@ -436,9 +438,11 @@ ObjectPtr Interpreter::visitPrintStmt(std::shared_ptr<Stmt::Print> stmt) {
 }
 
 ObjectPtr Interpreter::visitReturnStmt(std::shared_ptr<Stmt::Return> stmt) {
-    ObjectPtr return_value = nullptr;
+    ObjectPtr return_value;
     if (stmt->return_value != nullptr) {
         return_value = evaluate(stmt->return_value);
+    } else {
+        return_value = std::make_shared<Null>();
     }
     throw EagleReturn(return_value);
 }
