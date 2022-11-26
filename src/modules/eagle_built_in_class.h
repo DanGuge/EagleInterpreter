@@ -34,7 +34,7 @@ public:
                          int line)
         : instance(std::move(instance)), method(method), method_arity(method_arity), line(line) {}
 
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override {
+    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) override {
         return method(instance, arguments, line);
     }
 

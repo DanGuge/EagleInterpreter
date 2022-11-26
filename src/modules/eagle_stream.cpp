@@ -137,7 +137,7 @@ ObjectPtr EagleStream::map(const eagle::ObjectPtr &para, const eagle::ObjectPtr 
             line, "The arity of inner function parameter of stream method 'map' should be 1.");
     }
     std::vector<ObjectPtr> arguments{element};
-    return call->call(interpreter, arguments);
+    return call->call(interpreter, arguments, line);
 }
 
 ObjectPtr EagleStream::filter(const eagle::ObjectPtr &para, const eagle::ObjectPtr &element,
@@ -154,7 +154,7 @@ ObjectPtr EagleStream::filter(const eagle::ObjectPtr &para, const eagle::ObjectP
             line, "The arity of inner function parameter of stream method 'filter' should be 1.");
     }
     std::vector<ObjectPtr> arguments{element};
-    ObjectPtr filter_result = call->call(interpreter, arguments);
+    ObjectPtr filter_result = call->call(interpreter, arguments, line);
     return filter_result->isTruthy() ? element : nullptr;
 }
 
@@ -235,7 +235,7 @@ ObjectPtr EagleStream::for_each(const eagle::ObjectPtr &para,
     }
     for (auto &element : elements) {
         std::vector<ObjectPtr> arguments{element};
-        call->call(interpreter, arguments);
+        call->call(interpreter, arguments, line);
     }
     return std::make_shared<Null>();
 }
@@ -251,8 +251,8 @@ ObjectPtr EagleStream::count(const eagle::ObjectPtr &para, const std::vector<Obj
 EagleStreamCall::EagleStreamCall(eagle::EagleStreamPtr stream, eagle::TokenPtr func, int line)
     : stream(std::move(stream)), func(std::move(func)), line(line) {}
 
-ObjectPtr EagleStreamCall::call(eagle::Interpreter &interpreter,
-                                std::vector<ObjectPtr> &arguments) {
+ObjectPtr EagleStreamCall::call(eagle::Interpreter &interpreter, std::vector<ObjectPtr> &arguments,
+                                int call_line) {
     if (!arguments.empty() && arguments.size() != 1) {
         throw RuntimeError(line, "The number of parameters of Stream call should be 0 or 1.");
     }

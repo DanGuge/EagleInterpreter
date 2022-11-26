@@ -16,7 +16,8 @@ int EagleFunction::arity() {
     return (int)declaration->params.size();
 }
 
-ObjectPtr EagleFunction::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) {
+ObjectPtr EagleFunction::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
+                              int call_line) {
     EnvironmentPtr function_env = std::make_shared<Environment>(closure);
     for (int i = 0; i < this->arity(); i++) {
         function_env->define(declaration->params[i]->text, arguments[i]);

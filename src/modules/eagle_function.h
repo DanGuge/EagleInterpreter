@@ -18,7 +18,8 @@ public:
     EagleFunction(std::shared_ptr<Stmt::Function> declaration, EnvironmentPtr closure,
                   bool is_init);
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override;
+    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
+                   int call_line) override;
     EagleFunctionPtr bind(const EagleInstancePtr& instance);
     std::string toString() override;
 

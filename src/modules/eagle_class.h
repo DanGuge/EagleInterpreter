@@ -23,7 +23,7 @@ public:
                std::unordered_map<std::string, EagleFunctionPtr> methods);
     std::string toString() override;
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override;
+    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) override;
     EagleInstancePtr instanceVarInit();
     EagleFunctionPtr getMethodRecursive(const std::string& method_name);
     EagleFunctionPtr getMethodLocal(const std::string& method_name);

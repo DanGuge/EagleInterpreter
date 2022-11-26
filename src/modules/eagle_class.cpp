@@ -29,11 +29,12 @@ int EagleClass::arity() {
     return init->arity();
 }
 
-ObjectPtr EagleClass::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) {
+ObjectPtr EagleClass::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
+                           int call_line) {
     EagleInstancePtr instance = instanceVarInit();
     EagleFunctionPtr init = getMethodLocal("init");
     if (init != nullptr) {
-        return init->bind(instance)->call(interpreter, arguments);
+        return init->bind(instance)->call(interpreter, arguments, call_line);
     }
     return instance;
 }

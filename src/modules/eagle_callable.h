@@ -14,7 +14,7 @@ namespace eagle {
 class EagleCallable : public Object {
 public:
     virtual int arity() = 0;
-    virtual ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments) = 0;
+    virtual ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) = 0;
 };
 
 using EagleCallablePtr = std::shared_ptr<EagleCallable>;

@@ -89,7 +89,8 @@ class EagleStreamCall : public EagleCallable {
 public:
     EagleStreamCall(EagleStreamPtr stream, TokenPtr func, int line);
 
-    ObjectPtr call(eagle::Interpreter& interpreter, std::vector<ObjectPtr>& arguments) override;
+    ObjectPtr call(eagle::Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
+                   int call_line) override;
 
     int arity() override {
         return -1;
