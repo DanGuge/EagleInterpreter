@@ -44,6 +44,9 @@ private:
     static BigFloat Multiply(const BigFloat& left, const BigFloat& right);
     static BigFloat Pow(const BigFloat& left, const BigFloat& right);
 
+    // Default decimal
+    static const int DEFAULT_DECIMAL = 20;
+
 public:
     // Constructors
     BigFloat() {

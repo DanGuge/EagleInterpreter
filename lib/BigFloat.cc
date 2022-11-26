@@ -208,6 +208,7 @@ BigFloat& BigFloat::operator=(const char* strNum) {
         }
     }
     this->LeadTrim();
+    this->TrailTrim();
     return *this;
 };
 
@@ -491,6 +492,8 @@ BigFloat operator/(const BigFloat& left, const BigFloat& right) {
 
     // Increase Precision to highest decimal quote
     int div_precision = (left.decimals > right.decimals) ? (left.decimals) : (right.decimals);
+    div_precision =
+        (div_precision > BigFloat::DEFAULT_DECIMAL) ? div_precision : BigFloat::DEFAULT_DECIMAL;
     for (int i = 0; i < div_precision; i++)
         N.number.push_front('0');
 
@@ -559,7 +562,7 @@ BigFloat operator/(const BigFloat& left, const BigFloat& right) {
     tmp.decimals = div_precision;
     tmp.error = 0;
     tmp.LeadTrim();
-
+    tmp.TrailTrim();
     return tmp;
 };
 
