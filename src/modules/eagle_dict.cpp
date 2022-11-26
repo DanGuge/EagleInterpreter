@@ -172,7 +172,7 @@ ObjectPtr EagleDict::size(const BuiltInClassPtr &object, std::vector<ObjectPtr> 
 ObjectPtr EagleDict::clear(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "clear");
     dict->elements.clear();
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleDict::get_value(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -189,7 +189,7 @@ ObjectPtr EagleDict::get_value(const BuiltInClassPtr &object, std::vector<Object
 ObjectPtr EagleDict::put(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "put");
     dict->set(args[0], args[1], line);
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleDict::contains_key(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -221,11 +221,11 @@ ObjectPtr EagleDict::remove(const BuiltInClassPtr &object, std::vector<ObjectPtr
             if (key->equals(it->first)) {
                 list.erase(it);
                 dict->element_cnt--;
-                return nullptr;
+                return std::make_shared<Null>();
             }
         }
     }
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleDict::keys(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {

@@ -133,14 +133,14 @@ ObjectPtr EagleList::append(const eagle::BuiltInClassPtr &object, std::vector<Ob
         throw RuntimeError(line, "List can not contain itself.");
     }
     list->elements.emplace_back(args[0]);
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleList::clear(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
                            int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "clear");
     list->elements.clear();
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleList::contains(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -181,7 +181,7 @@ ObjectPtr EagleList::insert(const eagle::BuiltInClassPtr &object, std::vector<Ob
         pos_num += list_size;
     }
     list->elements.insert(list->elements.begin() + pos_num, args[1]);
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleList::remove(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -190,10 +190,10 @@ ObjectPtr EagleList::remove(const eagle::BuiltInClassPtr &object, std::vector<Ob
     for (auto it = list->elements.begin(); it != list->elements.end(); it++) {
         if ((*it)->equals(args[0])) {
             list->elements.erase(it);
-            return nullptr;
+            return std::make_shared<Null>();
         }
     }
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleList::pop(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -202,14 +202,14 @@ ObjectPtr EagleList::pop(const eagle::BuiltInClassPtr &object, std::vector<Objec
     if (!list->elements.empty()) {
         list->elements.pop_back();
     }
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 ObjectPtr EagleList::reverse(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
                              int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "reverse");
     std::reverse(list->elements.begin(), list->elements.end());
-    return nullptr;
+    return std::make_shared<Null>();
 }
 
 EagleListPtr EagleList::CheckBuiltInClassType(const eagle::BuiltInClassPtr &instance, int line,
