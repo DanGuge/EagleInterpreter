@@ -45,6 +45,9 @@ ObjectPtr EagleDict::get(const eagle::ObjectPtr &key, int line) {
 }
 
 void EagleDict::set(const eagle::ObjectPtr &key, eagle::ObjectPtr value, int line) {
+    if (key.get() == this || value.get() == this) {
+        throw RuntimeError(line, "Dict can not contain itself.");
+    }
     InsertDictEntry(key->hashcode(), key, std::move(value));
 }
 

@@ -25,6 +25,9 @@ ObjectPtr EagleList::get(const eagle::ObjectPtr &subscript, int line) {
 
 void EagleList::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, int line) {
     int index_num = CheckSubscript(subscript, line);
+    if (value.get() == this) {
+        throw RuntimeError(line, "List can not contain itself.");
+    }
     elements[index_num] = std::move(value);
 }
 
@@ -123,6 +126,9 @@ ObjectPtr EagleList::empty(const eagle::BuiltInClassPtr &object, std::vector<Obj
 ObjectPtr EagleList::append(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
                             int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "append");
+    if (list.get() == args[0].get()) {
+        throw RuntimeError(line, "List can not contain itself.");
+    }
     list->elements.emplace_back(args[0]);
     return nullptr;
 }
@@ -159,6 +165,9 @@ ObjectPtr EagleList::insert(const eagle::BuiltInClassPtr &object, std::vector<Ob
     auto position = cast<BigFloat>(args[0]);
     if (!position->isInteger()) {
         throw RuntimeError(line, "List subscript must be integer, not float.");
+    }
+    if (list.get() == args[1].get()) {
+        throw RuntimeError(line, "List can not contain itself.");
     }
     int pos_num = position->ToInt(), list_size = (int)list->elements.size();
     if (pos_num < -list_size) {
