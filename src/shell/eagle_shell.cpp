@@ -47,7 +47,7 @@ std::string EagleShell::readLine() {
     std::string line;
     char c;
     c = getch();
-    while (c != '\n' && c != '\b') {
+    while (c != '\n' && c != '\r') {
         if (c == -32) {
             c = getch();
             if (c == 72) {
