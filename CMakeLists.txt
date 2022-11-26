@@ -61,7 +61,9 @@ set(SOURCE_FILES
         src/shell/eagle_shell.cpp
         src/shell/eagle_shell.h
         src/modules/eagle_stream.h
-        src/modules/eagle_stream.cpp)
+        src/modules/eagle_stream.cpp
+        src/modules/eagle_stack.h
+        src/modules/eagle_stack.cpp)
 
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})

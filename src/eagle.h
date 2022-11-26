@@ -20,7 +20,7 @@ public:
 private:
     Lexer lexer;
     Parser parser;
-    Interpreter interpreter;
+    Interpreter& interpreter;
     Resolver resolver;
 };
 }  // namespace eagle

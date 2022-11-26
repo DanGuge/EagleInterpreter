@@ -16,9 +16,17 @@ using EagleDictPtr = std::shared_ptr<EagleDict>;
 
 class Interpreter : public Expr::Visitor, public Stmt::Visitor {
 public:
+    static Interpreter& getInstance();
+
+private:
+    static Interpreter interpreter;
+
+private:
     explicit Interpreter();
+
+public:
     void interpret(const std::vector<StmtPtr>& statements);
-    void init_built_in_functions();
+    void init_built_in();
     EagleDictPtr getGlobals();
     // expressions
     ObjectPtr visitAssignExpr(std::shared_ptr<Expr::Assign> expr) override;
@@ -84,6 +92,7 @@ private:
     EnvironmentPtr global_env;
     EnvironmentPtr current_env;
     std::unordered_map<ExprPtr, int> local_variables;
+    int stack_depth;
 };
 
 }  // namespace eagle

@@ -19,20 +19,19 @@ namespace eagle {
 class EagleStream;
 using EagleStreamPtr = std::shared_ptr<EagleStream>;
 using StreamOneToOneMethod = ObjectPtr (*)(const ObjectPtr& para, const eagle::ObjectPtr& element,
-                                           Interpreter& interpreter, int line);
+                                           int line);
 using StreamManyToManyMethod = std::vector<ObjectPtr> (*)(const ObjectPtr& para,
                                                           const std::vector<ObjectPtr>& elements,
-                                                          Interpreter& interpreter, int line);
+                                                          int line);
 using StreamFinalMethod = ObjectPtr (*)(const ObjectPtr& para,
-                                        const std::vector<ObjectPtr>& elements,
-                                        Interpreter& interpreter, int line);
+                                        const std::vector<ObjectPtr>& elements, int line);
 
 class EagleStream : public Object, public std::enable_shared_from_this<EagleStream> {
 public:
     EagleStream(EagleContainerPtr init_expr,
                 std::vector<std::pair<TokenPtr, ObjectPtr>> operations);
 
-    ObjectPtr run(Interpreter& interpreter, int line);
+    ObjectPtr run(int line);
 
     void append(std::pair<TokenPtr, ObjectPtr> operation);
 
@@ -59,25 +58,21 @@ public:
 
 private:
     // non-final methods
-    static ObjectPtr map(const ObjectPtr& para, const ObjectPtr& element, Interpreter& interpreter,
-                         int line);
-    static ObjectPtr filter(const ObjectPtr& para, const ObjectPtr& element,
-                            Interpreter& interpreter, int line);
+    static ObjectPtr map(const ObjectPtr& para, const ObjectPtr& element, int line);
+    static ObjectPtr filter(const ObjectPtr& para, const ObjectPtr& element, int line);
     static std::vector<ObjectPtr> limit(const ObjectPtr& para,
-                                        const std::vector<ObjectPtr>& elements,
-                                        Interpreter& interpreter, int line);
+                                        const std::vector<ObjectPtr>& elements, int line);
 
     // final methods
     static ObjectPtr to_list(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
-                             Interpreter& interpreter, int line);
+                             int line);
     static ObjectPtr to_tuple(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
-                              Interpreter& interpreter, int line);
+                              int line);
     static ObjectPtr to_dict(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
-                             Interpreter& interpreter, int line);
+                             int line);
     static ObjectPtr for_each(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
-                              Interpreter& interpreter, int line);
-    static ObjectPtr count(const ObjectPtr& para, const std::vector<ObjectPtr>& elements,
-                           Interpreter& interpreter, int line);
+                              int line);
+    static ObjectPtr count(const ObjectPtr& para, const std::vector<ObjectPtr>& elements, int line);
 
 private:
     // non-final methods
@@ -91,8 +86,7 @@ class EagleStreamCall : public EagleCallable {
 public:
     EagleStreamCall(EagleStreamPtr stream, TokenPtr func, int line);
 
-    ObjectPtr call(eagle::Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
 
     int arity() override {
         return -1;

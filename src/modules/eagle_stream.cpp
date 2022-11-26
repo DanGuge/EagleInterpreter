@@ -26,7 +26,7 @@ EagleStream::EagleStream(eagle::EagleContainerPtr init_expr,
                          std::vector<std::pair<TokenPtr, ObjectPtr>> operations)
     : init_expr(std::move(init_expr)), operations(std::move(operations)), executed(false) {}
 
-ObjectPtr EagleStream::run(eagle::Interpreter &interpreter, int line) {
+ObjectPtr EagleStream::run(int line) {
     if (executed) {
         throw RuntimeError(line, "Stream should not be executed repeatedly");
     }
@@ -50,7 +50,7 @@ ObjectPtr EagleStream::run(eagle::Interpreter &interpreter, int line) {
                 auto func = operations[i].first;
                 auto para = operations[i].second;
                 auto method = one2one_methods.find(func->text)->second;
-                ele_r = method(para, ele_r, interpreter, func->line);
+                ele_r = method(para, ele_r, func->line);
             }
             if (ele_r != nullptr) {
                 results.emplace_back(ele_r);
@@ -61,11 +61,11 @@ ObjectPtr EagleStream::run(eagle::Interpreter &interpreter, int line) {
         auto last_para = operations[seg_end].second;
         if (isManyToManyMethod(last_func->text)) {
             auto method = many2many_methods.find(last_func->text)->second;
-            elements = method(last_para, results, interpreter, last_func->line);
+            elements = method(last_para, results, last_func->line);
             results.clear();
         } else {
             auto method = final_methods.find(last_func->text)->second;
-            final_result = method(last_para, results, interpreter, last_func->line);
+            final_result = method(last_para, results, last_func->line);
         }
     }
     return final_result;
@@ -131,7 +131,7 @@ bool EagleStream::isManyToManyMethod(const std::string &method_name) {
 }
 
 ObjectPtr EagleStream::map(const eagle::ObjectPtr &para, const eagle::ObjectPtr &element,
-                           eagle::Interpreter &interpreter, int line) {
+                           int line) {
     if (para == nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'map' should not be null");
     }
@@ -144,11 +144,11 @@ ObjectPtr EagleStream::map(const eagle::ObjectPtr &para, const eagle::ObjectPtr 
             line, "The arity of inner function parameter of stream method 'map' should be 1.");
     }
     std::vector<ObjectPtr> arguments{element};
-    return call->call(interpreter, arguments, line);
+    return call->WrapperCall(arguments, line);
 }
 
 ObjectPtr EagleStream::filter(const eagle::ObjectPtr &para, const eagle::ObjectPtr &element,
-                              eagle::Interpreter &interpreter, int line) {
+                              int line) {
     if (para == nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'filter' should not be null");
     }
@@ -161,13 +161,12 @@ ObjectPtr EagleStream::filter(const eagle::ObjectPtr &para, const eagle::ObjectP
             line, "The arity of inner function parameter of stream method 'filter' should be 1.");
     }
     std::vector<ObjectPtr> arguments{element};
-    ObjectPtr filter_result = call->call(interpreter, arguments, line);
+    ObjectPtr filter_result = call->WrapperCall(arguments, line);
     return filter_result->isTruthy() ? element : nullptr;
 }
 
 std::vector<ObjectPtr> EagleStream::limit(const eagle::ObjectPtr &para,
-                                          const std::vector<ObjectPtr> &elements,
-                                          eagle::Interpreter &interpreter, int line) {
+                                          const std::vector<ObjectPtr> &elements, int line) {
     if (para == nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'limit' should not be null");
     }
@@ -188,7 +187,7 @@ std::vector<ObjectPtr> EagleStream::limit(const eagle::ObjectPtr &para,
 }
 
 ObjectPtr EagleStream::to_list(const eagle::ObjectPtr &para, const std::vector<ObjectPtr> &elements,
-                               eagle::Interpreter &interpreter, int line) {
+                               int line) {
     if (para != nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'to_list' should be null");
     }
@@ -196,8 +195,7 @@ ObjectPtr EagleStream::to_list(const eagle::ObjectPtr &para, const std::vector<O
 }
 
 ObjectPtr EagleStream::to_tuple(const eagle::ObjectPtr &para,
-                                const std::vector<ObjectPtr> &elements,
-                                eagle::Interpreter &interpreter, int line) {
+                                const std::vector<ObjectPtr> &elements, int line) {
     if (para != nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'to_tuple' should be null");
     }
@@ -205,7 +203,7 @@ ObjectPtr EagleStream::to_tuple(const eagle::ObjectPtr &para,
 }
 
 ObjectPtr EagleStream::to_dict(const eagle::ObjectPtr &para, const std::vector<ObjectPtr> &elements,
-                               eagle::Interpreter &interpreter, int line) {
+                               int line) {
     if (para != nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'to_dict' should be null");
     }
@@ -227,8 +225,7 @@ ObjectPtr EagleStream::to_dict(const eagle::ObjectPtr &para, const std::vector<O
 }
 
 ObjectPtr EagleStream::for_each(const eagle::ObjectPtr &para,
-                                const std::vector<ObjectPtr> &elements,
-                                eagle::Interpreter &interpreter, int line) {
+                                const std::vector<ObjectPtr> &elements, int line) {
     if (para == nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'for_each' should not be null");
     }
@@ -242,13 +239,13 @@ ObjectPtr EagleStream::for_each(const eagle::ObjectPtr &para,
     }
     for (auto &element : elements) {
         std::vector<ObjectPtr> arguments{element};
-        call->call(interpreter, arguments, line);
+        call->WrapperCall(arguments, line);
     }
     return std::make_shared<Null>();
 }
 
 ObjectPtr EagleStream::count(const eagle::ObjectPtr &para, const std::vector<ObjectPtr> &elements,
-                             eagle::Interpreter &interpreter, int line) {
+                             int line) {
     if (para != nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'count' should be null");
     }
@@ -258,14 +255,13 @@ ObjectPtr EagleStream::count(const eagle::ObjectPtr &para, const std::vector<Obj
 EagleStreamCall::EagleStreamCall(eagle::EagleStreamPtr stream, eagle::TokenPtr func, int line)
     : stream(std::move(stream)), func(std::move(func)), line(line) {}
 
-ObjectPtr EagleStreamCall::call(eagle::Interpreter &interpreter, std::vector<ObjectPtr> &arguments,
-                                int call_line) {
+ObjectPtr EagleStreamCall::call(std::vector<ObjectPtr> &arguments, int call_line) {
     if (!arguments.empty() && arguments.size() != 1) {
         throw RuntimeError(line, "The number of parameters of Stream call should be 0 or 1.");
     }
     ObjectPtr para = arguments.empty() ? nullptr : arguments[0];
     stream->append(std::pair<TokenPtr, ObjectPtr>{func, para});
-    return stream->run(interpreter, line);
+    return stream->run(line);
 }
 
 }  // namespace eagle

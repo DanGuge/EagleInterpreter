@@ -14,14 +14,21 @@
 #include "util/error_reporter.h"
 
 namespace eagle {
-Interpreter::Interpreter() {
+
+Interpreter& Interpreter::getInstance() {
+    return interpreter;
+}
+
+Interpreter Interpreter::interpreter{};
+
+Interpreter::Interpreter() : stack_depth(0) {
     global_env = std::make_shared<Environment>(nullptr);
     current_env = global_env;
     local_variables = {};
-    init_built_in_functions();
+    init_built_in();
 }
 
-void Interpreter::init_built_in_functions() {
+void Interpreter::init_built_in() {
     // built-in functions
     global_env->define("str", std::make_shared<built_in_functions::Str>());
     global_env->define("num", std::make_shared<built_in_functions::Num>());
@@ -174,7 +181,7 @@ ObjectPtr Interpreter::visitCallExpr(std::shared_ptr<Expr::Call> expr) {
             expr->line, "Expect arguments size is " + std::to_string(function->arity()) + " But " +
                             std::to_string(arguments.size()) + " argument(s) is(are) given");
     }
-    return function->call(*this, arguments, expr->line);
+    return function->WrapperCall(arguments, expr->line);
 }
 
 ObjectPtr Interpreter::visitLiteralExpr(std::shared_ptr<Expr::Literal> expr) {
@@ -201,7 +208,7 @@ ObjectPtr Interpreter::visitStreamExpr(std::shared_ptr<Expr::Stream> expr) {
     }
     EagleStreamPtr stream =
         std::make_shared<EagleStream>(std::move(init_expr), std::move(operations));
-    return stream->run(*this, expr->line);
+    return stream->run(expr->line);
 }
 
 ObjectPtr Interpreter::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
@@ -226,7 +233,7 @@ ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> e
 
     ObjectPtr value = evaluate(expr->value);
     if (expr->op->type != ASSIGN) {
-        ObjectPtr name_value = instance->get(expr->name, instance);
+        ObjectPtr name_value = instance->get(expr->name->text, instance);
         if (name_value == nullptr) {
             throw interpreterRuntimeError(expr->name->line,
                                           "Undefined property '" + expr->name->text + "'.");
@@ -250,7 +257,7 @@ ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> e
     ObjectPtr object = evaluate(expr->object);
     if (InstanceOf<EagleInstance>(object)) {
         EagleInstancePtr instance = cast<EagleInstance>(object);
-        ObjectPtr value = instance->get(expr->name, instance);
+        ObjectPtr value = instance->get(expr->name->text, instance);
         if (value == nullptr) {
             throw interpreterRuntimeError(expr->name->line,
                                           "Undefined property '" + expr->name->text + "'.");
@@ -461,7 +468,14 @@ ObjectPtr Interpreter::visitForStmt(std::shared_ptr<Stmt::For> stmt) {
 }
 
 ObjectPtr Interpreter::visitExpressionStmt(std::shared_ptr<Stmt::Expression> stmt) {
-    evaluate(stmt->expression);
+    ObjectPtr value = evaluate(stmt->expression);
+    if (InstanceOf<Expr::Assign>(stmt->expression) ||
+        InstanceOf<Expr::InstanceSet>(stmt->expression) ||
+        InstanceOf<Expr::ContainerSet>(stmt->expression)) {
+        return nullptr;
+    } else if (value != nullptr && !InstanceOf<Null>(value)) {
+        pretty_print::PrettyPrint::print(pretty_print::Front::BLUE, stringify(value));
+    }
     return nullptr;
 }
 

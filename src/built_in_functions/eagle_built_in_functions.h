@@ -16,8 +16,7 @@ public:
 class ReadFromFile : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -25,8 +24,7 @@ public:
 class WriteToFile : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -34,8 +32,7 @@ public:
 class Input : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -43,8 +40,7 @@ public:
 class Str : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -52,8 +48,7 @@ public:
 class Num : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -61,8 +56,7 @@ public:
 class Help : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -70,8 +64,7 @@ public:
 class Bool : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -79,8 +72,7 @@ public:
 class ClassMethod : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -88,8 +80,7 @@ public:
 class Globals : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -97,8 +88,7 @@ public:
 class Id : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };
@@ -106,8 +96,7 @@ public:
 class Len : public BuiltInFunction {
 public:
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                   int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     std::string toString() override;
     std::string GetBuiltInFunctionInfo() override;
 };

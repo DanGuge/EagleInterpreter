@@ -16,8 +16,7 @@ int ReadFromFile::arity() {
     return 1;
 }
 
-ObjectPtr ReadFromFile::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                             int call_line) {
+ObjectPtr ReadFromFile::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<String>(arguments[0])) {
         std::ifstream if_stream;
         if_stream.open(cast<String>(arguments[0])->str);
@@ -48,8 +47,7 @@ int WriteToFile::arity() {
     return 2;
 }
 
-ObjectPtr WriteToFile::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                            int call_line) {
+ObjectPtr WriteToFile::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<String>(arguments[0])) {
         std::ofstream of_stream(cast<String>(arguments[0])->str);
         of_stream << arguments[1]->toString();
@@ -74,7 +72,7 @@ int Input::arity() {
     return 0;
 }
 
-ObjectPtr Input::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) {
+ObjectPtr Input::call(std::vector<ObjectPtr>& arguments, int call_line) {
     std::string input;
     getline(std::cin, input);
     return std::make_shared<String>(input);
@@ -93,8 +91,7 @@ int Str::arity() {
     return 1;
 }
 
-ObjectPtr Str::call(eagle::Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                    int call_line) {
+ObjectPtr Str::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<String>(arguments[0])) {
         return arguments[0];
     } else if (InstanceOf<Object>(arguments[0])) {
@@ -117,8 +114,7 @@ int Num::arity() {
     return 1;
 }
 
-ObjectPtr Num::call(eagle::Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                    int call_line) {
+ObjectPtr Num::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<BigFloat>(arguments[0])) {
         return arguments[0];
     } else if (InstanceOf<String>(arguments[0])) {
@@ -141,7 +137,7 @@ int Help::arity() {
     return 1;
 }
 
-ObjectPtr Help::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) {
+ObjectPtr Help::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<BuiltInClass>(arguments[0])) {
         return std::make_shared<String>(cast<BuiltInClass>(arguments[0])->GetBuiltInClassInfo());
     } else if (InstanceOf<EagleStream>(arguments[0])) {
@@ -168,7 +164,7 @@ int Bool::arity() {
     return 1;
 }
 
-ObjectPtr Bool::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) {
+ObjectPtr Bool::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<Boolean>(arguments[0])) {
         return arguments[0];
     } else {
@@ -189,8 +185,7 @@ int ClassMethod::arity() {
     return 1;
 }
 
-ObjectPtr ClassMethod::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                            int call_line) {
+ObjectPtr ClassMethod::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<EagleClass>(arguments[0])) {
         return std::make_shared<String>(cast<EagleClass>(arguments[0])->getLocalMethodInfo());
     } else {
@@ -212,9 +207,8 @@ int Globals::arity() {
     return 0;
 }
 
-ObjectPtr Globals::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                        int call_line) {
-    return interpreter.getGlobals();
+ObjectPtr Globals::call(std::vector<ObjectPtr>& arguments, int call_line) {
+    return Interpreter::getInstance().getGlobals();
 }
 
 std::string Globals::toString() {
@@ -230,7 +224,7 @@ int Id::arity() {
     return 1;
 }
 
-ObjectPtr Id::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) {
+ObjectPtr Id::call(std::vector<ObjectPtr>& arguments, int call_line) {
     return std::make_shared<String>(std::to_string(reinterpret_cast<size_t>(arguments[0].get())));
 }
 
@@ -247,7 +241,7 @@ int Len::arity() {
     return 1;
 }
 
-ObjectPtr Len::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) {
+ObjectPtr Len::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<EagleContainer>(arguments[0])) {
         return cast<EagleContainer>(arguments[0])->size();
     } else if (InstanceOf<String>(arguments[0])) {

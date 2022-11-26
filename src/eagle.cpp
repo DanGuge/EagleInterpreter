@@ -12,7 +12,8 @@
 
 namespace eagle {
 
-Eagle::Eagle() : lexer(), parser(), interpreter(), resolver(interpreter) {}
+Eagle::Eagle()
+    : lexer(), parser(), interpreter(Interpreter::getInstance()), resolver(interpreter) {}
 
 void Eagle::run(std::string source) {
     std::vector<TokenPtr> tokens = lexer.scanTokens(std::move(source));

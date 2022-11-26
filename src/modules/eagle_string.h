@@ -73,13 +73,13 @@ public:
 
     std::string GetBuiltInClassInfo() override;
 
-    virtual std::string toString() override;
+    std::string toString() override;
 
-    virtual bool equals(ObjectPtr other) override;
+    bool equals(ObjectPtr other) override;
 
     size_t hashcode() override;
 
-    virtual bool isTruthy() override;
+    bool isTruthy() override;
 
     friend std::ostream& operator<<(std::ostream& out, String& s);
 };

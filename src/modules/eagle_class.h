@@ -23,7 +23,7 @@ public:
                std::unordered_map<std::string, EagleFunctionPtr> methods);
     std::string toString() override;
     int arity() override;
-    ObjectPtr call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments, int call_line) override;
+    ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
     EagleInstancePtr instanceVarInit();
     EagleFunctionPtr getMethodRecursive(const std::string& method_name);
     EagleFunctionPtr getMethodLocal(const std::string& method_name);
@@ -36,12 +36,15 @@ public:
     std::unordered_map<std::string, EagleFunctionPtr> methods;
 };
 
-class EagleInstance : public Object {
+class EagleInstance : public Object, public std::enable_shared_from_this<EagleInstance> {
 public:
     EagleInstance(EagleClassPtr klass, EagleInstancePtr super_instance);
-    ObjectPtr get(const TokenPtr& name, const EagleInstancePtr& instance);
+    ObjectPtr get(const std::string& name, const EagleInstancePtr& instance);
     void set(const std::string& name, ObjectPtr value);
     std::string toString() override;
+    bool equals(eagle::ObjectPtr other) override;
+    size_t hashcode() override;
+    bool isTruthy() override;
 
 private:
     EagleClassPtr klass;

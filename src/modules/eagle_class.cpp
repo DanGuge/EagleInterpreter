@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "eagle_function.h"
+#include "eagle_string.h"
 
 namespace eagle {
 
@@ -29,12 +30,11 @@ int EagleClass::arity() {
     return init->arity();
 }
 
-ObjectPtr EagleClass::call(Interpreter& interpreter, std::vector<ObjectPtr>& arguments,
-                           int call_line) {
+ObjectPtr EagleClass::call(std::vector<ObjectPtr>& arguments, int call_line) {
     EagleInstancePtr instance = instanceVarInit();
     EagleFunctionPtr init = getMethodLocal("init");
     if (init != nullptr) {
-        return init->bind(instance)->call(interpreter, arguments, call_line);
+        return init->bind(instance)->WrapperCall(arguments, call_line);
     }
     return instance;
 }
@@ -89,15 +89,15 @@ std::string EagleClass::getLocalMethodInfo() {
 EagleInstance::EagleInstance(EagleClassPtr klass, EagleInstancePtr super_instance)
     : klass(std::move(klass)), super_instance(std::move(super_instance)), fields({}) {}
 
-ObjectPtr EagleInstance::get(const TokenPtr& name, const EagleInstancePtr& instance) {
+ObjectPtr EagleInstance::get(const std::string& name, const EagleInstancePtr& instance) {
     // 1. find in field
-    if (fields.find(name->text) != fields.end()) {
-        return fields[name->text];
+    if (fields.find(name) != fields.end()) {
+        return fields[name];
     }
 
     // 2. find in local method
-    if (klass->getMethodLocal(name->text) != nullptr) {
-        return klass->getMethodLocal(name->text)->bind(instance);
+    if (klass->getMethodLocal(name) != nullptr) {
+        return klass->getMethodLocal(name)->bind(instance);
     }
 
     // 3. find super instance
@@ -112,7 +112,53 @@ void EagleInstance::set(const std::string& name, ObjectPtr value) {
 }
 
 std::string EagleInstance::toString() {
+    auto method = get("toString", shared_from_this());
+    if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 0) {
+        std::vector<ObjectPtr> arguments;
+        ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
+        if (InstanceOf<String>(result)) {
+            return cast<String>(result)->str;
+        }
+        return result->toString();
+    }
     return "<instance of class " + klass->name + ">";
+}
+
+bool EagleInstance::equals(eagle::ObjectPtr other) {
+    if (other.get() == this) {
+        return true;
+    }
+    auto method = get("equals", shared_from_this());
+    if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 1) {
+        std::vector<ObjectPtr> arguments{other};
+        ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
+        return result->isTruthy();
+    }
+    return false;
+}
+
+size_t EagleInstance::hashcode() {
+    auto method = get("hashcode", shared_from_this());
+    if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 0) {
+        std::vector<ObjectPtr> arguments;
+        ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
+        if (InstanceOf<BigFloat>(result) && cast<BigFloat>(result)->isInteger()) {
+            return static_cast<size_t>(cast<BigFloat>(result)->ToInt());
+        }
+    }
+    return reinterpret_cast<size_t>(this);
+}
+
+bool EagleInstance::isTruthy() {
+    auto method = get("isTruthy", shared_from_this());
+    if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 0) {
+        std::vector<ObjectPtr> arguments;
+        ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
+        if (InstanceOf<Boolean>(result)) {
+            return cast<Boolean>(result)->value;
+        }
+    }
+    return true;
 }
 
 }  // namespace eagle
