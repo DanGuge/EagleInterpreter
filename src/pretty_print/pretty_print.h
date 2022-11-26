@@ -9,6 +9,35 @@
 
 namespace pretty_print {
 
+#ifdef _WIN32
+namespace Front {
+enum Color {
+    NONE = 15,
+    BLACK = 0,
+    RED = 12,
+    GREEN = 10,
+    YELLOW = 14,
+    BLUE = 9,
+    PINK = 13,
+    CYAN = 11,
+    WHITE = 15
+};
+}
+
+namespace Back {
+enum Color {
+    NONE = 0,
+    BLACK = 0,
+    RED = 12,
+    GREEN = 10,
+    YELLOW = 14,
+    BLUE = 9,
+    PINK = 13,
+    CYAN = 11,
+    WHITE = 15
+};
+}
+#elif (__APPLE__) || (__unix__)
 namespace Front {
 enum Color {
     NONE = -1,
@@ -36,6 +65,7 @@ enum Color {
     WHITE = 107
 };
 }
+#endif
 
 enum DisplayStyle { NORMAL = 0, BOLD = 1, ITALIC = 3, UNDERLINE = 4, SLOW_BLINK = 5 };
 

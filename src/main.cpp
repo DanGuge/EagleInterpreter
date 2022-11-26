@@ -5,6 +5,11 @@
 #include "pretty_print/pretty_print.h"
 #include "shell/eagle_shell.h"
 #include "util/error_reporter.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using namespace eagle;
 
 bool checkParen(const std::string& input) {
@@ -59,7 +64,7 @@ int main(int argc, char* argv[]) {
             }
             input = getLine(eagle_shell);
         }
-#if (__APPLE__) || (__unix__)
+#ifdef __APPLE__
         printf("\n");
 #endif
     } else if (argc == 2) {
@@ -89,5 +94,8 @@ int main(int argc, char* argv[]) {
             "1 parameter: Interpret EagleFile\n"
             "\texample: ./EagleInterpreter ./test.eagle");
     }
+#ifdef _WIN32
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+#endif
     return 0;
 }
