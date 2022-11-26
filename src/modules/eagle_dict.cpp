@@ -99,6 +99,9 @@ std::string EagleDict::toString() {
 }
 
 bool EagleDict::equals(eagle::ObjectPtr other) {
+    if (other.get() == this) {
+        return true;
+    }
     if (!InstanceOf<EagleDict>(other)) {
         return false;
     }

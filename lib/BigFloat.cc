@@ -1193,6 +1193,9 @@ std::string BigFloat::toString() {
 }
 
 bool BigFloat::equals(ObjectPtr other) {
+    if (other.get() == this) {
+        return true;
+    }
     if (!InstanceOf<BigFloat>(other)) {
         return false;
     }

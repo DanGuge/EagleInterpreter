@@ -66,6 +66,9 @@ std::string EagleList::toString() {
 }
 
 bool EagleList::equals(eagle::ObjectPtr other) {
+    if (other.get() == this) {
+        return true;
+    }
     if (!InstanceOf<EagleList>(other)) {
         return false;
     }

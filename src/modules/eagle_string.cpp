@@ -187,6 +187,9 @@ std::string String::toString() {
 }
 
 bool String::equals(ObjectPtr other) {
+    if (other.get() == this) {
+        return true;
+    }
     if (!InstanceOf<String>(other)) {
         return false;
     }

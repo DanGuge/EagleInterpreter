@@ -71,6 +71,9 @@ std::string EagleTuple::toString() {
 }
 
 bool EagleTuple::equals(eagle::ObjectPtr other) {
+    if (other.get() == this) {
+        return true;
+    }
     if (!InstanceOf<EagleTuple>(other)) {
         return false;
     }
