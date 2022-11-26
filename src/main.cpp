@@ -24,14 +24,16 @@ bool checkParen(const std::string& input) {
 }
 
 std::string getLine(EagleShell& eagle_shell) {
-    pretty_print::PrettyPrint::print(pretty_print::Front::Color::YELLOW, ">>> ", false);
+    pretty_print::PrettyPrint::print(pretty_print::Front::Color::YELLOW,
+                                     {pretty_print::DisplayStyle::BOLD}, ">>> ", false);
     std::string input;
     std::string line = eagle_shell.readLine();
     printf("\n");
     input.append(line);
     if (checkParen(input)) {
         while (true) {
-            pretty_print::PrettyPrint::print(pretty_print::Front::Color::BLUE, "... ", false);
+            pretty_print::PrettyPrint::print(pretty_print::Front::Color::BLUE,
+                                             {pretty_print::DisplayStyle::BOLD}, "... ", false);
             line = eagle_shell.readLine();
             if (line.empty()) {
                 printf("\n");

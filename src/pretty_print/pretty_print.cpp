@@ -67,10 +67,10 @@ void PrettyPrint::print(Front::Color front_color, Back::Color back_color,
 
     prefix += ansi_suffix;
     if (newline) {
-        std::cout << prefix << output << "\e[95;21;23;24;49m"
+        std::cout << prefix << output << "\e[95;23;24;49m"
                   << "\n";
     } else {
-        std::cout << prefix << output << "\e[95;21;23;24;49m";
+        std::cout << prefix << output << "\e[95;23;24;49m";
     }
 }
 
