@@ -15,6 +15,7 @@ class Interpreter : public Expr::Visitor, public Stmt::Visitor {
 public:
     explicit Interpreter();
     void interpret(const std::vector<StmtPtr>& statements);
+    void init_built_in_functions();
     // expressions
     ObjectPtr visitAssignExpr(std::shared_ptr<Expr::Assign> expr) override;
     ObjectPtr visitTernaryExpr(std::shared_ptr<Expr::Ternary> expr) override;

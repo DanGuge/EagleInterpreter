@@ -13,8 +13,13 @@ set(LIB_FILES
         src/object.h
         src/object.cpp)
 
+set(BUILT_IN_FUNCTIONS
+        src/built_in_functions/file_io.h
+        src/built_in_functions/type_cast.h src/built_in_functions/io.h src/built_in_functions/type_cast.cpp src/built_in_functions/eagle_built_in_functions.h src/built_in_functions/file_io.cpp src/built_in_functions/io.cpp)
+
 set(PRETTY_PRINT_FILES
-        src/pretty_print/pretty_print.h src/pretty_print/pretty_print.cpp)
+        src/pretty_print/pretty_print.h
+        src/pretty_print/pretty_print.cpp)
 
 set(SOURCE_FILES
         src/eagle.h
@@ -61,9 +66,10 @@ set(SOURCE_FILES
 add_library(eagle_lib STATIC ${SOURCE_FILES})
 add_library(big_float_lib STATIC ${LIB_FILES})
 add_library(pretty_print_lib STATIC ${PRETTY_PRINT_FILES})
+add_library(built_in_functions STATIC ${BUILT_IN_FUNCTIONS})
 
 add_executable(EagleInterpreter src/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib)
+target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib built_in_functions)
 
 add_executable(test_simple test/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib)
+target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib built_in_functions)

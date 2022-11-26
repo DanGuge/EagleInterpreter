@@ -5,6 +5,7 @@
 #include "interpreter.h"
 
 #include "BigFloat.h"
+#include "built_in_functions/eagle_built_in_functions.h"
 #include "modules/eagle_class.h"
 #include "modules/eagle_container.h"
 #include "modules/eagle_stream.h"
@@ -17,6 +18,15 @@ Interpreter::Interpreter() {
     global_env = std::make_shared<Environment>(nullptr);
     current_env = global_env;
     local_variables = {};
+    init_built_in_functions();
+}
+
+void Interpreter::init_built_in_functions() {
+    global_env->define("str", std::make_shared<built_in_functions::Str>());
+    global_env->define("num", std::make_shared<built_in_functions::Num>());
+    global_env->define("read_from_file", std::make_shared<built_in_functions::ReadFromFile>());
+    global_env->define("write_to_file", std::make_shared<built_in_functions::WriteToFile>());
+    global_env->define("input", std::make_shared<built_in_functions::Input>());
 }
 
 void Interpreter::interpret(const std::vector<StmtPtr>& statements) {
@@ -140,7 +150,7 @@ ObjectPtr Interpreter::visitCallExpr(std::shared_ptr<Expr::Call> expr) {
             expr->line, "Expect arguments size is " + std::to_string(function->arity()) + " But " +
                             std::to_string(arguments.size()) + " argument(s) is(are) given");
     }
-    return function->call(*this, arguments);
+    return function->call(*this, arguments, expr->line);
 }
 
 ObjectPtr Interpreter::visitLiteralExpr(std::shared_ptr<Expr::Literal> expr) {
