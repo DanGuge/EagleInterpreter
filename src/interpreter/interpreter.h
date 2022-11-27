@@ -95,7 +95,6 @@ private:
     EnvironmentPtr global_env;
     EnvironmentPtr current_env;
     std::unordered_map<ExprPtr, int> local_variables;
-    int stack_depth;
 };
 
 }  // namespace eagle

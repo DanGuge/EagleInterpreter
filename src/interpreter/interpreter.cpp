@@ -21,7 +21,7 @@ Interpreter& Interpreter::getInstance() {
 
 Interpreter Interpreter::interpreter{};
 
-Interpreter::Interpreter() : stack_depth(0) {
+Interpreter::Interpreter() {
     global_env = std::make_shared<Environment>(nullptr);
     current_env = global_env;
     local_variables = {};
