@@ -16,7 +16,7 @@ std::vector<StmtPtr> Parser::parse(std::vector<TokenPtr> tokens_) {
 
     while (!isAtEnd()) {
         StmtPtr stmt = declarationOrStatement();
-        if (stmt != nullptr)
+        if (stmt != nullptr && !InstanceOf<Stmt::Empty>(stmt))
             stmts.emplace_back(stmt);
     }
     return std::move(stmts);
@@ -140,7 +140,7 @@ StmtPtr Parser::statement() {
     if (match(LEFT_BRACE))
         return std::make_shared<Stmt::Block>(block());
     if (match(SEMICOLON))
-        return nullptr;
+        return std::make_shared<Stmt::Empty>();
     return expressionStmt();
 }
 

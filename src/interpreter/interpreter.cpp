@@ -512,6 +512,10 @@ ObjectPtr Interpreter::visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) {
     return nullptr;
 }
 
+ObjectPtr Interpreter::visitEmptyStmt(std::shared_ptr<Stmt::Empty> stmt) {
+    return nullptr;
+}
+
 // help functions
 void Interpreter::resolveLocal(const ExprPtr& expr, int distance) {
     local_variables[expr] = distance;

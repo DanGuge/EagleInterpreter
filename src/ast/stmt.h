@@ -25,6 +25,7 @@ public:
     class Break;
     class Continue;
     class Block;
+    class Empty;
 
     class Visitor {
     public:
@@ -40,6 +41,7 @@ public:
         virtual ObjectPtr visitBreakStmt(std::shared_ptr<Break> stmt) = 0;
         virtual ObjectPtr visitContinueStmt(std::shared_ptr<Continue> stmt) = 0;
         virtual ObjectPtr visitBlockStmt(std::shared_ptr<Block> stmt) = 0;
+        virtual ObjectPtr visitEmptyStmt(std::shared_ptr<Empty> stmt) = 0;
     };
 
 public:
@@ -179,6 +181,13 @@ public:
 
 public:
     std::vector<StmtPtr> statements;
+};
+
+class Stmt::Empty : public Stmt, public std::enable_shared_from_this<Empty> {
+public:
+    Empty() = default;
+
+    ObjectPtr accept(eagle::Stmt::Visitor &visitor) override;
 };
 
 }  // namespace eagle

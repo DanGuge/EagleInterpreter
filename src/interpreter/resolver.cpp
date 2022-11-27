@@ -320,6 +320,10 @@ ObjectPtr Resolver::visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) {
     return nullptr;
 }
 
+ObjectPtr Resolver::visitEmptyStmt(std::shared_ptr<Stmt::Empty> stmt) {
+    return nullptr;
+}
+
 // help functions
 void Resolver::resolve(const StmtPtr& stmt) {
     stmt->accept(*this);

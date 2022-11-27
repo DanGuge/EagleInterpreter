@@ -61,6 +61,7 @@ public:
     ObjectPtr visitBreakStmt(std::shared_ptr<Stmt::Break> stmt) override;
     ObjectPtr visitContinueStmt(std::shared_ptr<Stmt::Continue> stmt) override;
     ObjectPtr visitBlockStmt(std::shared_ptr<Stmt::Block> stmt) override;
+    ObjectPtr visitEmptyStmt(std::shared_ptr<Stmt::Empty> stmt) override;
     // help functions
     void resolveLocal(const ExprPtr& expr, int distance);
     void executeBlock(const std::vector<StmtPtr>& statements, const EnvironmentPtr& block_env);

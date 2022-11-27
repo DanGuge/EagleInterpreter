@@ -95,4 +95,8 @@ ObjectPtr Stmt::Block::accept(Visitor &visitor) {
     return visitor.visitBlockStmt(shared_from_this());
 }
 
+ObjectPtr Stmt::Empty::accept(eagle::Stmt::Visitor &visitor) {
+    return visitor.visitEmptyStmt(shared_from_this());
+}
+
 }  // namespace eagle
