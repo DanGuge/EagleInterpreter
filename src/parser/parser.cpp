@@ -278,7 +278,9 @@ StmtPtr Parser::continueStmt() {
 std::vector<StmtPtr> Parser::block() {
     std::vector<StmtPtr> statements{};
     while (!check(RIGHT_BRACE) && !isAtEnd()) {
-        statements.emplace_back(declarationOrStatement());
+        StmtPtr stmt = declarationOrStatement();
+        if (stmt != nullptr)
+            statements.emplace_back(stmt);
     }
     consume(RIGHT_BRACE, "Expect '}' after block statement");
 
