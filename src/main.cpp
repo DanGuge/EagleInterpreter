@@ -48,6 +48,9 @@ std::string getLine(EagleShell& eagle_shell) {
             printf("\n");
         }
     }
+#ifdef _WIN32
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+#endif
     return std::move(input);
 }
 
@@ -94,8 +97,5 @@ int main(int argc, char* argv[]) {
             "1 parameter: Interpret EagleFile\n"
             "\texample: ./EagleInterpreter ./test.eagle");
     }
-#ifdef _WIN32
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-#endif
     return 0;
 }
