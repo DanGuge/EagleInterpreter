@@ -31,12 +31,11 @@ public:
 
 class BuiltInClassCall : public EagleCallable {
 public:
-    BuiltInClassCall(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity,
-                     int line)
-        : instance(std::move(instance)), method(method), method_arity(method_arity), line(line) {}
+    BuiltInClassCall(BuiltInClassPtr instance, BuiltInClassMethod method, int method_arity)
+        : instance(std::move(instance)), method(method), method_arity(method_arity) {}
 
     ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override {
-        return method(instance, arguments, line);
+        return method(instance, arguments, call_line);
     }
 
     int arity() override {
@@ -47,7 +46,6 @@ private:
     BuiltInClassPtr instance;
     BuiltInClassMethod method;
     int method_arity;
-    int line;
 };
 
 }  // namespace eagle

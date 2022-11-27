@@ -84,7 +84,7 @@ private:
 
 class EagleStreamCall : public EagleCallable {
 public:
-    EagleStreamCall(EagleStreamPtr stream, TokenPtr func, int line);
+    EagleStreamCall(EagleStreamPtr stream, TokenPtr func);
 
     ObjectPtr call(std::vector<ObjectPtr>& arguments, int call_line) override;
 
@@ -95,7 +95,6 @@ public:
 private:
     EagleStreamPtr stream;
     TokenPtr func;
-    int line;
 };
 
 }  // namespace eagle

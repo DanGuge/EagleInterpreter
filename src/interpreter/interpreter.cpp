@@ -271,12 +271,12 @@ ObjectPtr Interpreter::visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> e
         BuiltInClassPtr instance = cast<BuiltInClass>(object);
         BuiltInClassMethodInfo method_info = instance->GetMethod(expr->name);
         return std::make_shared<BuiltInClassCall>(std::move(instance), method_info.method,
-                                                  method_info.method_arity, expr->name->line);
+                                                  method_info.method_arity);
     } else if (InstanceOf<EagleStream>(object)) {
         EagleStreamPtr stream = cast<EagleStream>(object);
         EagleStreamPtr new_stream = stream->copy(expr->name->line);
         stream->execute();
-        return std::make_shared<EagleStreamCall>(new_stream, expr->name, expr->name->line);
+        return std::make_shared<EagleStreamCall>(new_stream, expr->name);
     } else {
         throw interpreterRuntimeError(expr->name->line, "Only instances have properties");
     }

@@ -252,16 +252,16 @@ ObjectPtr EagleStream::count(const eagle::ObjectPtr &para, const std::vector<Obj
     return std::make_shared<BigFloat>((int)elements.size());
 }
 
-EagleStreamCall::EagleStreamCall(eagle::EagleStreamPtr stream, eagle::TokenPtr func, int line)
-    : stream(std::move(stream)), func(std::move(func)), line(line) {}
+EagleStreamCall::EagleStreamCall(eagle::EagleStreamPtr stream, eagle::TokenPtr func)
+    : stream(std::move(stream)), func(std::move(func)) {}
 
 ObjectPtr EagleStreamCall::call(std::vector<ObjectPtr> &arguments, int call_line) {
     if (!arguments.empty() && arguments.size() != 1) {
-        throw RuntimeError(line, "The number of parameters of Stream call should be 0 or 1.");
+        throw RuntimeError(call_line, "The number of parameters of Stream call should be 0 or 1.");
     }
     ObjectPtr para = arguments.empty() ? nullptr : arguments[0];
     stream->append(std::pair<TokenPtr, ObjectPtr>{func, para});
-    return stream->run(line);
+    return stream->run(call_line);
 }
 
 }  // namespace eagle
