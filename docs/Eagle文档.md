@@ -197,14 +197,25 @@ RIGHT_BRACE // }
 * list添加/删除元素：push，pop
 * dict添加/删除元素：insert，remove
 * steam--基本类型
-  * 非终结方法：map/filter/limit/sorted，返回值为stream
-    * map：将元素进行映射
-    * filter：通过check的方法，对元素进行过滤
-    * limit：取出前k个元素
-    * sorted：对元素进行排序（需要先实现Comparable）
-  * 终结方法：to_list/to_dict/to_tuple/for_each/count
-    * to_list/to_tuple：将流元素转换为对应的可迭代类型，返回值为list/tuple
-    * to_dict：对二元流元素转换为对应的可迭代类型，返回值为dict
-    * for_each：对每个元素都执行该方法，返回值为void
-    * count：统计流元素个数，返回值为int
+  * [ ] 非终结方法：map/filter/limit/sorted，返回值为stream
+    * [x] one-to-one methods：
+      * [x] filter(func)：使用func方法，对元素进行过滤
+      * [x] map(func)：使用func方法，对元素进行映射
+    * [ ] many-to-many methods：
+      * [ ] sorted(func)：若func不为空，则使用func进行比较，并升序排序元素；否则若流元素均为同一类可比较类型，则按照对元素进行排序（需要先实现Comparable）；其他情况报错
+      * [x] limit(n)：取出前n个元素
+      * [ ] distinct：使用equals方法进行去重判断
+      * [ ] skip(n)：跳过前n个元素
+  * [ ] 终结方法：to_list/to_dict/to_tuple/for_each/count
+    * [x] to_list/to_tuple：将流元素转换为对应的可迭代类型，返回值为list/tuple
+    * [x] to_dict：对二元流元素转换为对应的可迭代类型，返回值为dict
+    * [x] for_each：对每个元素都执行该方法，返回值为void
+    * [x] count：统计流元素个数，返回值为int
+    * [ ] find(func)：返回第一个符合条件的元素，若没有则返回Null
+    * [ ] match(func)：如果存在符合条件的元素，返回true，否则返回false
+    * [ ] inner_call参数为二元运算的终结方法：
+      * [ ] max(func)：若有func且为Callable类型，则使用func进行比较，并返回最大的流元素；否则若流元素均为同一类可比较类型，返回最大的流元素：其他情况均报错
+      * [ ] min(func)：若有func且为Callable类型，则使用func进行比较，并返回最小的流元素；否则若流元素均为同一类可比较类型，返回最小的流元素：其他情况均报错
+      * [ ] reduce(func, initial)：若initial为空，则第一次计算为func(initial, ele[0])，否则第一次计算为func(ele[0], ele[1])，以此类推计算出所有元素并返回
+      * 若仅有一个元素能参与该二元运算，则返回该元素；若没有元素能参与运算，则返回Null
 * 类初始化init函数内置
