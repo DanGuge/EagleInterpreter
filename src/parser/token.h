@@ -22,6 +22,7 @@ enum TokenType {
     MULTI,
     DIV,
     MOD,
+    ASSIGN,
     MINUS_ASSIGN,
     PLUS_ASSIGN,
     MULTI_ASSIGN,
@@ -68,10 +69,8 @@ enum TokenType {
     EXTENDS,
     PRINT,
     RETURN,
-    END,
 
     // Single character
-    ASSIGN,
     COMMA,
     DOT,
     COLON,
@@ -87,6 +86,9 @@ enum TokenType {
 
     // Two characters
     RIGHT_ARROW,
+
+    // Help
+    END,
 };
 
 class Token {
