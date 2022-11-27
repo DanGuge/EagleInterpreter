@@ -52,7 +52,35 @@ std::string EagleList::GetBuiltInClassInfo() {
     return "built-in class list methods:\n"
 
            "size()->Number\n"
-           "\tusage: return the size of list";
+           "\tusage: return the size of list\n"
+
+           "empty()->Boolean\n"
+           "\tusage: return whether list is empty\n"
+
+           "append(element: Object)->Null\n"
+           "\tusage: append element to the end of list\n"
+
+           "clear()->Null\n"
+           "\tusage: clear list\n"
+
+           "contains(element: Object)->Boolean\n"
+           "\tusage: return whether list contains element\n"
+
+           "count(element: Object)->Number\n"
+           "\tusage: return the number of times that element appears in list, return 0 if list "
+           "does not contain element\n"
+
+           "insert(index: Number, element: Object)->Null\n"
+           "\tusage: insert element before index\n"
+
+           "remove(value: Object)->Null\n"
+           "\tusage: remove first occurrence of value, do nothing if list does not contain value\n"
+
+           "pop()->Null\n"
+           "\tusage: remove the last element of list, do nothing if list is empty\n"
+
+           "reverse()->Null\n"
+           "\tusage: reverse list";
 }
 
 std::string EagleList::toString() {

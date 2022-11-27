@@ -96,8 +96,32 @@ std::string EagleStream::toString() {
 std::string EagleStream::GetStreamInfo() {
     return "stream methods:\n"
 
-           "size()->Number\n"
-           "\tusage: return the size of string";
+           "non-final methods:\n"
+           "\tmap(func: Function)\n"
+           "\t\tusage: for each element of stream, return the result of func(element)\n"
+
+           "\tfilter(func: Function)\n"
+           "\t\tusage: return element only if func(element) is true, otherwise drop it\n"
+
+           "\tlimit(n: Number)\n"
+           "\t\tusage: return the first n elements of stream\n"
+
+           "final methods:\n"
+           "\tto_list()->List\n"
+           "\t\tusage: return a list consist of stream's elements\n"
+
+           "\tto_tuple()->Tuple\n"
+           "\t\tusage: return a tuple consist of stream's elements\n"
+
+           "\tto_dict()->Dict\n"
+           "\t\tusage: if each element of stream is a tuple contains 2 sub_elements(key, value), "
+           "return a Dict consist of (key, value) pairs\n"
+
+           "\tfor_each(func: Function)->Null\n"
+           "\t\tusage: for each element of stream, execute func(element)\n"
+
+           "\tcount()->Number\n"
+           "\t\tusage: return the number of stream's elements";
 }
 
 std::vector<std::pair<int, int>> EagleStream::GetProcessSegments() {

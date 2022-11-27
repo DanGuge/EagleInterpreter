@@ -78,7 +78,36 @@ std::string EagleDict::GetBuiltInClassInfo() {
     return "built-in class dict methods:\n"
 
            "size()->Number\n"
-           "\tusage: return the size of dict";
+           "\tusage: return the size of dict\n"
+
+           "clear()->Null\n"
+           "\tusage: clear dict\n"
+
+           "get_value(key: Object)->Object\n"
+           "\tusage: return the value for key if key is in the dict, else Null\n"
+
+           "put(key: Object, new_value: Object)->Null\n"
+           "\tusage: update the value for key to new_value if key is in the dict, else insert "
+           "(key, new_value) in dict\n"
+
+           "contains_key(key: Object)->Boolean\n"
+           "\tusage: return whether key is in dict\n"
+
+           "contains_value(value: Object)->Boolean\n"
+           "\tusage: return whether value has appeared in dict\n"
+
+           "remove(key: Object)->Null\n"
+           "\tusage: remove the (key, value) pair if key is in dict, else do nothing\n"
+
+           "keys()->Tuple\n"
+           "\tusage: return a Tuple object providing a view on keys of dict\n"
+
+           "values()->Tuple\n"
+           "\tusage: return a Tuple object providing a view on values of dict\n"
+
+           "items()->Tuple\n"
+           "\tusage: return a Tuple object providing a view on items of dict, and each item "
+           "is a Tuple object consisting of (key, value) pair";
 }
 
 std::string EagleDict::toString() {

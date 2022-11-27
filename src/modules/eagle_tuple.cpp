@@ -54,7 +54,8 @@ std::string EagleTuple::GetBuiltInClassInfo() {
            "\tusage: return whether tuple is empty\n"
 
            "count(element: Object)->Number\n"
-           "\tusage: if tuple contains the object, then return 1 else return 0\n"
+           "\tusage: return the number of times that element appears in tuple, return 0 if tuple "
+           "does not contain element\n"
 
            "contains(element: Object)->Boolean\n"
            "\tusage: return whether tuple contains the object";
