@@ -85,7 +85,7 @@ enum TokenType {
     LEFT_BRACE,
     RIGHT_BRACE,
 
-    // arrow
+    // Two characters
     RIGHT_ARROW,
 };
 
