@@ -9,6 +9,7 @@
 #include "modules/eagle_class.h"
 #include "modules/eagle_stream.h"
 #include "modules/eagle_string.h"
+#include "pretty_print/pretty_print.h"
 
 namespace eagle::built_in_functions {
 
@@ -138,17 +139,19 @@ int Help::arity() {
 }
 
 ObjectPtr Help::call(std::vector<ObjectPtr>& arguments, int call_line) {
+    std::string info;
     if (InstanceOf<BuiltInClass>(arguments[0])) {
-        return std::make_shared<String>(cast<BuiltInClass>(arguments[0])->GetBuiltInClassInfo());
+        info = cast<BuiltInClass>(arguments[0])->GetBuiltInClassInfo();
     } else if (InstanceOf<EagleStream>(arguments[0])) {
-        return std::make_shared<String>(cast<EagleStream>(arguments[0])->GetStreamInfo());
+        info = cast<EagleStream>(arguments[0])->GetStreamInfo();
     } else if (InstanceOf<BuiltInFunction>(arguments[0])) {
-        return std::make_shared<String>(
-            cast<BuiltInFunction>(arguments[0])->GetBuiltInFunctionInfo());
+        info = cast<BuiltInFunction>(arguments[0])->GetBuiltInFunctionInfo();
     } else {
         throw RuntimeError(call_line, "help() need one argument and can only provide information "
                                       "about built-in class & built-in function & stream");
     }
+    pretty_print::PrettyPrint::print(pretty_print::Front::CYAN, info);
+    return std::make_shared<Null>();
 }
 
 std::string Help::toString() {
@@ -156,8 +159,8 @@ std::string Help::toString() {
 }
 
 std::string Help::GetBuiltInFunctionInfo() {
-    return "function: show the function and usage of built-in class & built-in function && stream\n"
-           "usage: help(input: BuiltInClass/BuiltInFunction/Stream)->String";
+    return "function: print the function and usage of built-in class & built-in function && stream\n"
+           "usage: help(input: BuiltInClass/BuiltInFunction/Stream)->Null";
 }
 
 int Bool::arity() {
@@ -187,7 +190,9 @@ int ClassMethod::arity() {
 
 ObjectPtr ClassMethod::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<EagleClass>(arguments[0])) {
-        return std::make_shared<String>(cast<EagleClass>(arguments[0])->getLocalMethodInfo());
+        pretty_print::PrettyPrint::print(pretty_print::Front::CYAN,
+                                         cast<EagleClass>(arguments[0])->getLocalMethodInfo());
+        return std::make_shared<Null>();
     } else {
         throw RuntimeError(call_line, "class_method() need one 'Class' argument and can only "
                                       "return the methods of user-defined class");
@@ -199,8 +204,8 @@ std::string ClassMethod::toString() {
 }
 
 std::string ClassMethod::GetBuiltInFunctionInfo() {
-    return "function: get user-defined class method info\n"
-           "usage: class_method(input: Class)->String";
+    return "function: print user-defined class method info\n"
+           "usage: class_method(input: Class)->Null";
 }
 
 int Globals::arity() {
@@ -225,7 +230,7 @@ int Id::arity() {
 }
 
 ObjectPtr Id::call(std::vector<ObjectPtr>& arguments, int call_line) {
-    return std::make_shared<String>(std::to_string(reinterpret_cast<size_t>(arguments[0].get())));
+    return std::make_shared<BigFloat>(std::to_string(reinterpret_cast<size_t>(arguments[0].get())));
 }
 
 std::string Id::toString() {
@@ -234,7 +239,7 @@ std::string Id::toString() {
 
 std::string Id::GetBuiltInFunctionInfo() {
     return "function: get the address of object\n"
-           "usage: id()->String";
+           "usage: id(object: Object)->Number";
 }
 
 int Len::arity() {
@@ -257,7 +262,7 @@ std::string Len::toString() {
 
 std::string Len::GetBuiltInFunctionInfo() {
     return "function: get the length of Container or String\n"
-           "usage: len()->Number";
+           "usage: len(object: Container/String)->Number";
 }
 
 }  // namespace eagle::built_in_functions
