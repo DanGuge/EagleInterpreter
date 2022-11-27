@@ -95,6 +95,20 @@ ObjectPtr Resolver::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
     return nullptr;
 }
 
+ObjectPtr Resolver::visitLambdaExpr(std::shared_ptr<Expr::Lambda> expr) {
+    FunctionType enclosing_function_type = current_function_type;
+    current_function_type = FunctionType::FUNCTION;
+    beginScope();
+    for (const auto & param : expr->params) {
+        declareIdentifier(param);
+        defineIdentifier(param);
+    }
+    resolve(expr->body);
+    endScope();
+    current_function_type = enclosing_function_type;
+    return nullptr;
+}
+
 ObjectPtr Resolver::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> expr) {
     resolve(expr->object);
     resolve(expr->value);

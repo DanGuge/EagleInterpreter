@@ -485,7 +485,13 @@ ExprPtr Parser::primary() {
     } else if (match(IDENTIFIER)) {
         return std::make_shared<Expr::Variable>(previous());
     } else if (match(LEFT_PAREN)) {
-        return parsePrimaryParen();
+        ExprPtr expr = parsePrimaryParen();
+        int params_line = previous()->line;
+        if (match(RIGHT_ARROW)) {
+            return lambdaExpr(std::move(expr), params_line);
+        } else {
+            return std::move(expr);
+        }
     } else if (match(LEFT_BRACKET)) {
         TokenPtr type = std::make_shared<Token>(LIST, previous()->line, "", nullptr);
         std::vector<ExprPtr> elements{};
@@ -595,6 +601,37 @@ ExprPtr Parser::switchExpr() {
     return std::make_shared<Expr::Switch>(expr, std::move(case_results), default_result);
 }
 
+/*
+ * have processed "(" parameters ")" "->"
+ * lambda_expression ::= "(" parameters? ")" "->" (expression | block-statement) ;
+ */
+ExprPtr Parser::lambdaExpr(ExprPtr params, int params_line) {
+    std::vector<TokenPtr> lambda_params{};
+    if (InstanceOf<Expr::Sequence>(params)) {
+        auto seq = cast<Expr::Sequence>(params);
+        for (auto& ele : seq->elements) {
+            if (!InstanceOf<Expr::Variable>(ele)) {
+                throw error(params_line, "Expect identifier for lambda parameters.");
+            }
+            lambda_params.emplace_back(cast<Expr::Variable>(ele)->name);
+        }
+    } else if (InstanceOf<Expr::Variable>(params)) {
+        auto var = cast<Expr::Variable>(params);
+        lambda_params.emplace_back(var->name);
+    } else {
+        throw error(params_line, "Expect identifier for lambda parameters.");
+    }
+    StmtPtr body;
+    if (match(LEFT_BRACE)) {
+        body = std::make_shared<Stmt::Block>(block());
+    } else {
+        int line = peek()->line;
+        ExprPtr expr = expression();
+        body = std::make_shared<Stmt::Return>(std::move(expr), line);
+    }
+    return std::make_shared<Expr::Lambda>(std::move(lambda_params), std::move(body));
+}
+
 bool Parser::match(const TokenType& type) {
     if (check(type)) {
         advance();
@@ -667,6 +704,11 @@ void Parser::synchronize() {
 
 Parser::ParserError Parser::error(const TokenPtr& token, const std::string& message) {
     ErrorReporter::getInstance().error(token, message);
+    return {};
+}
+
+Parser::ParserError Parser::error(int line, const std::string& message) {
+    ErrorReporter::getInstance().error(line, message);
     return {};
 }
 

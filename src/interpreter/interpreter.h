@@ -39,6 +39,7 @@ public:
     ObjectPtr visitVariableExpr(std::shared_ptr<Expr::Variable> expr) override;
     ObjectPtr visitStreamExpr(std::shared_ptr<Expr::Stream> expr) override;
     ObjectPtr visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) override;
+    ObjectPtr visitLambdaExpr(std::shared_ptr<Expr::Lambda> expr) override;
     ObjectPtr visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> expr) override;
     ObjectPtr visitInstanceGetExpr(std::shared_ptr<Expr::InstanceGet> expr) override;
     ObjectPtr visitContainerSetExpr(std::shared_ptr<Expr::ContainerSet> expr) override;
@@ -63,6 +64,7 @@ public:
     // help functions
     void resolveLocal(const ExprPtr& expr, int distance);
     void executeBlock(const std::vector<StmtPtr>& statements, const EnvironmentPtr& block_env);
+    void execute(const StmtPtr& statement, const EnvironmentPtr& stmt_env);
 
 private:
     // help functions

@@ -223,6 +223,10 @@ ObjectPtr Interpreter::visitSwitchExpr(std::shared_ptr<Expr::Switch> expr) {
     return value != nullptr ? value : evaluate(expr->default_results);
 }
 
+ObjectPtr Interpreter::visitLambdaExpr(std::shared_ptr<Expr::Lambda> expr) {
+    return std::make_shared<EagleLambda>(expr, current_env);
+}
+
 ObjectPtr Interpreter::visitInstanceSetExpr(std::shared_ptr<Expr::InstanceSet> expr) {
     ObjectPtr object = evaluate(expr->object);
     if (!InstanceOf<EagleInstance>(object)) {
@@ -519,6 +523,11 @@ void Interpreter::executeBlock(const std::vector<StmtPtr>& statements,
     for (const auto& stmt : statements) {
         execute(stmt);
     }
+}
+
+void Interpreter::execute(const StmtPtr& statement, const EnvironmentPtr& stmt_env) {
+    ScopedEnvironment scoped{current_env, stmt_env};
+    execute(statement);
 }
 
 ObjectPtr Interpreter::evaluate(const ExprPtr& expr) {

@@ -55,6 +55,7 @@ private:
     ExprPtr parsePrimaryParen();
     ExprPtr streamExpr();
     ExprPtr switchExpr();
+    ExprPtr lambdaExpr(ExprPtr params, int params_line);
     // help function
     bool match(const TokenType& type);
     bool match(const std::vector<TokenType>& types);
@@ -67,6 +68,7 @@ private:
     void synchronize();
     // error handling
     static ParserError error(const TokenPtr& token, const std::string& message);
+    static ParserError error(int line, const std::string& message);
 
 private:
     std::vector<StmtPtr> stmts;

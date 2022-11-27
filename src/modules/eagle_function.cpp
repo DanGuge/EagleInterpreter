@@ -45,4 +45,27 @@ std::string EagleFunction::toString() {
     return "<function " + declaration->name->text + ">";
 }
 
+EagleLambda::EagleLambda(std::shared_ptr<Expr::Lambda> declaration, EnvironmentPtr closure)
+    : declaration(std::move(declaration)), closure(std::move(closure)) {}
+
+int EagleLambda::arity() {
+    return (int)declaration->params.size();
+}
+
+ObjectPtr EagleLambda::call(std::vector<ObjectPtr>& arguments, int call_line) {
+    EnvironmentPtr lambda_env = std::make_shared<Environment>(closure);
+    for (int i = 0; i < this->arity(); i++) {
+        lambda_env->define(declaration->params[i]->text, arguments[i]);
+    }
+
+    try {
+        Interpreter::getInstance().execute(declaration->body, lambda_env);
+    } catch (EagleReturn& eagle_return) { return eagle_return.return_value; }
+    return std::make_shared<Null>();
+}
+
+std::string EagleLambda::toString() {
+    return "<lambda at " + std::to_string(reinterpret_cast<size_t>(this)) + ">";
+}
+
 }  // namespace eagle

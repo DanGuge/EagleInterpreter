@@ -70,7 +70,7 @@ call ::= primary ("." identifier | ("[" expression "]")+ | "(" arguments? ")")* 
 primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
 						number | string | identifier | "(" expression ")" |
 						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
-						stream_expression | switch_expression ;
+						stream_expression | switch_expression | lambda_expression ;
 
 list_elements ::= expression ("," expression)* ;
 dict_elements ::= expression ":" expression ("," expression ":" expression)* ;
@@ -80,6 +80,7 @@ stream_expression ::= "stream" "(" expression ")" ("." identifier "(" call? ")")
 switch_expression ::= "switch" "(" expression ")" "{"
 											("case" expression ":" expression ",")*
 											"default" ":" expression "}" ;
+lambda_expression ::= "(" parameters? ")" "->" (expression | block-statement) ;
 
 arguments ::= expression ("," expression) ;
 

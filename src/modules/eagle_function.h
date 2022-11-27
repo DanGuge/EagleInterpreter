@@ -27,4 +27,18 @@ private:
     EnvironmentPtr closure;
     bool is_init;
 };
+
+class EagleLambda : public EagleCallable {
+public:
+    EagleLambda(std::shared_ptr<Expr::Lambda> declaration, EnvironmentPtr closure);
+
+    int arity() override;
+    ObjectPtr call(std::vector<ObjectPtr> &arguments, int call_line) override;
+
+    std::string toString() override;
+
+private:
+    std::shared_ptr<Expr::Lambda> declaration;
+    EnvironmentPtr closure;
+};
 }  // namespace eagle

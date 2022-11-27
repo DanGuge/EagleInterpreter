@@ -14,6 +14,8 @@ namespace eagle {
 
 class Expr;
 using ExprPtr = std::shared_ptr<Expr>;
+class Stmt;
+using StmtPtr = std::shared_ptr<Stmt>;
 
 class Expr : public Object {
 public:
@@ -27,6 +29,7 @@ public:
     class Variable;
     class Stream;
     class Switch;
+    class Lambda;
     class InstanceSet;
     class InstanceGet;
     class ContainerSet;
@@ -48,6 +51,7 @@ public:
         virtual ObjectPtr visitVariableExpr(std::shared_ptr<Variable> expr) = 0;
         virtual ObjectPtr visitStreamExpr(std::shared_ptr<Stream> expr) = 0;
         virtual ObjectPtr visitSwitchExpr(std::shared_ptr<Switch> expr) = 0;
+        virtual ObjectPtr visitLambdaExpr(std::shared_ptr<Lambda> expr) = 0;
         virtual ObjectPtr visitInstanceSetExpr(std::shared_ptr<InstanceSet> expr) = 0;
         virtual ObjectPtr visitInstanceGetExpr(std::shared_ptr<InstanceGet> expr) = 0;
         virtual ObjectPtr visitContainerSetExpr(std::shared_ptr<ContainerSet> expr) = 0;
@@ -175,6 +179,17 @@ public:
     ExprPtr expr;
     std::vector<std::pair<ExprPtr, ExprPtr>> case_results;
     ExprPtr default_results;
+};
+
+class Expr::Lambda : public Expr, public std::enable_shared_from_this<Lambda> {
+public:
+    Lambda(std::vector<TokenPtr> params, StmtPtr body);
+
+    ObjectPtr accept(Visitor &visitor) override;
+
+public:
+    std::vector<TokenPtr> params;
+    StmtPtr body;
 };
 
 class Expr::InstanceSet : public Expr, public std::enable_shared_from_this<InstanceSet> {

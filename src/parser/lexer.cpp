@@ -50,7 +50,7 @@ void Lexer::scanToken() {
         case '{': addToken(LEFT_BRACE); break;
         case '}': addToken(RIGHT_BRACE); break;
         case '+': addToken(match('=') ? PLUS_ASSIGN : PLUS); break;
-        case '-': addToken(match('=') ? MINUS_ASSIGN : MINUS); break;
+        case '-': addToken(match('=') ? MINUS_ASSIGN : match('>') ? RIGHT_ARROW : MINUS); break;
         case '*': addToken(match('=') ? MULTI_ASSIGN : MULTI); break;
         case '/':
             if (match('/')) {

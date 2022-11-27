@@ -84,6 +84,9 @@ enum TokenType {
     RIGHT_BRACKET,
     LEFT_BRACE,
     RIGHT_BRACE,
+
+    // arrow
+    RIGHT_ARROW,
 };
 
 class Token {

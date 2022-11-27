@@ -4,6 +4,8 @@
 
 #include "expr.h"
 
+#include "stmt.h"
+
 namespace eagle {
 
 Expr::Assign::Assign(TokenPtr name, TokenPtr op, ExprPtr value)
@@ -76,6 +78,13 @@ Expr::Switch::Switch(ExprPtr expr, std::vector<std::pair<ExprPtr, ExprPtr>> case
 
 ObjectPtr Expr::Switch::accept(Visitor &visitor) {
     return visitor.visitSwitchExpr(shared_from_this());
+}
+
+Expr::Lambda::Lambda(std::vector<TokenPtr> params, StmtPtr body)
+    : params(std::move(params)), body(std::move(body)) {}
+
+ObjectPtr Expr::Lambda::accept(Visitor &visitor) {
+    return visitor.visitLambdaExpr(shared_from_this());
 }
 
 Expr::InstanceSet::InstanceSet(ExprPtr object, TokenPtr name, TokenPtr op, ExprPtr value)

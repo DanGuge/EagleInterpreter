@@ -30,6 +30,7 @@ Literal 		: Object value
 Variable 		: Token name
 Stream 			: Expr expr, List<Pair<Token, Expr>> operations
 Switch 			: Expr expr, List<Pair<Expr, Expr>> case_results, Expr default_result
+Lambda			: List<Token> params, Stmt body
 InstanceSet 	: Expr object, Token name, Token operator, Expr value
 InstanceGet 	: Expr object, Token name
 ContainerSet 	: Expr container, Expr subscript, Token operator, Expr value
