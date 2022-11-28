@@ -25,7 +25,7 @@
 
 ### 2.2 TokenType设计
 
-在Eagle，TokenType主要可以分为5大类，分别是算术运算符，关系运算符，类型标识符，关键字和基本符号，另外还有一个辅助标识符，用于Parser语法解析时辅助使用。
+在Eagle，TokenType主要可以分为5大类，分别是算术运算符，关系运算符，字面量标识符，关键字和基本符号，另外还有一个辅助标识符，用于Parser语法解析时辅助使用。
 
 TokenType的作用是区分Lexer词法解析的分析结果，在Parser中通过不同的TokenType来进行语法解析。
 
@@ -58,7 +58,7 @@ TokenType的作用是区分Lexer词法解析的分析结果，在Parser中通过
 | >      | GREATER       | 检查左操作数是否大于右操作数     |
 | >=     | GREATER_EQUAL | 检查左操作数是否大于等于右操作数 |
 
-#### 2.2.3 类型标识符
+#### 2.2.3 字面量标识符
 
 | TokenType  | 说明                         |
 | ---------- | ---------------------------- |
@@ -71,9 +71,9 @@ TokenType的作用是区分Lexer词法解析的分析结果，在Parser中通过
 | DICT       | 字典，如 {1: 2, true: "abc"} |
 | TUPLE      | 元组，如 (a, function, 1)    |
 
-* 类型标识符
-  * IDENTIFIER，NUMBER，STRING，BOOLEAN可以在Lexer词法解析时直接解析出来
-  * LIST，DICT，TUPLE在Parser语法解析时用于区分的容器类内置类型
+* 字面量标识符，部分字面量标识符可以在Lexer词法解析时直接解析出来，部分字面量标识符需要在Parser语法解析时通过分析嵌套表达式来解析
+  * Lexer直接解析：IDENTIFIER，NUMBER，STRING，BOOLEAN
+  * Parser嵌套解析：LIST，DICT，TUPLE
 
 #### 2.2.4 关键字
 
