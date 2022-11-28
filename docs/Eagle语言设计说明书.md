@@ -156,8 +156,9 @@ program ::= (declaration|statement)* ;
 
 #### 3.1.2 Statement EBNF设计
 
+* 声明
+
 ```cpp
-// Declaration
 declaration :: = class-declaration |
 								 function-declaration |
 								 variable-declaration ;
@@ -169,8 +170,11 @@ function-declaration ::= "def" identifier "(" parameters? ")" block-statement ;
 parameters ::= identifier ("," identifier)* ;
 
 variable-declaration ::= "var" identifier ("=" expression)? ";" ;
+```
 
-// Statement
+* 语句
+
+```cpp
 statement ::= if-statement |
 							for-statement |
 							while-statement |
@@ -179,7 +183,8 @@ statement ::= if-statement |
 							return-statement |
 							break-statement |
 							continue-statement |
-							block-statement ;
+							block-statement |
+              empty-statement;
 
 if-statement ::= "if" "(" condition ")" statement
 								 ("else" statement)? ;
@@ -204,6 +209,8 @@ break-statement ::= "break" ";" ;
 continue-statement ::= "continue" ";" ;
 
 block-statement ::= "{" (declaration|statement)* "}" ;
+
+empty-statement ::= ";" ;
 ```
 
 #### 3.1.3 Expression EBNF设计
