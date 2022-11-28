@@ -1,6 +1,6 @@
 # Eagle语言设计说明书
 
-> 预计30-40页
+吴晨灿 王艺坤
 
 ## 1. 语言的背景和目标
 
@@ -276,11 +276,95 @@ alpha ::= "a"..."z"|"A"..."Z"|"_" ;
 
 ### 3.2 AST抽象语法树设计
 
-#### 3.2.1 Statement AST节点设计
+抽象语法树（AST）是通过Parser语法解析，将Lexer词法解析的结果构造为Eagle对应的语言成分，在Eagle中主要分为Expression和Statement两类
 
+在Eagle的AST抽象语法树中，入口为Program，是一个List\<Statement\>，里面包含多个Statement AST节点。在Expression AST节点和Statement AST节点中，它们的节点组成主要为Token，Expression，Statement，
 
+#### 3.2.1 Expression AST节点设计
 
-#### 3.2.2 Expression AST节点设计
+```cpp
+Assign 				: Token name, Token operator, Expr value
+Ternary 			: Expr condition, Expr then_expr, Expr else_expr
+Compare 			: Expr first, List<Pair<Token, Expr>> others
+Binary 				: Expr left, Token operator, Expr right
+Unary 				: Token operator, Expr expr
+Call 					: Expr callee, List<Expr> arguments, int line
+Literal 			: Object value
+Variable 			: Token name
+Stream 				: Expr expr, List<Pair<Token, Expr>> operations
+Switch 				: Expr expr, List<Pair<Expr, Expr>> case_results, Expr default_result
+Lambda				: List<Token> params, Stmt body
+InstanceSet 	: Expr object, Token name, Token operator, Expr value
+InstanceGet 	: Expr object, Token name
+ContainerSet	: Expr container, Expr subscript, Token operator, Expr value
+ContainerGet	: Expr container, Expr subscript
+This 					: Token keyword
+Super 				: Token keyword, Token method
+Sequence 			: Token type, List<Expr> elements
+Associative 	: Token type, List<Pair<Expr, Expr>> elements
+```
+
+#### 3.2.2 Statement AST节点设计
+
+```cpp
+Class 			: Token name, Variable super_class, List<Var> members, List<Function> methods
+Function 		: Token name, List<Token> params, List<Stmt> body
+Var 				: Token name, Expr initializer
+If 					: Expr condition, Stmt then_branch, Stmt else_branch
+While 			: Expr condition, Stmt body
+For       	: Stmt initializer, Expr condition, Stmt increment, Stmt body 
+Expression	: Expr expression
+Print 			: Expr print_value
+Return 			: Expr return_value, int line
+Break 			: Token keyword
+Continue 		: Token keyword
+Block 			: List<Stmt> statements
+Empty     	:
+```
+
+#### 3.2.3 Eagle AST样例说明
+
+##### InstanceSet AST样例说明
+
+```java
+class A {
+  var b = 1;
+}
+A().b += 2;
+```
+
+<img src="./imgs/InstanceSet.png" alt="InstanceSet" style="zoom:18%;" />
+
+##### ContainerSet AST样例说明
+
+```java
+var b = {1: 2, 3: 4};
+b[3] = "4";
+```
+
+<img src="./imgs/ContainerSet.png" alt="ContainerSet" style="zoom:18%;" />
+
+##### Function AST样例说明
+
+```cpp
+def func(a, b) {
+  var c = a;
+  return c + b;
+}
+var b = func(1, 2);
+```
+
+<img src="./imgs/Function.png" alt="Function" style="zoom:18%;" />
+
+##### For AST样例说明
+
+```java
+for (var a = 1; a < 10; a += 1) {
+  print a;
+}
+```
+
+<img src="./imgs/For.png" alt="For" style="zoom:18%;" />
 
 
 
@@ -293,17 +377,21 @@ alpha ::= "a"..."z"|"A"..."Z"|"_" ;
 
 ## 5. 对标语言差异
 
+
+
 ## 6. 实现细节
 
 1. Object
 2. 内置类
 2. 内置方法
 3. 类与实例
+3. Return, Break, Continue实现
 4. 方法 / lambda
 5. Visitor模式
-6. shell
+6. EagleShell
 7. pretty_print
 8. 支持用户自定义toString, equals, hashcode, isTruthy
+8. 多平台适配
 
 ## 7. 验证与测试
 
