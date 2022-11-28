@@ -27,7 +27,8 @@ statement ::= if-statement |
 							return-statement |
 							break-statement |
 							continue-statement |
-							block-statement ;
+							block-statement  |
+                            empty-statement ;
 
 if-statement ::= "if" "(" condition ")" statement
 								 ("else" statement)? ;
@@ -52,6 +53,8 @@ break-statement ::= "break" ";" ;
 continue-statement ::= "continue" ";" ;
 
 block-statement ::= "{" (declaration|statement)* "}" ;
+
+empty-statement ::= ";" ;
 
 // 表达式
 expression ::= assignment_expression ;
