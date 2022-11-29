@@ -370,10 +370,95 @@ for (var a = 1; a < 10; a += 1) {
 
 ## 4. 语义说明
 
-1. 存储域
-2. 环境域
-3. 语义域
-4. 指称语义
+### 4.1 存储域
+
+Storage是Eagle的存储域，描述的是程序运行时的堆内存的使用。Address用于描述存储域中存储数据的位置，使用Address和辅助函数storage_get可以查询存储域中的值，使用allocate，storage_set等辅助函数可以修改存储域中的值，并获得改变后的存储域。
+
+* 存储域
+
+```
+Storage = Address → (value + undefined + unused)
+```
+
+* 语义函数
+
+```
+empty_storage: Storage
+storage_get: Storage × Address → value
+allocate: Storage → Storage × Address
+storage_set: Storage × Address × value → Storage
+```
+
+* 语义方程
+
+```
+empty_storage = λAddress.unused
+storage_get(sto, addr) = let stored_value (value) = value
+												 let stored_value (undefined) = fail
+												 let stored_value (unused) = fail
+												 in stored_value sto(addr)
+allocate(sto) = let addr = any_unused_location(sto) in (sto[addr → undefined], addr)
+storage_set(sto, addr, val) = sto[addr → val]
+```
+
+### 4.2 环境域
+
+Environment是Eagle的环境域，包含了当前作用域的变量绑定。Eagle中，Environment之间存在嵌套关系，以实现层级作用域。Environment中提供env_identifier_set和env_identifier_get方法用于设置和获取环境域中标识符对应对象。
+
+* 环境域
+
+```
+Environment = (parent: Optional Environment, local_identifiers: map<identifier, object>)
+```
+
+* 语义函数
+
+```
+new_environment: (cur_environment, local_identifiers)
+env_identifier_set: identifier × Environment → Environment
+env_identifier_get: Environment × identifier → object
+```
+
+* 语义方程
+
+```
+new_environment(cur_environment, local_identifiers) = let environment = (cur_environment, local_identifiers)
+env_identifier_set(cur_environment, identifier, object) = cur_environment.local_identifiers.put(identifier, object)
+env_identifier_get(cur_environment, identifier) = let object = 
+										 						 									if cur_environment.local_identifiers.contains(identifier)
+								 										 						  then cur_environment.local_identifiers.get(identifier)
+										 						 									else if cur_environment.parent
+										 						 									then env_identifier_get(cur_environment.parent, identifier)
+										 						 									else ⊥
+```
+
+### 4.3 赋值表达式
+
+
+
+### 4.4 算术表达式
+
+
+
+### 4.5 控制流
+
+
+
+### 4.6 函数
+
+
+
+### 4.7 类与继承
+
+
+
+### 4.8 switch-case表达式
+
+
+
+### 4.9 流
+
+
 
 ## 5. 对标语言差异
 
