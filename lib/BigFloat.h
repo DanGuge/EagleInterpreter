@@ -188,12 +188,12 @@ public:
     std::string Exp() const;
 
     // object methods
-    virtual std::string toString();
+    std::string toString() override;
 
-    virtual bool equals(ObjectPtr other);
+    bool equals(ObjectPtr other) override;
 
-    virtual size_t hashcode();
+    size_t hashcode() override;
 
-    virtual bool isTruthy();
+    bool isTruthy() override;
 };
 }  // namespace eagle
