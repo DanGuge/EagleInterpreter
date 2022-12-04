@@ -832,18 +832,116 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 
 1. `toString`
 	+ 含义：返回该Eagle值的字符串表示形式
-	+ Object类行为：返回`"<object at address>"`，其中address为该值的内存地址
-2. `equals`
-	+ 含义：返回该Eagle值是否与另一个Eagle值相等
+	+ Object类行为：返回字符串`"<object at address>"`，其中address为该值的内存地址
+2. `equals(Object obj)`
+	+ 含义：返回该Eagle值是否与另一个Eagle值`obj`相等
 	+ Object类行为：返回自身的内存地址是否与另一个Eagle值的内存地址相等
 3. `hashcode`
-	+ 含义：返回该Eagle值
+	+ 含义：返回该Eagle值的hash值
 	+ Object类行为：返回该值的内存地址
 4. `isTruthy`
 	+ 含义：返回该Eagle值作为布尔值进行判断时，是否为真
 	+ Object类行为：返回true
 
-### 6.3 内置类
+### 6.3 内置类型
+
+#### 6.3.1 Null
+
+Null为Eagle中的空值，当用户显式地将某个变量赋值为`nil`时，该变量的值为Null；或当某个函数没有通过return语句返回时，该函数的返回值为Null.
+
+Null不具有任何成员变量，仅重写了父类Object的四个方法：
+
+1. `toString`：返回字符串`"Nil"`
+2. `equals(Object obj)`：所有Null类型的值均相等，因此该方法返回`obj`的类型是否为Null
+3. `hashcode`：返回0
+4. `isTruthy`：返回false
+
+#### 6.3.2 Boolean
+
+Boolean为Eagle中的布尔值，当用户将某个变量显式地赋值为`true`，`false`，或赋值为某个逻辑表达式的结果时，该变量的值类型为Boolean
+
+Boolean具有类型为bool的成员变量value，表示该Boolean值的真假，并重写了父类Object的四个方法：
+
+1. `toString`：若value为真，则返回字符串`"true"`，否则返回字符串`"false"`
+2. `equals(Object obj)`：仅当`obj`的类型也为Boolean，且二者的value值相等时，返回true，否则返回false
+3. `hashcode`：返回value的hash值（使用c++内置的hash函数）
+4. `isTruthy`：返回value
+
+#### 6.3.3 Number
+
+Number为Eagle中的数值，包括高精度整数和高精度浮点数，并支持任意精度的结果精确的数值基本运算（加减乘除模）
+
+Number的实现基于开源的[BigFloat](https://github.com/Mariotti94/BigFloat)，其包含以下成员变量：
+
++ sign：表示Number的符号
++ number：类型为`deque<char>`，倒序存储了Number的十进制表示的每一位的数字
++ decimals：类型为`int`，表示Number小数点的位置
+
+Number实现了数值基本运算方法、比较方法、与int、double、string类型的相互转换方法等，并重写了父类Object的四个方法：
+
+1. `toString`：返回数值的字符串表示形式，如-1.23返回`"-1.23"`
+2. `equals(Object obj)`：若`obj`也为Number类型，则从最高位逐位进行比较，否则返回false
+3. `hashcode`：返回数值的字符串表示的hash值（使用c++内置的hash函数）
+4. `isTruthy`：若数值不为0，则返回true，否则返回false
+
+#### 6.3.4 Callable
+
+Callable为Eagle中的可调用类型，包括EagleClass, EagleFunction, Lambda等，这些对象具有相同的公共行为，即通过`()`运算符、传入参数并进行函数调用。可将该行为抽象为如下的抽象方法：
+
+```c++
+Object call(vector<Object> arguments)
+```
+
+所有Callable的子类均需要实现该方法。
+
+该类型与AST中Call节点的处理紧密相关，具体而言，需要判断Call节点的callee进行evaluate后的结果，是否为Callable类型。若否，则表示该callee不可被调用，此时需要报错；若是，则调用该Callable类型的call方法即可。
+
+#### 6.3.5 BuiltInClass
+
+BuiltInClass表示Eagle中具有内置方法的类型，包含String，Container等。这些类型的值具有相同的抽象行为，即可以通过形如`instance.method(params)`对内置方法进行调用，例如：
+
++ 若`s`为字符串类型，则可以通过`s.size()`获得`s`的长度；
++ 若`l`为列表类型，v为任意Eagle值类型，则可以通过`l.append(v)`将`v`添加到`l`的末端
+
+对于上述行为的解释执行，实现为一个callback过程，具体而言，分为两个阶段：
+
+1. 处理InstanceGet节点：通过`method`的名称，获取对应的内置方法的函数指针`method_f`，将其与该Eagle值的指针`instance`存储到`BuiltInClassCall`对象中并返回给上层节点，其中：
+	+ `method_f`为静态函数指针类型，其返回值类型为Object，第一个参数类型为BuiltInClass，代表需要执行内置方法的Eagle值；第二个参数类型为`vector<Object>`，即上层Call节点中的参数；
+	+ `BuiltInClassCall`是一个`Callable`类型；
+2. 处理Call节点：调用上一步获得的`BuiltInClassCall`对象的`call`方法，通过调用`method_f(instance, params)`来执行对应的内置方法，其中`params`为Call节点中的参数，类型为`vector<Object>`。
+
+分析上述执行过程，可以发现BuiltInClass的抽象行为为，通过方法名获取对应的内置方法的函数指针，将该抽象行为定义为抽象方法`GetMethod(string name)`，其子类需要实现该方法。
+
+#### 6.3.6 Container
+
+Container表示Eagle中的容器，包含List, Tuple和Dict，是Eagle中的一类BuiltInClass。
+
+Eagle中，Container的抽象行为包括：
+
+1. `Object get(Object subscript)`：使用`[]`运算符，通过下标获取容器值；
+2. `void set(Object subscript, Object value)`：使用`[]`运算符，通过下标设置容器值；
+3. `Number size()`：获取容器大小；
+4. `vector<Object> iterator()`：获取容器的迭代元素序列，从而对容器进行迭代
+
+下面介绍List, Tuple, Dict三种容器的行为、实现以及具有的内置方法。
+
+##### List
+
+
+
+##### Tuple
+
+
+
+##### Dict
+
+
+
+#### 6.3.7 String
+
+
+
+#### 6.3.8 Stream
 
 
 
@@ -867,7 +965,7 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 
 
 
-### 6.9 用户自定义类
+### 6.9 函数调用栈的层数控制
 
 
 
