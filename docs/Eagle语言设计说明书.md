@@ -466,7 +466,7 @@ container_get(container, env, index) =
 
 ### 4.4 表达式
 
-使用Expression来表示表达式域，表达式主要可以分为赋值表达式，算术表达式，关系表达式和逻辑表达式。
+使用Expression来表示表达式域，表达式主要可以分为取值表达式，赋值表达式，算术表达式，关系表达式和逻辑表达式。
 
 * 语义函数
 
@@ -483,10 +483,10 @@ instance_set: Identifier × Bindable × Identifier × Value → Environ
 container_set: Environ × Identifier × Expression × Value → Environ
 // 算术表达式
 plus: Value × Value → Value
-minus: Value × Value → Value
-multi: Value × Value → Value
-div: Value × Value → Value
-mod: Value × Value → Value
+minus: Number × Number → Number
+multi: Number × Number → Number
+div: Number × Number → Number
+mod: Number × Number → Number
 // 关系表达式
 equal: Value × Value → Boolean
 not_equal: Value × Value → Boolean
@@ -512,7 +512,10 @@ container_set(container, env, index, sto, value) =
 	let container_var = container_get(container, env, index) in
 	update_variable(sto, container_var, value)
 // 算术表达式
-plus(left, right) = left + right
+plus(left, right) = let plus_value (Number left, Number right) = left + right
+						plus_value (String left, String right) = left + right // 字符串拼接
+						plus_value (Value left, Value right) = fail
+						in plus_value (left, right)
 minus(left, right) = left - right
 multi(left, righ) = left * right
 divide(left, right) = left / right
@@ -527,21 +530,33 @@ not_equal(left, right) =
 	then true
 	else false
 less(left, right) =
-	if left < right
-	then true
-	else false
+	let less_value (Number left, Number right) = 
+			if left < right then true else false
+		less_value (String left, String right) = 
+			if left < right then true else false // 比较字符串字典序
+		less_value (Value left, Value right) = fail
+		in less_value (left, right)
 less_equal(left, right) =
-	if left <= right
-	then true
-	else false
+	let less_equal_value (Number left, Number right) = 
+			if left <= right then true else false
+		less_equal_value (String left, String right) = 
+			if left <= right then true else false // 比较字符串字典序
+		less_equal_value (Value left, Value right) = fail
+		in less_equal_value (left, right)
 greater(left, right) =
-	if left > right
-	then true
-	else false
+	let greater_value (Number left, Number right) = 
+			if left > right then true else false
+		greater_value (String left, String right) = 
+			if left > right then true else false // 比较字符串字典序
+		greater_value (Value left, Value right) = fail
+		in greater_value (left, right)
 greater_equal(left, right) =
-	if left >= right
-	then true
-	else false
+	let greater_equal_value (Number left, Number right) = 
+			if left >= right then true else false
+		greater_equal_value (String left, String right) = 
+			if left >= right then true else false // 比较字符串字典序
+		greater_equal_value (Value left, Value right) = fail
+		in greater_value (left, right)
 // 逻辑表达式
 not(value) = !value
 and(left, right) =
@@ -557,6 +572,12 @@ or(left, right) =
 * 语义方程
 
 ```
+// 取值表达式
+evaluate [I.member] env sto =
+	intance_get(I, env, member)
+evaluate [I[E]] env sto = 
+	let index = evaluate E env sto in
+	container_get(I, env, index)
 // 赋值表达式
 evaluate [I = E] env sto =
 	let val = evaluate E env sto in
