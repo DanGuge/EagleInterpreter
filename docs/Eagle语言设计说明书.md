@@ -160,11 +160,11 @@ program ::= (declaration|statement)* ;
 
 ```cpp
 declaration :: = class-declaration |
-								 function-declaration |
-								 variable-declaration ;
+				 function-declaration |
+				 variable-declaration ;
 
 class-declaration ::= "class" identifier ("extends" identifier)?
-											"{" (variable-declaration|function-declaration)* "}" ;
+					  "{" (variable-declaration|function-declaration)* "}" ;
 
 function-declaration ::= "def" identifier "(" parameters? ")" block-statement ;
 parameters ::= identifier ("," identifier)* ;
@@ -176,25 +176,25 @@ variable-declaration ::= "var" identifier ("=" expression)? ";" ;
 
 ```cpp
 statement ::= if-statement |
-							for-statement |
-							while-statement |
-							expression-statement |
-							print-statement |
-							return-statement |
-							break-statement |
-							continue-statement |
-							block-statement |
-              empty-statement;
+			  for-statement |
+              while-statement |
+              expression-statement |
+			  print-statement |
+			  return-statement |
+			  break-statement |
+			  continue-statement |
+			  block-statement |
+			  empty-statement;
 
 if-statement ::= "if" "(" condition ")" statement
-								 ("else" statement)? ;
+				 ("else" statement)? ;
 
 for-statement ::= "for" "(" 
-									(variable-declaration | expression-statement | ";")?
-									expression? ";"
-									expression? 
-									")"
-								  statement ;
+				  (variable-declaration | expression-statement | ";")?
+				  expression? ";"
+				  expression? 
+				  ")"
+				  statement ;
 
 while-statement ::= "while" "(" expression ")" statement ;
 
@@ -220,7 +220,7 @@ empty-statement ::= ";" ;
 expression ::= assignment_expression ;
 
 assignment_expression ::= call ("="|"+" "="|"-" "="|"*" "="|"/" "="|"%" "=") 		
-  												assignment_expression | ternary_if_else ;
+						  assignment_expression | ternary_if_else ;
 
 ternary_if_else ::= logic_or ("?" ternary_if_else ":" ternary_if_else)? ;
 
@@ -239,9 +239,9 @@ unary ::= ("!"|"-"|"not") unary | call ;
 call ::= primary ("." identifier | ("[" expression "]")+ | "(" arguments? ")")* ;
 
 primary ::= "true" | "false" | "nil" | "this" | "super" "." identifier |
-						number | string | identifier | "(" expression ")" |
-						"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
-						stream_expression | switch_expression | lambda_expression ;
+			number | string | identifier | "(" expression ")" |
+			"[" list_elements? "]" | "{" dict_elements? "}" | "(" tuple_elements? ")" |
+			stream_expression | switch_expression | lambda_expression ;
 ```
 
 #### 3.1.4 基本单元 EBNF设计
@@ -256,8 +256,8 @@ tuple_elements ::= (expression ",")? | expression ("," expression)+ ;
 stream_expression ::= "stream" "(" expression ")" ("." identifier "(" call? ")")* ;
 
 switch_expression ::= "switch" "(" expression ")" "{"
-											("case" expression ":" expression ",")*
-											"default" ":" expression "}" ;
+					  ("case" expression ":" expression ",")*
+					  "default" ":" expression "}" ;
 
 lambda_expression ::= "(" parameters? ")" "->" (expression | block-statement) ;
 
@@ -288,37 +288,37 @@ Ternary 			: Expr condition, Expr then_expr, Expr else_expr
 Compare 			: Expr first, List<Pair<Token, Expr>> others
 Binary 				: Expr left, Token operator, Expr right
 Unary 				: Token operator, Expr expr
-Call 					: Expr callee, List<Expr> arguments, int line
+Call 				: Expr callee, List<Expr> arguments, int line
 Literal 			: Object value
 Variable 			: Token name
 Stream 				: Expr expr, List<Pair<Token, Expr>> operations
 Switch 				: Expr expr, List<Pair<Expr, Expr>> case_results, Expr default_result
 Lambda				: List<Token> params, Stmt body
-InstanceSet 	: Expr object, Token name, Token operator, Expr value
-InstanceGet 	: Expr object, Token name
-ContainerSet	: Expr container, Expr subscript, Token operator, Expr value
-ContainerGet	: Expr container, Expr subscript
-This 					: Token keyword
+InstanceSet 		: Expr object, Token name, Token operator, Expr value
+InstanceGet 		: Expr object, Token name
+ContainerSet		: Expr container, Expr subscript, Token operator, Expr value
+ContainerGet		: Expr container, Expr subscript
+This 				: Token keyword
 Super 				: Token keyword, Token method
 Sequence 			: Token type, List<Expr> elements
-Associative 	: Token type, List<Pair<Expr, Expr>> elements
+Associative 		: Token type, List<Pair<Expr, Expr>> elements
 ```
 
 #### 3.2.2 Statement AST节点设计
 
 ```cpp
-Class 			: Token name, Variable super_class, List<Var> members, List<Function> methods
-Function 		: Token name, List<Token> params, List<Stmt> body
-Var 				: Token name, Expr initializer
-If 					: Expr condition, Stmt then_branch, Stmt else_branch
-While 			: Expr condition, Stmt body
+Class 		: Token name, Variable super_class, List<Var> members, List<Function> methods
+Function 	: Token name, List<Token> params, List<Stmt> body
+Var 		: Token name, Expr initializer
+If 			: Expr condition, Stmt then_branch, Stmt else_branch
+While 		: Expr condition, Stmt body
 For       	: Stmt initializer, Expr condition, Stmt increment, Stmt body 
 Expression	: Expr expression
-Print 			: Expr print_value
-Return 			: Expr return_value, int line
-Break 			: Token keyword
-Continue 		: Token keyword
-Block 			: List<Stmt> statements
+Print 		: Expr print_value
+Return 		: Expr return_value, int line
+Break 		: Token keyword
+Continue 	: Token keyword
+Block 		: List<Stmt> statements
 Empty     	:
 ```
 
@@ -328,7 +328,7 @@ Empty     	:
 
 ```java
 class A {
-  var b = 1;
+	var b = 1;
 }
 A().b += 2;
 ```
@@ -348,8 +348,8 @@ b[3] = "4";
 
 ```cpp
 def func(a, b) {
-  var c = a;
-  return c + b;
+	var c = a;
+	return c + b;
 }
 var b = func(1, 2);
 ```
@@ -360,7 +360,7 @@ var b = func(1, 2);
 
 ```java
 for (var a = 1; a < 10; a += 1) {
-  print a;
+	print a;
 }
 ```
 
@@ -398,9 +398,9 @@ allocate(sto) = let loc = any_unused_location(sto) in (sto[loc → undefined], l
 deallocate(sto, loc) = sto[loc → unused]
 update(sto, loc, stble) = sto[loc → stored stble]
 fetch(sto, loc) = let stored_value (stored stble) = stble
-											stored_value (undefined) = fail
-											stored_value (unused) = fail
-											in stored_value (sto(loc))
+				  	  stored_value (undefined) = fail
+				  	  stored_value (unused) = fail
+				  	  in stored_value (sto(loc))
 ```
 
 ### 4.2 环境域
@@ -429,9 +429,9 @@ empty-environ = λI.unbound
 bind(I, bdble) = λI'. if I' = I then bound bdble else unbound
 overlay(env', env) = λI. if env'(I) != unbound then env'(d) else env(d)
 find(env, I) = 
-		let bound_value(bound bdble) = bdble
-				bound_value(unbound) = fail
-		in bound_value(env(I))
+	let bound_value(bound bdble) = bdble
+		bound_value(unbound) = fail
+	in bound_value(env(I))
 ```
 
 ### 4.3 原始域表达式
@@ -506,11 +506,11 @@ or: Boolean × Boolean → Boolean
 update_variable(sto, variable loc, stble) = update(sto, loc, stble)
 // 赋值表达式
 instance_set(instance, env, member, sto, value) = 
-		let instance_var = intance_get(instance, env, member) in
-		update_variable(sto, instance_var, value)
+	let instance_var = intance_get(instance, env, member) in
+	update_variable(sto, instance_var, value)
 container_set(container, env, index, sto, value) =
-		let container_var = container_get(container, env, index) in
-		update_variable(sto, container_var, value)
+	let container_var = container_get(container, env, index) in
+	update_variable(sto, container_var, value)
 // 算术表达式
 plus(left, right) = left + right
 minus(left, right) = left - right
@@ -519,39 +519,39 @@ divide(left, right) = left / right
 mod(left, right) = left % right
 // 关系表达式
 equal(left, right) = 
-		if left == right
-		then true
-		else false
+	if left == right
+	then true
+	else false
 not_equal(left, right) = 
-		if left != right
-		then true
-		else false
+	if left != right
+	then true
+	else false
 less(left, right) =
-		if left < right
-		then true
-		else false
+	if left < right
+	then true
+	else false
 less_equal(left, right) =
-		if left <= right
-		then true
-		else false
+	if left <= right
+	then true
+	else false
 greater(left, right) =
-		if left > right
-		then true
-		else false
+	if left > right
+	then true
+	else false
 greater_equal(left, right) =
-		if left >= right
-		then true
-		else false
+	if left >= right
+	then true
+	else false
 // 逻辑表达式
 not(value) = !value
 and(left, right) =
-		if left == true && right == true
-		then true
-		else false
+	if left == true && right == true
+	then true
+	else false
 or(left, right) = 
-		if left == true || right == true
-		then true
-		else false
+	if left == true || right == true
+	then true
+	else false
 ```
 
 * 语义方程
@@ -559,85 +559,85 @@ or(left, right) =
 ```
 // 赋值表达式
 evaluate [I = E] env sto =
-		let val = evaluate E env sto in
-		update_variable(sto, I, val)
+	let val = evaluate E env sto in
+	update_variable(sto, I, val)
 evaluate [I.member = E] env sto =
-		let val = evaluate E env sto in
-		instance_set(I, env, member, sto, val)
+	let val = evaluate E env sto in
+	instance_set(I, env, member, sto, val)
 evaluate [I[E1] = E2] env sto = 
-		let index = evaluate E1 env sto in
-		let val = evaluate E2 env sto in
-		container_set(I, env, index, sto, val)
+	let index = evaluate E1 env sto in
+	let val = evaluate E2 env sto in
+	container_set(I, env, index, sto, val)
 // 算术表达式
 evaluate [E1 + E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		plus(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	plus(left, right)
 evaluate [E1 - E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		minus(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	minus(left, right)
 evaluate [E1 * E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		multi(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	multi(left, right)
 evaluate [E1 / E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		divide(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	divide(left, right)
 evaluate [E1 % E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		mod(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	mod(left, right)
 // 关系表达式
 evaluate [E1 == E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		equal(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	equal(left, right)
 evaluate [E1 != E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		not_equal(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	not_equal(left, right)
 evaluate [E1 < E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		less(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	less(left, right)
 evaluate [E1 <= E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		less_equal(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	less_equal(left, right)
 evaluate [E1 > E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		greater(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	greater(left, right)
 evaluate [E1 >= E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		greater_equal(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	greater_equal(left, right)
 // 逻辑表达式
 evaluate [not E] env sto =
-		let value = evaluate E env sto in
-		not(value)
+	let value = evaluate E env sto in
+	not(value)
 evaluate [E1 and E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		and(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	and(left, right)
 evaluate [E1 or E2] env sto =
-		let left = evaluate E1 env sto in
-		let right = evaluate E2 env sto in
-		or(left, right)
+	let left = evaluate E1 env sto in
+	let right = evaluate E2 env sto in
+	or(left, right)
 // switch-case表达式
 evaluate [switch(E) case E1: V1, case E2: V2, default V3] env sto =
-		let condition = evaluate E env sto in
-		let case_1 = evaluate E1 env sto in
-		if condition == case_1
-		then evaluate V1
-		else
-		let case_2 = evaluate E2 env sto in
-		if condition == case_2
-		then evaulate V2
-		else
-		evaluate V3
+	let condition = evaluate E env sto in
+	let case_1 = evaluate E1 env sto in
+	if condition == case_1
+	then evaluate V1
+	else
+	let case_2 = evaluate E2 env sto in
+	if condition == case_2
+	then evaulate V2
+	else
+	evaluate V3
 // 其他表达式
 evaluate [(E)] env sto = evaluate E env sto
 ```
@@ -656,28 +656,28 @@ execute: Statement → (Environ → Store → Store)
 
 ```
 execute [if C then S1 else S2] env sto = 
-		if evaluate C env sto = Boolean true
-		then execute S1 env sto
-		else execute S2 env sto
+	if evaluate C env sto = Boolean true
+	then execute S1 env sto
+	else execute S2 env sto
 execute [for (S1; C; S2) S3] env sto =
-		execute S1 env sto
-		let execute_for env sto = 
-				if evaluate C env sto = Boolean true
-				then execute_for env (execute S2 env sto (execute S3 env sto))
-				else sto
-		in
-		execute_for
+	execute S1 env sto
+	let execute_for env sto = 
+		if evaluate C env sto = Boolean true
+		then execute_for env (execute S2 env sto (execute S3 env sto))
+		else sto
+	in
+	execute_for
 execute [while C do S] env sto = 
-		let execute_while env sto =
-				if evaluate C env sto = Boolean true
-				then execute_while env (execute S env sto)
-				else sto
-		in
-		execute_while
+	let execute_while env sto =
+		if evaluate C env sto = Boolean true
+		then execute_while env (execute S env sto)
+		else sto
+	in
+	execute_while
 execute [E] env sto = evaluate E env sto
 execute [print E] env sto =
-		let output = evaluate E env sto in
-		print output
+	let output = evaluate E env sto in
+	print output
 execute [] env sto = sto
 ```
 
@@ -691,9 +691,9 @@ execute [] env sto = sto
 
 ```
 execute [var V = E] env sto =
-		let var = identifier V env sto in
-		let val = evaluate E env sto in
-		update_variable(allocate(sto), var, val)
+	let var = identifier V env sto in
+	let val = evaluate E env sto in
+	update_variable(allocate(sto), var, val)
 ```
 
 #### 函数
@@ -726,16 +726,16 @@ give_argument(E) env sto = let arg = evluate E env sto
 ```
 // 函数声明
 execute [def I(FP) S] env =
-		let func arg =
-				let parenv = bind_parameter(I, FP) in
-				evaluate S(overlay(parenv, env))
-		in
-		(bind(I, def func))
+	let func arg =
+		let parenv = bind_parameter(I, FP) in
+		evaluate S(overlay(parenv, env))
+	in
+	(bind(I, def func))
 // 函数调用
 evaluate [I(AP)] env =
-		let function func = find(env, I) in
-		let arg = give_argument(AP) env in
-		func arg
+	let function func = find(env, I) in
+	let arg = give_argument(AP) env in
+	func arg
 ```
 
 #### 类
@@ -750,13 +750,13 @@ evaluate [I(AP)] env =
 
 ```
 execute [class I1 extends I2 VD FD] env sto =
-		let super_class = find(env, I2) in
-		let class sto' = 
-			let env = overlay(bind(I, class class), overlay(super_class, env)) in
-			let variables = execute VD env sto
-			let functions = execute FD env sto
-			in
-			(bind(I1, class class), sto')
+	let super_class = find(env, I2) in
+	let class sto' = 
+		let env = overlay(bind(I, class class), overlay(super_class, env)) in
+		let variables = execute VD env sto
+		let functions = execute FD env sto
+		in
+		(bind(I1, class class), sto')
 ```
 
 ## 5. 对标语言差异
