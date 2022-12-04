@@ -372,93 +372,392 @@ for (var a = 1; a < 10; a += 1) {
 
 ### 4.1 存储域
 
-Storage是Eagle的存储域，描述的是程序运行时的堆内存的使用。Address用于描述存储域中存储数据的位置，使用Address和辅助函数storage_get可以查询存储域中的值，使用allocate，storage_set等辅助函数可以修改存储域中的值，并获得改变后的存储域。
-
-* 存储域
-
-```
-Storage = Address → (value + undefined + unused)
-```
+Store是Eagle的存储域，描述的是程序运行时的堆内存的使用。Location用于描述存储域中存储数据的位置，使用Location和辅助函数fetch可以查询存储域中的值，使用Location和update函数可以更新存储域中的值，allocate，deallocate等辅助函数更新存储域的使用情况。
 
 * 语义函数
 
 ```
-empty_storage: Storage
-storage_get: Storage × Address → value
-allocate: Storage → Storage × Address
-storage_set: Storage × Address × value → Storage
+Store = Location → (stored Storable + undefined + unused)
 ```
 
-* 语义方程
+* 辅助函数
 
 ```
-empty_storage = λAddress.unused
-storage_get(sto, addr) = let stored_value (value) = value
-												 let stored_value (undefined) = fail
-												 let stored_value (unused) = fail
-												 in stored_value sto(addr)
-allocate(sto) = let addr = any_unused_location(sto) in (sto[addr → undefined], addr)
-storage_set(sto, addr, val) = sto[addr → val]
+empty_store: Store
+allocate: Store → Store × Location
+deallocate: Store × Location → Store
+update: Store × Location × Storable → Store
+fetch: Store × Location → Storable
+```
+
+* 辅助函数符号表示
+
+```
+empty_store = λloc.unused
+allocate(sto) = let loc = any_unused_location(sto) in (sto[loc → undefined], loc)
+deallocate(sto, loc) = sto[loc → unused]
+update(sto, loc, stble) = sto[loc → stored stble]
+fetch(sto, loc) = let stored_value (stored stble) = stble
+											stored_value (undefined) = fail
+											stored_value (unused) = fail
+											in stored_value (sto(loc))
 ```
 
 ### 4.2 环境域
 
-Environment是Eagle的环境域，包含了当前作用域的变量绑定。Eagle中，Environment之间存在嵌套关系，以实现层级作用域。Environment中提供env_identifier_set和env_identifier_get方法用于设置和获取环境域中标识符对应对象。
-
-* 环境域
-
-```
-Environment = (parent: Optional Environment, local_identifiers: map<identifier, object>)
-```
+标识环境域Environ，标识符域Identifier，可绑定体域Bindable，环境特性的映射关系如下：
 
 * 语义函数
 
 ```
-new_environment: (cur_environment, local_identifiers)
-env_identifier_set: identifier × Environment → Environment
-env_identifier_get: Environment × identifier → object
+Environ = Identifier → (bound Bindable + unbound)
+```
+
+* 辅助函数
+
+```
+empty_environ: Environ
+bind: Identifier × Bindable → Environ
+overlay: Environ × Environ → Environ
+find: Environ × Identifier → Bindable
+```
+
+* 辅助函数符号表示
+
+```
+empty-environ = λI.unbound
+bind(I, bdble) = λI'. if I' = I then bound bdble else unbound
+overlay(env', env) = λI. if env'(I) != unbound then env'(d) else env(d)
+find(env, I) = 
+		let bound_value(bound bdble) = bdble
+				bound_value(unbound) = fail
+		in bound_value(env(I))
+```
+
+### 4.3 原始域表达式
+
+Primary原始域中包含：真值域Boolean，空值域Nil，字符串域String，数值域Number，容器域Container，标识符域Identifier。
+
+* 语义函数
+
+```
+Primary = Value → (Boolean + Nil + String + Number + Container + Identifier)
+```
+
+* 辅助函数
+
+```
+fetch_variable: Store × Identifier → Value
+instance_get: Identifier × Bindable × Identifier → Value
+container_get: Environ × Identifier × Expression → Value
+```
+
+* 辅助函数符号表示
+
+```
+fetch_variable(sto, variable loc) = fetch(sto, loc)
+instance_get(instance, env, member) = 
+	let instance_sto = find(env, instance) in
+	fetch_variable(instance_sto, member)
+container_get(container, env, index) = 
+	let container_sto = find(env, container) in
+	fetch_variable(container_env, index)
+```
+
+### 4.4 表达式
+
+使用Expression来表示表达式域，表达式主要可以分为赋值表达式，算术表达式，关系表达式和逻辑表达式。
+
+* 语义函数
+
+```
+evaluate: Expression → (Environ → Store → Value)
+```
+
+* 辅助函数
+
+```
+update_variable: Store × Identifier × Value → Store
+// 赋值表达式
+instance_set: Identifier × Bindable × Identifier × Value → Environ
+container_set: Environ × Identifier × Expression × Value → Environ
+// 算术表达式
+plus: Value × Value → Value
+minus: Value × Value → Value
+multi: Value × Value → Value
+div: Value × Value → Value
+mod: Value × Value → Value
+// 关系表达式
+equal: Value × Value → Boolean
+not_equal: Value × Value → Boolean
+less: Value × Value → Boolean
+less_equal: Value × Value → Boolean
+greater: Value × Value → Boolean
+greater_equal: Value × Value → Boolean
+// 逻辑表达式
+not: Boolean → Boolean
+and: Boolean × Boolean → Boolean
+or: Boolean × Boolean → Boolean
+```
+
+* 辅助函数符号表示
+
+```
+update_variable(sto, variable loc, stble) = update(sto, loc, stble)
+// 赋值表达式
+instance_set(instance, env, member, sto, value) = 
+		let instance_var = intance_get(instance, env, member) in
+		update_variable(sto, instance_var, value)
+container_set(container, env, index, sto, value) =
+		let container_var = container_get(container, env, index) in
+		update_variable(sto, container_var, value)
+// 算术表达式
+plus(left, right) = left + right
+minus(left, right) = left - right
+multi(left, righ) = left * right
+divide(left, right) = left / right
+mod(left, right) = left % right
+// 关系表达式
+equal(left, right) = 
+		if left == right
+		then true
+		else false
+not_equal(left, right) = 
+		if left != right
+		then true
+		else false
+less(left, right) =
+		if left < right
+		then true
+		else false
+less_equal(left, right) =
+		if left <= right
+		then true
+		else false
+greater(left, right) =
+		if left > right
+		then true
+		else false
+greater_equal(left, right) =
+		if left >= right
+		then true
+		else false
+// 逻辑表达式
+not(value) = !value
+and(left, right) =
+		if left == true && right == true
+		then true
+		else false
+or(left, right) = 
+		if left == true || right == true
+		then true
+		else false
 ```
 
 * 语义方程
 
 ```
-new_environment(cur_environment, local_identifiers) = let environment = (cur_environment, local_identifiers)
-env_identifier_set(cur_environment, identifier, object) = cur_environment.local_identifiers.put(identifier, object)
-env_identifier_get(cur_environment, identifier) = let object = 
-										 						 									if cur_environment.local_identifiers.contains(identifier)
-								 										 						  then cur_environment.local_identifiers.get(identifier)
-										 						 									else if cur_environment.parent
-										 						 									then env_identifier_get(cur_environment.parent, identifier)
-										 						 									else ⊥
+// 赋值表达式
+evaluate [I = E] env sto =
+		let val = evaluate E env sto in
+		update_variable(sto, I, val)
+evaluate [I.member = E] env sto =
+		let val = evaluate E env sto in
+		instance_set(I, env, member, sto, val)
+evaluate [I[E1] = E2] env sto = 
+		let index = evaluate E1 env sto in
+		let val = evaluate E2 env sto in
+		container_set(I, env, index, sto, val)
+// 算术表达式
+evaluate [E1 + E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		plus(left, right)
+evaluate [E1 - E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		minus(left, right)
+evaluate [E1 * E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		multi(left, right)
+evaluate [E1 / E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		divide(left, right)
+evaluate [E1 % E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		mod(left, right)
+// 关系表达式
+evaluate [E1 == E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		equal(left, right)
+evaluate [E1 != E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		not_equal(left, right)
+evaluate [E1 < E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		less(left, right)
+evaluate [E1 <= E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		less_equal(left, right)
+evaluate [E1 > E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		greater(left, right)
+evaluate [E1 >= E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		greater_equal(left, right)
+// 逻辑表达式
+evaluate [not E] env sto =
+		let value = evaluate E env sto in
+		not(value)
+evaluate [E1 and E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		and(left, right)
+evaluate [E1 or E2] env sto =
+		let left = evaluate E1 env sto in
+		let right = evaluate E2 env sto in
+		or(left, right)
+// switch-case表达式
+evaluate [switch(E) case E1: V1, case E2: V2, default V3] env sto =
+		let condition = evaluate E env sto in
+		let case_1 = evaluate E1 env sto in
+		if condition == case_1
+		then evaluate V1
+		else
+		let case_2 = evaluate E2 env sto in
+		if condition == case_2
+		then evaulate V2
+		else
+		evaluate V3
+// 其他表达式
+evaluate [(E)] env sto = evaluate E env sto
 ```
 
-### 4.3 赋值表达式
+### 4.5 语句
 
+* 使用Statement来表示语句域，语句主要可以分为条件语句，循环语句，表达式语句，输出语句，空语句。
 
+* 语义函数
 
-### 4.4 算术表达式
+```
+execute: Statement → (Environ → Store → Store)
+```
 
+* 语义方程
 
+```
+execute [if C then S1 else S2] env sto = 
+		if evaluate C env sto = Boolean true
+		then execute S1 env sto
+		else execute S2 env sto
+execute [for (S1; C; S2) S3] env sto =
+		execute S1 env sto
+		let execute_for env sto = 
+				if evaluate C env sto = Boolean true
+				then execute_for env (execute S2 env sto (execute S3 env sto))
+				else sto
+		in
+		execute_for
+execute [while C do S] env sto = 
+		let execute_while env sto =
+				if evaluate C env sto = Boolean true
+				then execute_while env (execute S env sto)
+				else sto
+		in
+		execute_while
+execute [E] env sto = evaluate E env sto
+execute [print E] env sto =
+		let output = evaluate E env sto in
+		print output
+execute [] env sto = sto
+```
 
-### 4.5 控制流
+### 4.6 声明
 
+* 在Eagle中声明分为变量声明，函数声明和类的声明
 
+#### 变量
 
-### 4.6 函数
+* 语义方程
 
+```
+execute [var V = E] env sto =
+		let var = identifier V env sto in
+		let val = evaluate E env sto in
+		update_variable(allocate(sto), var, val)
+```
 
+#### 函数
 
-### 4.7 类与继承
+在Eagle关于函数，分为函数的声明与形式参数Formal Parameters，以及函数的调用与实际参数Actual Parameters。
 
+* 函数抽象
 
+```
+Function = Argument → Value
+Function = Argument → Store → Value
+```
 
-### 4.8 switch-case表达式
+* 辅助函数
 
+```
+bind_parameter: Formal_Parameter → (Argument → Environ)
+give_argument: Actual_Parameter → (Environ → Argument)
+```
 
+* 辅助函数符号表示
 
-### 4.9 流
+```
+bind_parameter(I, arg) = bind(I, arg)
+give_argument(E) env sto = let arg = evluate E env sto
+```
 
+* 语义方程
 
+```
+// 函数声明
+execute [def I(FP) S] env =
+		let func arg =
+				let parenv = bind_parameter(I, FP) in
+				evaluate S(overlay(parenv, env))
+		in
+		(bind(I, def func))
+// 函数调用
+evaluate [I(AP)] env =
+		let function func = find(env, I) in
+		let arg = give_argument(AP) env in
+		func arg
+```
+
+#### 类
+
+* 类抽象
+
+ ```
+ Class = Class_Declaration → (Environ → Store → Environ × Store)
+ ```
+
+* 语义方程
+
+```
+execute [class I1 extends I2 VD FD] env sto =
+		let super_class = find(env, I2) in
+		let class sto' = 
+			let env = overlay(bind(I, class class), overlay(super_class, env)) in
+			let variables = execute VD env sto
+			let functions = execute FD env sto
+			in
+			(bind(I1, class class), sto')
+```
 
 ## 5. 对标语言差异
 
