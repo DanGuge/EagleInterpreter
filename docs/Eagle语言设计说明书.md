@@ -786,17 +786,90 @@ execute [class I1 extends I2 VD FD] env sto =
 
 ## 6. 实现细节
 
-1. Object
-2. 内置类
-2. 内置方法
-3. 类与实例
-3. Return, Break, Continue实现
-4. 方法 / lambda
-5. Visitor模式
-6. EagleShell
-7. pretty_print
-8. 支持用户自定义toString, equals, hashcode, isTruthy
-8. 多平台适配
+### 6.1 总述
+
+Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macOS等常见操作系统上。
+
+解释器的整体实现思路为使用访问者模式（Visitor Pattern），在通过词法分析和语法分析得到AST后，从根节点开始递归地访问AST的每一个节点，并针对不同的AST节点类型执行不同的动作，并最终完成源代码的解释执行。若在执行过程中发生错误，则抛出`EagleRuntimeError`（运行时错误）异常到解释器的最顶层，解释器捕捉到该异常后打印错误信息并停止解释执行。
+
+使用面向对象的编程范式完成代码的具体实现，将模块功能封装在相应的类中。为了方便管理内存，使用c++17的智能指针`shared_ptr`管理堆内存资源。
+
+### 6.2 Object类
+
+#### 6.2.1 使用Object类的原因
+
+出于以下两个方面的原因，程序中使用自定义的Object类作为公共父类：
+
++ 在访问AST节点时，需要使用RTTI（Run Time Type Identification，运行时类型识别）来确定子节点的类型，从而确定处理逻辑；
++ Eagle语言的值Value没有具体的类型，可以是字符串、数值、列表等等，为了方便实现，将Value定义为公共父类的指针，并在解释执行时通过RTTI确定子节点的类型并选择相应的处理方法。
+
+出于以上两点考虑，定义Object类作为所有AST节点类型和Eagle所有值类型的公共父类，其继承关系如下图所示
+
+<img src="./imgs/Object继承关系.png" alt="Object继承关系" style="zoom:80%;" />
+
+其中：
+
++ 上半部分为AST节点类型，在3.2节中已介绍
++ 下半部分为Eagle中的值类型，将在后续章节中介绍，包括：
+	+ 空值 Null
+	+ 布尔值 Boolean
+	+ 数值 Number
+	+ 具有内置方法的类型 BuiltInClass，包括：
+		+ 容器类型 Container，包含：列表 List，元组 Tuple，字典 Dict
+		+ 字符串类型 String
+	+ 流类型 Stream
+	+ 对象类型（即类实例）Instance
+	+ 可调用类型 Callable，包括：
+		+ 用户自定义类 EagleClass
+		+ 用户自定义函数 EagleFunction
+		+ 匿名函数（lambda表达式）Lambda
+		+ 内置函数 BuiltInFunction
+		+ 其他
+
+#### 6.2.2 Object类的方法
+
+考虑到Eagle的各种值类型具有一些公共的行为，参考java语言Object类的方法，设计Object类具有以下四个可继承的方法：
+
+1. `toString`
+	+ 含义：返回该Eagle值的字符串表示形式
+	+ Object类行为：返回`"<object at address>"`，其中address为该值的内存地址
+2. `equals`
+	+ 含义：返回该Eagle值是否与另一个Eagle值相等
+	+ Object类行为：返回自身的内存地址是否与另一个Eagle值的内存地址相等
+3. `hashcode`
+	+ 含义：返回该Eagle值
+	+ Object类行为：返回该值的内存地址
+4. `isTruthy`
+	+ 含义：返回该Eagle值作为布尔值进行判断时，是否为真
+	+ Object类行为：返回true
+
+### 6.3 内置类
+
+
+
+### 6.4 内置函数
+
+
+
+### 6.5 类与实例
+
+
+
+### 6.6 Return, Break, Continue实现
+
+
+
+### 6.7 函数 / lambda
+
+
+
+### 6.8 EagleShell
+
+
+
+### 6.9 用户自定义类
+
+
 
 ## 7. 验证与测试
 
