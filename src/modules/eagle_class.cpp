@@ -128,9 +128,16 @@ bool EagleInstance::equals(eagle::ObjectPtr other) {
     if (other.get() == this) {
         return true;
     }
+    if (!InstanceOf<EagleInstance>(other)) {
+        return false;
+    }
+    EagleInstancePtr another = cast<EagleInstance>(other);
+    if (this->klass != another->klass) {
+        return false;
+    }
     auto method = get("equals", shared_from_this());
     if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 1) {
-        std::vector<ObjectPtr> arguments{other};
+        std::vector<ObjectPtr> arguments{another};
         ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
         return result->isTruthy();
     }
