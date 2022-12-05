@@ -873,18 +873,18 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 
 考虑到Eagle的各种值类型具有一些公共的行为，参考java语言Object类的方法，设计Object类具有以下四个可继承的方法：
 
-1. `toString`
+1. `string toString()`
 	+ 含义：返回该Eagle值的字符串表示形式
-	+ Object类行为：返回字符串`"<object at address>"`，其中address为该值的内存地址
-2. `equals(Object obj)`
+	+ 缺省行为：返回字符串`"<object at address>"`，其中address为该值的内存地址
+2. `bool equals(Object obj)`
 	+ 含义：返回该Eagle值是否与另一个Eagle值`obj`相等
-	+ Object类行为：返回自身的内存地址是否与另一个Eagle值的内存地址相等
-3. `hashcode`
+	+ 缺省行为：返回自身的内存地址是否与另一个Eagle值的内存地址相等
+3. `size_t hashcode()`
 	+ 含义：返回该Eagle值的hash值
-	+ Object类行为：返回该值的内存地址
-4. `isTruthy`
+	+ 缺省行为：返回该值的内存地址
+4. `bool isTruthy()`
 	+ 含义：返回该Eagle值作为布尔值进行判断时，是否为真
-	+ Object类行为：返回true
+	+ 缺省行为：返回true
 
 ### 5.3 内置类型
 
@@ -894,10 +894,10 @@ Null为Eagle中的空值，当用户显式地将某个变量赋值为`nil`时，
 
 Null不具有任何成员变量，仅重写了父类Object的四个方法：
 
-1. `toString`：返回字符串`"Nil"`
-2. `equals(Object obj)`：所有Null类型的值均相等，因此该方法返回`obj`的类型是否为Null
-3. `hashcode`：返回0
-4. `isTruthy`：返回false
+1. `string toString()`：返回字符串`"Nil"`
+2. `bool equals(Object obj)`：所有Null类型的值均相等，因此该方法返回`obj`的类型是否为Null
+3. `size_t hashcode()`：返回0
+4. `bool isTruthy()`：返回false
 
 #### 5.3.2 Boolean
 
@@ -905,10 +905,10 @@ Boolean为Eagle中的布尔值，当用户将某个变量显式地赋值为`true
 
 Boolean具有类型为bool的成员变量value，表示该Boolean值的真假，并重写了父类Object的四个方法：
 
-1. `toString`：若value为真，则返回字符串`"true"`，否则返回字符串`"false"`
-2. `equals(Object obj)`：仅当`obj`的类型也为Boolean，且二者的value值相等时，返回true，否则返回false
-3. `hashcode`：返回value的hash值（使用c++内置的hash函数）
-4. `isTruthy`：返回value
+1. `string toString()`：若value为真，则返回字符串`"true"`，否则返回字符串`"false"`
+2. `bool equals(Object obj)`：仅当`obj`的类型也为Boolean，且二者的value值相等时，返回true，否则返回false
+3. `size_t hashcode()`：返回value的hash值（使用c++内置的hash函数）
+4. `bool isTruthy()`：返回value
 
 #### 5.3.3 Number
 
@@ -922,10 +922,10 @@ Number的实现基于开源的[BigFloat](https://github.com/Mariotti94/BigFloat)
 
 Number实现了数值基本运算方法、比较方法、与int、double、string类型的相互转换方法等，并重写了父类Object的四个方法：
 
-1. `toString`：返回数值的字符串表示形式，如-1.23返回`"-1.23"`
-2. `equals(Object obj)`：若`obj`也为Number类型，则从最高位逐位进行比较，否则返回false
-3. `hashcode`：返回数值的字符串表示的hash值（使用c++内置的hash函数）
-4. `isTruthy`：若数值不为0，则返回true，否则返回false
+1. `string toString()`：返回数值的字符串表示形式，如-1.23返回`"-1.23"`
+2. `bool equals(Object obj)`：若`obj`也为Number类型，则从最高位逐位进行比较，否则返回false
+3. `size_t hashcode()`：返回数值的字符串表示的hash值（使用c++内置的hash函数）
+4. `bool isTruthy()`：若数值不为0，则返回true，否则返回false
 
 #### 5.3.4 Callable
 
@@ -937,7 +937,7 @@ Object call(vector<Object> arguments)
 
 所有Callable的子类均需要实现该方法。
 
-该类型与AST中Call节点的处理紧密相关，具体而言，需要判断Call节点的callee进行evaluate后的结果，是否为Callable类型。若否，则表示该callee不可被调用，此时需要报错；若是，则调用该Callable类型的call方法即可。
+该类型与AST中Call节点的处理紧密相关，具体而言，对Call节点进行解释执行时，需要判断子节点callee进行evaluate后的结果，是否为Callable类型。若否，则表示该callee不可被调用，此时需要报错；若是，则调用该Callable类型的call方法即可。
 
 #### 5.3.5 BuiltInClass
 
@@ -946,14 +946,18 @@ BuiltInClass表示Eagle中具有内置方法的类型，包含String，Container
 + 若`s`为字符串类型，则可以通过`s.size()`获得`s`的长度；
 + 若`l`为列表类型，v为任意Eagle值类型，则可以通过`l.append(v)`将`v`添加到`l`的末端
 
-对于上述行为的解释执行，实现为一个callback过程，具体而言，分为两个阶段：
+对于上述行为的解释执行，分为两个阶段：
 
 1. 处理InstanceGet节点：通过`method`的名称，获取对应的内置方法的函数指针`method_f`，将其与该Eagle值的指针`instance`存储到`BuiltInClassCall`对象中并返回给上层节点，其中：
 	+ `method_f`为静态函数指针类型，其返回值类型为Object，第一个参数类型为BuiltInClass，代表需要执行内置方法的Eagle值；第二个参数类型为`vector<Object>`，即上层Call节点中的参数；
 	+ `BuiltInClassCall`是一个`Callable`类型；
 2. 处理Call节点：调用上一步获得的`BuiltInClassCall`对象的`call`方法，通过调用`method_f(instance, params)`来执行对应的内置方法，其中`params`为Call节点中的参数，类型为`vector<Object>`。
 
-分析上述执行过程，可以发现BuiltInClass的抽象行为为，通过方法名获取对应的内置方法的函数指针，将该抽象行为定义为抽象方法`GetMethod(string name)`，其子类需要实现该方法。
+上述处理流程如下图所示，总体而言是一个Callback过程。
+
+<img src="./imgs/BuiltInClassCall.png" alt="BuiltInClassCall" style="zoom: 67%;" />
+
+分析上述过程，可以发现BuiltInClass的抽象行为为，通过方法名获取对应的内置方法的函数指针，将该抽象行为定义为抽象方法`GetMethod(string name)`，其子类需要实现该方法。
 
 #### 5.3.6 Container
 
@@ -966,27 +970,241 @@ Eagle中，Container的抽象行为包括：
 3. `Number size()`：获取容器大小；
 4. `vector<Object> iterator()`：获取容器的迭代元素序列，从而对容器进行迭代
 
-下面介绍List, Tuple, Dict三种容器的行为、实现以及具有的内置方法。
+将在后续章节中介绍List, Tuple, Dict三种容器的具体实现以及具有的内置方法。
 
-##### List
+#### 5.3.7 List
 
+List为Eagle中的**可变**的线性容器，可存储任意类型的Eagle值，具体而言，使用成员变量`vector<Object> elements`来存储容器内包含的元素。
 
+List作为一类Eagle容器，同时也作为一种Eagle值类型，重写了以下方法：
 
-##### Tuple
++ Container的方法：
 
+	+ `Object get(Object subscript)`：首先进行安全检查，即判断`subscript`是否为Number类型、是否为整数且是否没有越界。若是，则返回`elements`对应位置的Eagle值，否则报错；
+	+ `void set(Object subscript, Object value)`：首先进行与`get`相同的安全检查，若通过检查则将`elements`对应位置的值设置为value，否则报错；
+	+ `Number size()`：即返回`elements`的大小
+	+ `vector<Object> iterator()`：List的迭代即为对其中包含的元素进行迭代，因此返回`elements`
 
++ Object的方法：
 
-##### Dict
+	+ `string toString()`：将`elements`中所有Eagle值的`toString`的结果依次拼接起来，并使用`, `分隔，将得到的字符串在左右两端分别用`[`和`]`包裹后返回。例如，包含元素`1.1`和`"2.2"`的List的`toString`结果为[1.1, "2.2"]`；
 
+	+ `bool equals(Object obj)`：当两个List包含完全相同的元素且**顺序一致**时，可认为这两个List相同。因此该函数处理流程为：
 
+		+ 使用RTTI判断obj是否为List类型，若是则将其转化为`List another`，否则返回false；
 
-#### 5.3.7 String
+		+ 判断二者的元素个数是否相同，若是则继续比较，否则返回false；
 
+		+ 使用`equals`方法，逐个比较`this.elements`与`another.elements`中的元素是否相同，即
 
+			`this.elements[i].equals(another.elements[i])`；
 
-#### 5.3.8 Stream
+		+ 若上述比较的结果均为true，则返回true，否则返回false；
 
+	+ `size_t hashcode()`：首先计算每个元素的hash值（通过`elements[i].hashcode()`），然后使用某种确定的**顺序有关**算法（例如移位加法），通过这些值计算出新的hash值并返回。这种计算方式保证了，两个通过`equals`方法进行比较后相等的List对象，其hash值也必定相同；
 
+	+ `bool isTruthy()`：可认为非空的List为真值，因此该函数返回`elements`是否不为空
+
+此外，List是一种BuiltInClass，参考python，实现了以下常用的List内置方法：
+
++ `size() - Number`：返回List内元素个数；
++ `empty() - Boolean`：返回List是否为空；
++ `append(Object value) - Null`：将value添加到List的末尾，无返回值（即返回值为`Null`，下略）；
++ `clear() - Null`：清空List；
++ `contains(Object value) - Boolean`：返回List内是否包含value，使用`equals`方法逐个进行判断；
++ `count(Object value) - Number`：返回List内包含多少个value，使用`equals`方法逐个进行判断并计数；若不包含，则返回0；
++ `insert(Number index, Object value) - Null`：在List中插入新的元素value，其下标（位置）为index，其后面的元素则向后移动一位；若index过小或过大，则插入位置为List元素序列头部和尾部；
++ `remove(Object value) - Number`：移除List中出现的value（使用`equals`方法逐个进行判断）；若List中不包含value，则不做任何处理；若List中包含多个value，则仅移除第一个；
++ `pop() - Null`：移除List尾部的元素；若List为空，则不做任何处理；
++ `reverse() - Null`：反转List中的元素顺序。
+
+#### 5.3.8 Tuple
+
+Tuple为Eagle中的**不可变**的线性容器，可存储任意类型的Eagle值，与List基本类似，同样使用成员变量`vector<Object> elements`来存储容器内包含的元素。
+
+与List相同，Tuple重写了以下方法：
+
++ Container的方法：
+	+ `Object get(Object subscript)`：与List相同，首先进行安全检查，即判断`subscript`是否为Number类型、是否为整数且是否没有越界。若是，则返回`elements`对应位置的Eagle值，否则报错；
+	+ `void set(Object subscript, Object value)`：由于Tuple不可变，不支持对元素进行赋值，因此该方法直接报错；
+	+ `Number size()`：即返回`elements`的大小
+	+ `vector<Object> iterator()`：Tuple的迭代即为对其中包含的元素进行迭代，因此返回`elements`
++ Object的方法：
+	+ `string toString()`：与List类似，将`elements`中所有Eagle值的`toString`的结果依次拼接起来，并使用`, `分隔。不同的是将得到的字符串在左右两端分别用`(`和`)`包裹后返回。例如，包含元素`1.1`和`"2.2"`的Tuple的`toString`结果为`(1.1, "2.2")`；此外，当Tuple中仅包含一个元素时，会添加额外的`,`从而与括号表达式区分开，例如包含元素`1.1`的Tuple的`toString`结果为`(1.1,)`；
+	+ `bool equals(Object obj)`：当两个Tuple包含完全相同的元素且**顺序一致**时，可认为这两个Tuple相同。因此该函数处理过程与List的`equals`方法类似；
+	+ `size_t hashcode()`：与List类似，首先计算每个元素的hash值，然后使用某种确定的**顺序有关**算法（例如移位加法），通过这些值计算出新的hash值并返回。这种计算方式保证了，两个通过`equals`方法进行比较后相等的Tuple对象，其hash值也必定相同；
+	+ `bool isTruthy()`：可认为非空的Tuple为真值，因此该函数返回`elements`是否不为空
+
+此外，Tuple是一种BuiltInClass，参考python，实现了以下常用的Tuple内置方法：
+
++ `size() - Number`：返回Tuple内元素个数；
++ `empty() - Boolean`：返回Tuple是否为空；
++ `count(Object value) - Number`：返回Tuple内包含多少个value，使用`equals`方法逐个进行判断并计数；若不包含，则返回0；
++ `contains(Object value) - Boolean`：返回Tuple内是否包含value，使用`equals`方法逐个进行判断；
+
+#### 5.3.9 Dict
+
+Dict为Eagle中的可变的**关系型**容器，可存储任意类型的、形如(key, value)的Eagle值对。
+
++ 由于Eagle中的值类型均具有hashcode函数，均可求hash值，因此出于效率的考量，使用c++的`unordered_map`存储Dict的元素，其中`unordered_map`的键值为`key.hashcode()`，存储的值为(key, value)对
++ 考虑到哈希冲突的问题，实际上`unordered_map`中存储的值应为(key, value)对的序列，其中，同一序列的所有(key, value)对的`key.hashcode()`相同
+
+基于上述两点，Dict的实现方案中使用如下的成员变量存储容器内包含的元素：
+
+```c++
+unordered_map<size_t, vector<pair<Object, Object>>> elements
+```
+
+Dict的存储模型如下图所示：
+
+<img src="./imgs/Dict存储模型.png" alt="Dict存储模型" style="zoom:95%;" />
+
+与List、Tuple相同，Dict重写了以下方法：
+
++ Container的方法：
+
+	+ `Object get(Object k)`：返回Dict中以`k`为键值的(key, value)对的value值，若不存在，则报错；
+
+	+ `void set(Object k, Object v)`：将Dict中以`k`为键值的(key, value)对的value值设置为v，若不存在，则将`(k, v)`插入Dict中；
+
+	+ `Number size()`：即返回`elements`包含的(key, value)对的数量。由于elements需要进行遍历后才能获取其中包含的元素总数，出于效率的考量，使用成员变量`int element_cnt`记录元素数量，并在插入删除元素时维护该变量的值；
+	+ `vector<Object> iterator()`：可认为对Dict的迭代即为对其所有key值的迭代，因此该方法返回所有key值组成的序列；
+
++ Object的方法：
+
+	+ `string toString()`：首先使用 `: ` 拼接每个(key, value)对的key的`toString`结果和value的`toString`结果，然后使用`, `将上述字符串拼接起来，最后将得到的字符串在左右两端分别用`{`和`}`包裹后返回。例如，包含元素(1, 2)和(3, 4)的Dict的`toString`结果为 `"{1: 2, 3: 4}"`
+	+ `bool equals(Object obj)`：当两个Dict包含完全相同的元素时，可认为这两个Dict相等。由于元素存储顺序的不一致并不影响两个Dict是否相等，因此使用如下的流程进行相等判断：
+		+ 使用RTTI判断obj是否为Dict类型，若是则将其转化为`Dict another`，否则返回false；
+		+ 比较二者的元素数量是否相同，若相同则继续比较，否则返回false；
+		+ 对于Dict中所有的键值对(key1, value1)，判断`another`是否包含键值对(key2, value2)，并满足：`key1 == key2 && value1 == value2`；
+		+ 若上述过程均满足，则返回true；若有一例不满足，则返回false；
+	+ `size_t hashcode()`：首先计算每个键值对key和value的hash值，并将二者异或得到所有键值对的hash值，然后使用某种确定的**顺序无关**算法（例如加法），通过这些值计算出新的hash值并返回。这种计算方式保证了，两个通过`equals`方法进行比较后相等的Dict对象，其hash值也必定相同；
+	+ `bool isTruthy()`：可认为非空的Dict为真值，因此该函数返回`element_cnt`是否不为0
+
+此外，Dict是一种BuiltInClass，参考python，实现了以下常用的Dict内置方法：
+
++ `size() - Number`：返回Dict内键值对个数；
++ `clear() - Null`：清空Dict；
++ `get_value(Object k) - Object`：返回Dict中以`k`为键值的(key, value)对的value值，若不存在，则返回`Null`。具体实现与`get`方法类似；
++ `put(Object k, Object v) - Null`：将键值对(k, v)插入Dict中，若已存在，则覆盖。具体实现与`set`方法类似；
++ `contains_key(Object k) - Boolean`：返回Dict中是否包含键`k`；
++ `contains_value(Object v) - Boolean`：返回Dict中是否包含值`v`，遍历Dict中的所有键值对，通过`equals`方法比较判断；
++ `remove(Object k) - Null`：移除Dict中键为k的键值对，若不存在，则不进行任何处理。与`get`方法类似，需要进行两次查找。此外，成功移除时需要更新`element_cnt`的值；
++ `keys() - Tuple`：返回Dict所有的key值组成的不可变序列Tuple；
++ `values() - Tuple`：返回Dict所有的value值组成的不可变序列Tuple；
++ `items() - Tuple`：返回所有(key, value)对组成的不可变序列Tuple，其中每一个元素均为二元的Tuple；
+
+#### 5.3.10 String
+
+String为Eagle中的字符串值类型，其使用成员变量`string str`来存储具体的字符串值。String重写了Object类的四个方法：
+
+1. `string toString()`：在`str`的两侧加上`""`包裹后返回
+2. `bool equals(Object obj)`：若`obj`也为String类型，则比较二者的`str`是否相同，否则返回false
+3. `size_t hashcode()`：返回`str`的hash值（使用c++内置的hash函数）
+4. `bool isTruthy()`：可认为字符串在不为空时为真值，因此该函数返回`str`是否不为空串
+
+此外，String是一种BuiltInClass，参考python, java, c++等多种语言，实现了以下常用的String内置方法：
+
++ `size() - Number`：返回String的长度；
++ `empty() - Number`：返回String是否为空串；
++ `char_at(Number index) - String`：返回String中位置在index的字符
++ `count(String substr) - Number`：返回String中包含子串`substr`的个数，若不包含，则返回0
++ `find(String substr) - Number`：返回String中，子串`substr`首次出现的位置，若不存在，则返回-1；
++ `upper() - String `：将String中所有小写字母大写，并返回新字符串；不改变原String的值；
++ `lower() - String `：将String中所有大写字母小写，并返回新字符串；不改变原String的值；
++ `split(String substr) - List`：使用子串`substr`分割String，将分割后的所有字符串组成可变序列List并返回；不改变原String的值；
++ `replace(String target_str, String new_str) - String`：将String中所有子串`target_str`替换为`new_str`，生成新的字符串并返回；不改变原String的值；
+
+#### 5.3.11 Stream
+
+#### (1) Stream的定义
+
+Stream为Eagle中的流，参考java语言的流，将Eagle的Stream定义为一系列操作的集合，例如：
+
+```
+stream([1, 2, 3]).map((x) -> x*x).filter((x) -> x >= 4).for_each((x) -> {print x;});
+```
+
+可以看出，Stream主要由两个部分组成：初始值`initial_value`，操作集合`operations`。
+
++ `Container initial_value`：Stream要求其初始值为一个可迭代的Eagle值类型，即为一个容器类型；
++ `vector<pair<string, Object>>`：Stream的操作集合为一个序列，其中每一个操作由操作名称和操作参数组成。
+
+可将Stream的操作分为**终结方法**和**非终结方法**：
+
++ 非终结方法：执行该操作得到的结果仍是一个流，例如`map`, `filter`, `limit`等；
++ 终结方法：执行该操作得到的结果不是一个流，而是其他的Eagle值类型，例如`count`, `to_list`, `for_each`等。
+
+由于仅有Stream对象才能进行流操作，因此一个Stream对象最多只能有一个终结方法，且必须位于操作序列的末尾，称这样的Stream对象为**终结流**，其他Stream对象为**非终结流**。
+
+#### (2) Stream的运算：急求值与懒求值
+
+当定义一个流并进行运算时，根据流的类型不同，用户的期望也有所不同：
+
++ 对终结流进行运算时，用户期望得到一个运算后的结果，因此需要立即进行求值，称这种求值方式为急求值；
++ 对非终结流进行运算时，用户实际上仅仅是定义了一系列流操作，并没有期望流操作的结果。此外，此时流操作的结果仍为一个流，用户不关心它的值，也没有必要耗费额外的内存去存储它的值。因此，对于非终结流，可以暂缓求值过程，直到用户调用了终结方法后再进行，称这种求值方式为懒求值。
+
+急求值与懒求值的区别可参考如下示例：
+
+```
+>>> stream(["c++", "java", "python"]).map((x) -> {print x; return x;}).count();
+"c++"
+"java"
+"python"
+3
+// 终结流，急求值，输出了语言名称
+>>> stream(["c++", "java", "python"]).map((x) -> {print x; return x;});
+// 非终结流，懒求值，没有输出了语言名称
+```
+
+使用如下方案实现急求值-懒求值机制：
+
++ 对于终结流的运算，按操作序列的顺序，对初始值的每一个迭代元素进行操作，并返回最终的终结方法操作结果；
++ 对于非终结流的运算，初始化Stream对象后，不进行任何操作，返回Stream对象本身。
+
+#### (3) Stream的内置方法的调用
+
+当对非终结流进行运算后，得到的是一个流对象`stream`。类似BuiltInClass，此时可对该流对象进行形如`stream.method(params)`的 “*内置方法调用* ”。
+
+但是，不同于BuiltInClass的内置方法调用是一次普通的函数调用，参考java语言的流机制，Eagle中将Stream对象的 “*内置方法调用* ” 定义为一个新的流的生成过程，包括以下几个步骤：
+
+1. 使用原Stream对象（拷贝）生成一个新的Stream对象；
+2. 设置原Stream对象的状态为`executed`，即同一个Stream不可进行多次 “*内置方法调用* ” ；
+3. 使用急求值-懒求值机制，对新的Stream对象进行运算，并返回运算结果。
+
+可参考如下示例：
+
+```
+>>> var s1 = stream([1, 2, 3]).filter((x) -> x > 1);
+>>> print s1.count();
+2
+>>> print s1.limit(1).count();
+[RuntimeError at line 1] Stream should not be executed repeatedly
+```
+
+具体实现方案中，与BuiltInClass类似，Stream同样借助一个中间结构StreamCall，通过一个Callback过程完成上述Stream对象的 “*内置方法调用* ”，包含两个阶段：
+
+1. 处理InstanceGet节点：生成新的Stream对象，改变原Stream对象的状态，将新的Stream对象与操作的名称封装在StreamCall结构中，并返回给上层节点；
+2. 处理Call节点：调用上一步获得的`StreamCall`对象的`call`方法，具体而言：将操作名称与操作参数组成一个操作，并加入到Stream对象的操作序列中，最后返回该Stream对象的计算结果；
+
+#### (4) Stream的操作
+
+参考java语言的流机制，设计并实现了下列Stream的操作：
+
++ 非终结方法：
+
+	+ `filter(Callable func)` ：通过func函数调用，对流中每一个元素进行过滤，即仅当`func(element)`的结果为真值时，保留`element`，并将结果组成新的流；
+
+	+ `map(Callable func)`：通过func函数调用，将流中每一个元素`element`映射为`func(element)`，并将结果组成新的流；
+
+	+ `limit(Number n)`：取出流中的前n个元素，组成新的流；
+
++ 终结方法：
+	+ `to_list() - List`：将流中的元素组成List并返回；
+	+ `to_tuple() - Tuple`：将流中的元素组成Tuple并返回；
+	+ `to_dict() - Dict`：若流中的每一个元素均为tuple，且均含有两个子元素(key, value)，则将流中所有的(key, value)对组成Dict并返回，否则报错；
+	+ `for_each(Callable func) - Null`：对流中的每一个元素`element`执行`func(element)`，返回值为`Null`；
+	+ `count() - Number`：返回流中元素的数量。
 
 ### 5.4 环境域
 
@@ -1033,6 +1251,8 @@ while(true) {
 
 ### 5.6 类与实例
 
+#### 5.6.1 类的实现及实例化过程
+
 Eagle中类的声明语法如下：
 
 ```cpp
@@ -1059,6 +1279,49 @@ Instance的查找的逻辑：
 1. 查找自身`fields`中的变量，该部分变量包括类中的变量声明和实例化后添加的变量/方法
 2. 查找实例对应的类的方法，通过`klass`索引到类
 3. 递归地对父类的实例化进行1和2的查找
+
+#### 5.6.2 支持用户自定义类的equals等方法
+
+用户可在类中定义`equals`方法，从而自定义类实例的比较方式，如下所示：
+
+```
+>>> class A {
+...     var a;
+...     var b;
+...     def init(a, b) {
+...         this.a = a;
+...         this.b = b;
+...     }
+... }
+>>> A(1, 2) == A(1, 2);
+false
+// 对于类A，没有自定义equals方法，其实例的equals方法按照缺省行为
+// 比较两个值的内存地址是否相等，因此结果为false
+
+>>> class B {
+...     var a;
+...     var b;
+...     def init(a, b) {
+...         this.a = a;
+...         this.b = b;
+...     }
+...     def equals(o) {
+...         return this.a == o.a and this.b == o.b;
+...     }
+... }
+>>> B(1, 2) == B(1, 2);
+true
+>>> B(1, 2) == B(2, 1);
+false
+// 对于类B，定义了equals方法，其实例的equals方法按照用户自定义的行为进行比较
+```
+
+同样的，用户可自定义类的`toString`, `hashcode`, `isTruthy`方法，从而自定义该类的实例的行为。该功能通过重写EagleInstance的四个父类方法完成：
+
+1. `string toString()`：若对应的类定义了名为`toString`的方法，且参数数量满足条件，则返回该方法执行结果的`toString()`的结果；否则返回缺省结果；
+2. `bool equals(Object obj)`：若obj也为EagleInstance类型，且二者的类相同，且该类定义了名为`equals`的方法，且参数数量满足条件，则返回该方法执行结果的`isTruthy()`的结果；否则返回缺省结果；
+3. `size_t hashcode()`：若对应的类定义了名为`hashcode`的方法，且参数数量满足条件，且执行结果为正整数，则返回该方法的执行结果；否则返回缺省结果；
+4. `bool isTruthy()`：若对应的类定义了名为`isTruthy`的方法，且参数数量满足条件，且执行结果为Boolean，则返回该方法的执行结果；否则返回缺省结果；
 
 ### 5.7 Return, Break, Continue实现
 
