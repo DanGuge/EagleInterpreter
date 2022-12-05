@@ -51,7 +51,11 @@ int WriteToFile::arity() {
 ObjectPtr WriteToFile::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<String>(arguments[0])) {
         std::ofstream of_stream(cast<String>(arguments[0])->str);
-        of_stream << arguments[1]->toString();
+        if (InstanceOf<String>(arguments[1])) {
+            of_stream << cast<String>(arguments[1])->str;
+        } else {
+            of_stream << arguments[1]->toString();
+        }
         of_stream.close();
         return std::make_shared<Null>();
     } else {
