@@ -1415,6 +1415,14 @@ EagleShell支持彩色输出、斜体输出等，使得输出内容的意义更�
 	+ 使用库`<windows.h>`中的函数`SetConsoleTextAttribute(attr)`设置控制台的背景色与前景色。其中attr为一个双字节整数，低位字节表示前景色，高位字节表示背景色；
 	+ 完成输出后，需要再次使用函数`SetConsoleTextAttribute`将控制台的背景色与前景色调整回默认状态；
 + unix平台
+    + 在unix平台和macos平台，使用[ANSI转义码](https://juejin.cn/post/6920241597846126599)实现不同字体类型和控制台背景色与前景色的设置
+        + `\e`代表ANSI Escape code
+        + `[`代表转义序列开始符CSI，Control Sequence Introducer
+        + `95;23;24;49` 表示用`;`分隔样式控制符
+        + `m`代表结束控制符序列
+
+    + 完成一行输出后，将ANSI转义设置为`\e[95;23;24;49m`，表示设置默认背景色，设置字体为正常字体，字体色为亮品红
+
 
 #### (5) 其他
 
