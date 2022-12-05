@@ -1,0 +1,85 @@
+// 不断从用户输入中获取数值，构建二叉排序树
+// 当用户输入end时，结束输入并输出该二叉排序树的前序遍历、中序遍历和后序遍历
+class Node {
+    var value;
+    var left;
+    var right;
+    def init(value) {
+        this.value = value;
+        this.left = nil;
+        this.right = nil;
+    }
+    def insert(v) {
+        if (v < this.value) {
+            if (this.left == nil) {
+                this.left = Node(v);
+            } else {
+                this.left.insert(v);
+            }
+        } else if (v > this.value) {
+           if (this.right == nil) {
+               this.right = Node(v);
+           } else {
+               this.right.insert(v);
+           }
+       }
+    }
+    def pre_order() {
+        print this.value;
+        if (this.left != nil) this.left.pre_order();
+        if (this.right != nil) this.right.pre_order();
+    }
+    def in_order() {
+        if (this.left != nil) this.left.in_order();
+        print this.value;
+        if (this.right != nil) this.right.in_order();
+    }
+    def post_order() {
+        if (this.left != nil) this.left.post_order();
+        if (this.right != nil) this.right.post_order();
+        print this.value;
+    }
+}
+
+var line = input();
+if (line != "end") {
+    var tree = Node(num(line));
+    line = input();
+    while (line != "end") {
+        tree.insert(num(line));
+        line = input();
+    }
+    print "pre order:";
+    tree.pre_order();
+    print "in order:";
+    tree.in_order();
+    print "post order:";
+    tree.post_order();
+}
+
+// 若输入为: 12 10 15 13 16 8 11 end
+// 则输出为:
+// pre order:
+// 12
+// 10
+// 8
+// 11
+// 15
+// 13
+// 16
+// in order:
+// 8
+// 10
+// 11
+// 12
+// 13
+// 15
+// 16
+// post order:
+// 8
+// 11
+// 10
+// 13
+// 16
+// 15
+// 12

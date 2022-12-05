@@ -1,0 +1,42 @@
+def hanoi(a, b, c, n) {
+    if (n == 1) {
+        print a + " -> " + c;
+        return 1;
+    }
+    var l = hanoi(a, c, b, n-1);
+    print a + " -> " + c;
+    var r = hanoi(b, a, c, n-1);
+    return l + r + 1;
+}
+
+print "3 levels hanoi:";
+print hanoi("A", "B", "C", 3);
+// 3 levels hanoi:
+// A -> C
+// A -> B
+// C -> B
+// A -> C
+// B -> A
+// B -> C
+// A -> C
+// 7
+
+print "4 levels hanoi:";
+print hanoi("A", "B", "C", 4);
+// 4 levels hanoi:
+// A -> B
+// A -> C
+// B -> C
+// A -> B
+// C -> A
+// C -> B
+// A -> B
+// A -> C
+// B -> C
+// B -> A
+// C -> A
+// B -> C
+// A -> B
+// A -> C
+// B -> C
+// 15

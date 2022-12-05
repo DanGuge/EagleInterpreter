@@ -1,0 +1,17 @@
+var d = {};
+def fib(n) {
+    if (n == 1 or n == 2) {
+        return 1;
+    }
+    if (d.contains_key(n)) {
+        return d[n];
+    }
+    var result = fib(n-1) + fib(n-2);
+    d[n] = result;
+    return result;
+}
+
+print fib(1);   // 1
+print fib(5);   // 5
+print fib(10);  // 55
+print fib(100); // 354224848179261915075
