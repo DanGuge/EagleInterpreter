@@ -945,27 +945,122 @@ Eagle中，Container的抽象行为包括：
 
 
 
-### 6.4 内置函数
+### 6.4 环境域
+
+在Eagle中，设计了`Environment`类来管理不同作用域中的环境变量，其主要有以下成员变量和方法。（环境域，也就是符号表）
+
+* `Environment enclosing`：描述当前`Environment`的外部环境域，如果当前`Environment`为全局环境域，则外部环境域为空。
+* `map<string, Object> name_object_map`：描述当前环境域中的变量声明和变量对应的值。
+* `Object get(string name)`：以变量名作为key，以当前环境域作为起点，查找对应变量的值，如果当前环境域中不存在该变量，则会递归地向`enclosing`环境域中查找。
+* `void define(string name, Object object)`：以`name`作为key，`object`作为为value，在当前环境域中声明并赋值该变量，其中`object`可能为空，就赋值为Null
+* `void assign(string name, Object object)`：以`name`作为key，`object`作为为value，以当前环境域作为起点，查找对应变量，并赋值为`object`，如果当前环境域中不存在该变量，则会递归地向`enclosing`环境域中查找。
+
+以下为一个简单的例子：
+
+```cpp
+var a = 1;
+var b = "str";
+while(true) {
+    var a = 2;
+    var c;
+}
+```
+
+<img src="./imgs/Environment.png" alt="Environment" style="zoom:18%;" />
+
+### 6.5 内置函数
+
+在Eagle中，BuiltInFunction继承了Callable接口，内置函数需要实现BuiltInFunction接口，所以都可以执行`call`动作。Eagle中内置函数的处理逻辑就是在全局环境域中提前注册一系列实现了Callable接口的实例，使其具有可调用的性质。
+
+用户在使用**内置函数**，环境域能够递归查找到全局环境域，获得在全局环境域中注册的方法。
+
+目前实现了以下内置函数：
+
+* `str(variable: Object)->String`：将输入变量转换为对应的字符串
+* `num(variable: Number/String)->Number`：将输入的Number/String类型，转换为对应的Number
+* `read_from_file(filename: String)->String`：给定文件名，返回文件中所有内容
+* `write_to_file(filename: String, content: Object)->Null`：给定文件名，将内容输出到文件中
+* `input()->String`：从控制台读取一行内容作为输入
+* `help(input: BuiltInClass/BuiltInFunction/Stream)->Null`：输出内置类/内置方法/流处理的相关使用方法
+* `bool(input: Object)->Boolean`：检查输入是否为真值
+* `class_method(input: Class)->Null`：输出用户自定义类实现的方法
+*  `id(object: Object)->Number`：输出对象的存储地址
+* `len(object: Container/String)->Number`：输出容器/字符串的长度
+
+### 6.6 类与实例
+
+Eagle中类的声明语法如下：
+
+```cpp
+class-declaration ::= "class" identifier ("extends" identifier)?
+					  "{" (variable-declaration|function-declaration)* "}" ;
+```
+
+可以看出Eagle类的组成主要分为三个部分父类`super_class`，变量声明`members`，方法声明`methods`。
+
+* `EagleClass super_class`：Eagle中的继承机制，仅允许单继承，指向父类，可以通过`super`来调用父类的方法
+* `map<string, Object> members`：Eagle中的直接成员变量声明，同时在Eagle中可以通过`this`来间接声明成员变量
+* `map<string, EagleFunction> methods`：Eagle中的方法声明
+
+在类的实例化过程中，将类的实例化分为了两个部分，父类的实例化和自身的实例化，Eagle实例的组成主要分为三个部分。
+
+* `EagleClass klass`：该实例对应的类
+* `EagleInstance super_instance`：如果该实例对应的类存在父类，则实例化其父类
+* `map<string, Object> fields`：该实例的对应类的成员变量，以及实例化后添加的变量/方法
+
+<img src="./imgs/instance.png" alt="instance" style="zoom:20%;" />
+
+Instance的查找的逻辑：
+
+1. 查找自身`fields`中的变量，该部分变量包括类中的变量声明和实例化后添加的变量/方法
+2. 查找实例对应的类的方法，通过`klass`索引到类
+3. 递归地对父类的实例化进行1和2的查找
+
+### 6.7 Return, Break, Continue实现
+
+在Eagle中，Return语句会出现在方法中，Break和Continue语句会出现在循环中，它们的语义是跳出方法/循环的作用域，返回到调用的地方。
+
+在Eagle的实现中，将Return，Break和Continue都当作异常来处理，在最外层通过`try-catch`的方式来捕捉这些跳转信息，来完成对应的执行逻辑。
+
+* `class EagleReturn : public exception`：EagleReturn继承父类异常
+* `class EagleBreak : public exception`：EagleBreak继承父类异常
+* `class EagleContinue : public exception`：EagleContinue继承父类异常
+
+以循环语句While为例：
+
+```cpp
+ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
+    while (isTruthy(evaluate(stmt->condition))) {
+        try {
+            execute(stmt->body);
+        } catch (EagleBreak& eagle_break) {
+            break;
+        } catch (EagleContinue& eagle_continue) {
+            continue;
+        }
+    }
+    return nullptr;
+}
+```
+
+### 6.8 函数 / lambda
+
+在Eagle中，函数和lambda本质是相同，lambda就是匿名的函数。EagleFunction主要由函数声明`Stmt::Function declaration`和函数声明的环境域`Environment closure` 组成。
+
+* `Stmt::Function declaration`：为函数声明，是AST节点中的函数节点，其中包括参数`vector<Token> params`和函数体`vector<Stmt> body`
+* `Environment closure`：为函数声明的环境域，函数执行需要在该环境域下执行
+
+在函数调用的时候，通过调用Callable中的接口`call()`，传入实际参数来执行函数。
+
+```cpp
+Object call(vector<Object> argument);
+```
+
+### 6.9 EagleShell
 
 
 
-### 6.5 类与实例
-
-
-
-### 6.6 Return, Break, Continue实现
-
-
-
-### 6.7 函数 / lambda
-
-
-
-### 6.8 EagleShell
-
-
-
-### 6.9 函数调用栈的层数控制
+### 6.10 函数调用栈的层数控制
 
 
 
