@@ -1,11 +1,11 @@
 var a = 19.07;
-print str(a); // expected: "19.07"
+print str(a); // expected: 19.07
 
 var b = "111.111";
 print num(b); // expected: 111.111
 
 var c = input(); // input: abc
-print c; // expected: "abc"
+print c; // expected: abc
 
 help(help);
 // expected
