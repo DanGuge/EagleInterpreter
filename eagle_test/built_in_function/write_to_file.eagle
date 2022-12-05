@@ -1,0 +1,5 @@
+var content = "Write Something to file
+[]
+111
+222";
+write_to_file("../eagle_test/built_in_function/file_write.txt", content);

@@ -1,0 +1,39 @@
+var a = 19.07;
+print str(a); // expected: "19.07"
+
+var b = "111.111";
+print num(b); // expected: 111.111
+
+var c = input(); // input: abc
+print c; // expected: "abc"
+
+help(help);
+// expected
+// function: print the function and usage of built-in class & built-in function && stream
+// usage: help(input: BuiltInClass/BuiltInFunction/Stream)->Null
+
+var d;
+print bool(d); // expected: false
+
+class E {
+    def a() {}
+    def b(c, d) {}
+    def e(f, g, h) {}
+}
+class_method(E);
+// expected:
+// method a with 0 parameter(s)
+// method b with 2 parameter(s)
+// method e with 3 parameter(s)
+
+print globals();
+// expected:
+// {"str": <built-in function str>, "read_from_file": <built-in function read_from_file>, "list_info": [], "write_to_file": <built-in function write_to_file>, "input": <built-in function input>, "num": <built-in function num>, "bool": <built-in function bool>, "len": <built-in function len>, "class_method": <built-in function class_method>, "id": <built-in function id>, "help": <built-in function help>, "globals": <built-in function globals>, "tuple_info": (), "dict_info": {}, "stream_info": <stream at 105553125277816>}
+
+var f;
+print id(f); // expected: 105553163010200 -- address of the variable
+
+var g = [1, "2", (), E];
+print len(g); // expected: 4
+
+

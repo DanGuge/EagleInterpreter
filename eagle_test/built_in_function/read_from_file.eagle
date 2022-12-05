@@ -1,0 +1,13 @@
+var content = read_from_file("../eagle_test/built_in_function/file_read.txt");
+print content;
+
+// expected:
+// This is a test for eagle built-in function `read_from_file`:
+// 111
+// 222
+// 333
+// 444
+// 555
+//
+//
+// []

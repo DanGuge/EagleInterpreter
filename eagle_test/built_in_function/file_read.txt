@@ -1,0 +1,9 @@
+This is a test for eagle built-in function `read_from_file`:
+111
+222
+333
+444
+555
+
+
+[]
