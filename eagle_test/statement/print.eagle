@@ -1,0 +1,16 @@
+class A {}
+print A; // expected: <class A>
+print A(); // expected: <instance of class A>
+
+var a = A();
+a.toString = () -> { return "aaaaa";};
+print a; // expected: aaaaa
+
+print help; // expected: <built-in function help>
+def fun() {}
+print fun; // expected: <function fun>
+
+print () -> {}; // expected: <lambda at 105553165550104>
+print stream([]); // expected: <stream at 105553147724088>
+
+print [()->{}, stream({}), A, a]; // expected: [<lambda at 105553148006808>, <stream at 105553165829560>, <class A>, aaaaa]

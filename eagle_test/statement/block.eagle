@@ -1,0 +1,12 @@
+var a = 1;
+{
+    print a; // expected: 1
+    var a = [];
+    {
+        print a; // expected: []
+        var a = {};
+        print a; // expected: {}
+    }
+    print a; // expected: []
+}
+print a; // expected: 1

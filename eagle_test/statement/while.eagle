@@ -1,0 +1,16 @@
+var a = 10;
+while (true) {
+    print a;
+    if (a == 5)
+        while (a > 0) a -= 2;
+    a -= 1;
+    if (a < 0) break;
+}
+
+// expected:
+// 10
+// 9
+// 8
+// 7
+// 6
+// 5
