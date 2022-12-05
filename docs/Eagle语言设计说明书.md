@@ -1365,11 +1365,86 @@ Object call(vector<Object> argument);
 
 ### 5.9 EagleShell
 
+Eagle中实现了EagleShell来支持丰富且多彩的命令行交互方式，方便用户将Eagle作为一个脚本语言来进行日常的使用，如下图所示。
 
+<img src="./imgs/EagleShell.png" alt="EagleShell" style="zoom: 80%;" />
+
+下面将详细介绍EagleShell的特殊功能及实现方案。
+
+#### (1) 使用上下键切换历史命令
+
+EagleShell中支持用户输入上下键来切换历史命令，实现方案如下：
+
+1. 使用全局变量`history`顺序存储已经运行过的历史命令，使用局部变量`line`存储当前用户已经键入的命令；
+2. 将程序的输入和输出设置为非缓冲模式（需要针对windows平台和unix平台分别处理），使得用户在输入任何字符时，程序都可以做出及时的响应；
+3. 捕捉上下键，需要进行跨平台处理：
+	+ windows平台中，上键由两个字符组成，其值分别为-32, 72；而下键也由两个字符组成，其值分别为-32, 80；
+	+ unix平台中，上下键各由三个字符组成，分别为`"\033[A"`和`"\033[B"`；
+4. 若捕捉到上下键，则进行响应：
+	1. 通过`history`得到对应的历史命令cmd，将`line`的值替换为cmd；
+	2. 清空控制台光标所在行的其他内容，将cmd输出到该行并正确设置光标位置；
+5. 若捕捉到命令字符，则将其添加到`line`末端；
+6. 若捕捉到换行符，则将`line`的值存入history并返回。
+
+#### (2) 使用退格键删去末端输入字符
+
+EagleShell中支持用户输入退格键，来删去末端输入字符。使得当用户输入错误的命令时，可以进行修改。实现方案如下：
+
+1. 同样需要将程序的输入和输出设置为非缓冲模式；
+2. 捕捉退格键，需要进行跨平台处理：
+	+ windows平台中，退格键为`\b`，其ASCII码为8；
+	+ unix平台中，退格键的ASCII码为127；
+3. 当捕捉到退格键时，进行响应：
+	1. 删去`line`末尾的字符
+	2. 将控制台的光标左移一位，并清除光标右侧的字符
+
+#### (3) 支持多行输入
+
+与python的shell类似，EagleShell支持用户将长命令，例如类定义、函数定义等等，通过多行进行输入。实现方案如下：
+
+1. 主程序通过EagleShell获取用户输入的一行命令cmd；
+2. 对cmd进行括号匹配：
+	+ 若匹配成功，则表示这是一行完整的命令，将cmd送入解释器进行解释执行；
+	+ 若匹配不成功，则表示该命令不完整，之后主程序不断通过EagleShell获取用户的一行输入，并将其拼接到当前命令末尾，直到用户键入空行，此时将得到的命令送入解释器进行解释执行。
+
+#### (4) PrettyPrint
+
+EagleShell支持彩色输出、斜体输出等，使得输出内容的意义更加明确。需要针对不同的平台进行不同的处理：
+
++ windows平台：仅支持彩色输出
+	+ 使用库`<windows.h>`中的函数`SetConsoleTextAttribute(attr)`设置控制台的背景色与前景色。其中attr为一个双字节整数，低位字节表示前景色，高位字节表示背景色；
+	+ 完成输出后，需要再次使用函数`SetConsoleTextAttribute`将控制台的背景色与前景色调整回默认状态；
++ unix平台
+
+#### (5) 其他
+
+当EagleShell检测到用户输入的命令是一个Expression，且该Expression不是赋值表达式时，会将Expression的结果打印出来，方便用户及时检查运算结果是否正确。
 
 ### 5.10 函数调用栈的层数控制
 
+当用户的程序陷入死递归时，Eagle的解释器能够及时检测并报错，这需要实现对函数调用栈的层数控制。
 
+Eagle认为对Callable对象的call方法的每一次调用，是一层函数调用栈，因此在Callable中定义`WrapperCall`方法，从而对call的递归层数进行控制：
+
+```c++
+ObjectPtr WrapperCall(std::vector<ObjectPtr>& arguments, int call_line) {
+    EagleStack::Push();
+    ObjectPtr value = this->call(arguments, call_line);
+    EagleStack::Pop();
+    return value;
+}
+```
+
+其中：
+
++ `EagleStack::Push`方法会将调用栈层数加一。该方法检测到当前调用栈的层数超过预设的最大值时，会进行报错，并清除当前函数调用栈的层数；
++ `EagleStack::Pop`方法将调用栈层数减一
+
+此外，需要将其他类对于`call`方法的调用，调整为对`WrapperCall`方法的调用。
+
+实现效果如下图所示，预设函数调用栈的最大层数为1000：
+
+<img src="./imgs/stackoverflow.png" alt="stackoverflow" style="zoom: 67%;" />
 
 ## 6. 验证与测试
 
