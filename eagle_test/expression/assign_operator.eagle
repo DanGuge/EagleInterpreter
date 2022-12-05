@@ -1,0 +1,14 @@
+var a = 20;
+a += a -= a *= a /= a %= 3;
+print a; // expected: -160
+
+class B {
+    var c = 1;
+}
+var d = B();
+d.c += a *= 10;
+print d.c; // expected: -1599
+
+var e = [a, B];
+e[0] += e[1]().c *= 20;
+print e[0]; // expected: -1580

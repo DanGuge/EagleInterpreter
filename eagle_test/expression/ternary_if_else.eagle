@@ -1,0 +1,5 @@
+var a = 10;
+var b = a == 9 ? 9 :
+        a != 10 ? 11 :
+        a == 10 ? a * a : a;
+print b; // expected: 100

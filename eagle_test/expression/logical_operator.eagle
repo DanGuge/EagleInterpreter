@@ -1,0 +1,20 @@
+var a = true;
+var b = false;
+
+if (a and b) {
+    print "a and b is true";
+} else {
+    print "a and b is false"; // expected: a and b is false
+}
+
+if (b or a) {
+    print "b or a is true"; // expected: b or a is true
+} else {
+    print "b or a is false";
+}
+
+if (a and not b) {
+    print "a and not b is true"; // expected: a and not b is true
+} else {
+    print "a and not b is false";
+}
