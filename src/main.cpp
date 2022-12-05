@@ -10,6 +10,8 @@
 #include <windows.h>
 #endif
 
+#pragma comment(linker, "/STACK:104857600") // 100M
+
 using namespace eagle;
 
 bool checkParen(const std::string& input) {

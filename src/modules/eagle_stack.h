@@ -13,7 +13,7 @@ public:
     static void Pop();
 
 private:
-    static const int MAX_STACK_DEPTH = 500;
+    static const int MAX_STACK_DEPTH = 1000;
     static int stack_depth;
 };
 
