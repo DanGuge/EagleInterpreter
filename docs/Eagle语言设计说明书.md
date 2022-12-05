@@ -4,12 +4,59 @@
 
 ## 1. 语言的背景和目标
 
-1. 设计背景
-2. 设计目标
-3. 语言名称由来（x）
+### 1.1 背景与动机
 
-* 动态类型，解释性语言，考虑了部分跨平台需求
-* 参考：Lox，Python，Java，Scala，C++？
+Eagle的设计目标，是想要设计一款类Python的解释型的动态类型语言，具备面向过程（OP），面向对象（OO）和部分函数式编程的特性。
+
+之所以起名为Eagle，是因为在英文中Eagle的解释为“鹰”，而Python为“蛇”，鹰一般是蛇的天敌。当然，我们不可能在这么短的时间内实现一款超越Python的语言，我们只是希望Eagle能够向Python看齐，我们在很多语法的设计上，都参考了Python的语法，同时在一些使用的便捷性上和语言的功能扩展上又稍微引入了一些其他语言的特性，来扩展我们的功能。
+
+现在Python语言在多个领域受到人们的追捧，比如机器学习，数据挖掘，后端开发等。其简单直白的语法规则和动态类型的语言设计，使得Python常常成为人们入门计算机编程的第一选择。这种简单直白的语法逻辑，和易于上手的便捷性，也是我们选择Python作为我们对标语言的主要原因，我们希望Eagle也能够成为成为一款易于上手，且功能强大的语言。
+
+Eagle在尝试向Python看齐，但是又与Python在一些方面有所不同。
+
+### 1.2 特性与目标
+
+在对标Python的过程中，我们保留了Python中好用的语法功能进行实现：
+
+1. 内置函数，如`help`，`len`，`input`，`globals`，`id`，`read_from_file`，`write_to_file`等等；
+2. 实现了`List`，`Dict`，`Tuple`等内置容器；
+3. 支持闭包；
+4. 动态类型，将类型的处理全部交给解释器来完成，而不需要用户来考虑；
+5. 支持实例化的类能够添加新的属性，如变量或者方法；
+6. 支持面向对象和单继承，从继承实现的难度上和逻辑的清晰上，我们选择实现单继承；
+7. 支持连续的赋值运算和连续的关系运算。
+
+同时，在我们自己使用Python的过程中，我们也发现了一些问题，并选择其他语言好的部分来进行参考和实现：
+
+1. 改变Python中的缩进规则，使用`{}`来区分不同的作用域，让代码更便于阅读；
+2. 支持三元运算符；
+3. 保留变量声明，在Python的使用中基本没有变量声明的环节，而有时候需要用到某个变量，需要先将其初始；
+4. 支持更复杂的流处理，Python并不具备像java，scala一样方便的流处理单元；
+5. 支持更复杂的字符串处理，没有类似java和c++那样多样的字符串处理方法；
+6. 完善对匿名函数支持，不够简单直白且功能不足，而类似java中的`()->{}`表示，可能能够处理更复杂的逻辑，且配合流处理更易于上手；
+7. 修改Python类中的声明，在Python中单独声明的成员变量是作为类变量来使用的，我们认为可能类似java的成员变量的声明方式，将这些变量作为实例的成员变量会更好一些；
+8. 支持`this`和`super`关键字的使用，此处参考了java中对于这些关键字的使用；
+9. 支持`switch-case`的表达式赋值，此处参考了scala中对于`swtich-case`的使用。
+
+在Eagle中，我们还实现了EagleShell和PrettyPrint来支持丰富且多彩的命令行交互方式，方便用户将Eagle作为一个脚本语言来进行日常的使用。
+
+在语言特性方面，我们主要参考了以下语言：
+
+* Python，Java，Scala，C++，Ruby
+
+### 1.3 实现
+
+* 在架构设计上，我们使用了Visitor模式作为解释器的主要架构，参考了以下开源项目的实现方案：
+
+    * [Lox](https://github.com/munificent/craftinginterpreters)
+    * [FlammingMyCompiler](https://github.com/mlzeng/CSC2020-USTC-FlammingMyCompiler)
+
+    * [CPython](https://github.com/python/cpython)
+
+* 在开发选择上，我们选择c++17作为我们的开发语言，我们希望给用户提供一个可执行的文件来作为我们解释器的入口，并且可以运行在windows，linux，macOS等常见操作系统上
+* 在内存管理上，我们使用了c++17的智能指针`shared_ptr`来管理堆内存资源
+* 在实现上，我们参考了java中的公共父类Object和面向对象的思想，在Eagle中也实现公共父类Object，所有Eagle中使用的对象均继承了Object，以此作为Eagle的开发基础
+    * 我们也实现了java中的`InstanceOf`等函数，来辅助开发
 
 ## 2. 词法设计
 
@@ -780,13 +827,9 @@ execute [class I1 extends I2 VD FD] env sto =
 		(bind(I1, class class), sto')
 ```
 
-## 5. 对标语言差异
+## 5. 实现细节
 
-
-
-## 6. 实现细节
-
-### 6.1 总述
+### 5.1 总述
 
 Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macOS等常见操作系统上。
 
@@ -794,9 +837,9 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 
 使用面向对象的编程范式完成代码的具体实现，将模块功能封装在相应的类中。为了方便管理内存，使用c++17的智能指针`shared_ptr`管理堆内存资源。
 
-### 6.2 Object类
+### 5.2 Object类
 
-#### 6.2.1 使用Object类的原因
+#### 5.2.1 使用Object类的原因
 
 出于以下两个方面的原因，程序中使用自定义的Object类作为公共父类：
 
@@ -826,7 +869,7 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 		+ 内置函数 BuiltInFunction
 		+ 其他
 
-#### 6.2.2 Object类的方法
+#### 5.2.2 Object类的方法
 
 考虑到Eagle的各种值类型具有一些公共的行为，参考java语言Object类的方法，设计Object类具有以下四个可继承的方法：
 
@@ -843,9 +886,9 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 	+ 含义：返回该Eagle值作为布尔值进行判断时，是否为真
 	+ Object类行为：返回true
 
-### 6.3 内置类型
+### 5.3 内置类型
 
-#### 6.3.1 Null
+#### 5.3.1 Null
 
 Null为Eagle中的空值，当用户显式地将某个变量赋值为`nil`时，该变量的值为Null；或当某个函数没有通过return语句返回时，该函数的返回值为Null.
 
@@ -856,7 +899,7 @@ Null不具有任何成员变量，仅重写了父类Object的四个方法：
 3. `hashcode`：返回0
 4. `isTruthy`：返回false
 
-#### 6.3.2 Boolean
+#### 5.3.2 Boolean
 
 Boolean为Eagle中的布尔值，当用户将某个变量显式地赋值为`true`，`false`，或赋值为某个逻辑表达式的结果时，该变量的值类型为Boolean
 
@@ -867,7 +910,7 @@ Boolean具有类型为bool的成员变量value，表示该Boolean值的真假，
 3. `hashcode`：返回value的hash值（使用c++内置的hash函数）
 4. `isTruthy`：返回value
 
-#### 6.3.3 Number
+#### 5.3.3 Number
 
 Number为Eagle中的数值，包括高精度整数和高精度浮点数，并支持任意精度的结果精确的数值基本运算（加减乘除模）
 
@@ -884,7 +927,7 @@ Number实现了数值基本运算方法、比较方法、与int、double、strin
 3. `hashcode`：返回数值的字符串表示的hash值（使用c++内置的hash函数）
 4. `isTruthy`：若数值不为0，则返回true，否则返回false
 
-#### 6.3.4 Callable
+#### 5.3.4 Callable
 
 Callable为Eagle中的可调用类型，包括EagleClass, EagleFunction, Lambda等，这些对象具有相同的公共行为，即通过`()`运算符、传入参数并进行函数调用。可将该行为抽象为如下的抽象方法：
 
@@ -896,7 +939,7 @@ Object call(vector<Object> arguments)
 
 该类型与AST中Call节点的处理紧密相关，具体而言，需要判断Call节点的callee进行evaluate后的结果，是否为Callable类型。若否，则表示该callee不可被调用，此时需要报错；若是，则调用该Callable类型的call方法即可。
 
-#### 6.3.5 BuiltInClass
+#### 5.3.5 BuiltInClass
 
 BuiltInClass表示Eagle中具有内置方法的类型，包含String，Container等。这些类型的值具有相同的抽象行为，即可以通过形如`instance.method(params)`对内置方法进行调用，例如：
 
@@ -912,7 +955,7 @@ BuiltInClass表示Eagle中具有内置方法的类型，包含String，Container
 
 分析上述执行过程，可以发现BuiltInClass的抽象行为为，通过方法名获取对应的内置方法的函数指针，将该抽象行为定义为抽象方法`GetMethod(string name)`，其子类需要实现该方法。
 
-#### 6.3.6 Container
+#### 5.3.6 Container
 
 Container表示Eagle中的容器，包含List, Tuple和Dict，是Eagle中的一类BuiltInClass。
 
@@ -937,15 +980,15 @@ Eagle中，Container的抽象行为包括：
 
 
 
-#### 6.3.7 String
+#### 5.3.7 String
 
 
 
-#### 6.3.8 Stream
+#### 5.3.8 Stream
 
 
 
-### 6.4 环境域
+### 5.4 环境域
 
 在Eagle中，设计了`Environment`类来管理不同作用域中的环境变量，其主要有以下成员变量和方法。（环境域，也就是符号表）
 
@@ -968,7 +1011,7 @@ while(true) {
 
 <img src="./imgs/Environment.png" alt="Environment" style="zoom:18%;" />
 
-### 6.5 内置函数
+### 5.5 内置函数
 
 在Eagle中，BuiltInFunction继承了Callable接口，内置函数需要实现BuiltInFunction接口，所以都可以执行`call`动作。Eagle中内置函数的处理逻辑就是在全局环境域中提前注册一系列实现了Callable接口的实例，使其具有可调用的性质。
 
@@ -984,10 +1027,11 @@ while(true) {
 * `help(input: BuiltInClass/BuiltInFunction/Stream)->Null`：输出内置类/内置方法/流处理的相关使用方法
 * `bool(input: Object)->Boolean`：检查输入是否为真值
 * `class_method(input: Class)->Null`：输出用户自定义类实现的方法
+* `globals()->Dict`：返回一个字典，包含全局环境域中的所有信息
 *  `id(object: Object)->Number`：输出对象的存储地址
 * `len(object: Container/String)->Number`：输出容器/字符串的长度
 
-### 6.6 类与实例
+### 5.6 类与实例
 
 Eagle中类的声明语法如下：
 
@@ -1016,7 +1060,7 @@ Instance的查找的逻辑：
 2. 查找实例对应的类的方法，通过`klass`索引到类
 3. 递归地对父类的实例化进行1和2的查找
 
-### 6.7 Return, Break, Continue实现
+### 5.7 Return, Break, Continue实现
 
 在Eagle中，Return语句会出现在方法中，Break和Continue语句会出现在循环中，它们的语义是跳出方法/循环的作用域，返回到调用的地方。
 
@@ -1043,7 +1087,7 @@ ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
 }
 ```
 
-### 6.8 函数 / lambda
+### 5.8 函数 / lambda
 
 在Eagle中，函数和lambda本质是相同，lambda就是匿名的函数。EagleFunction主要由函数声明`Stmt::Function declaration`和函数声明的环境域`Environment closure` 组成。
 
@@ -1056,18 +1100,19 @@ ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
 Object call(vector<Object> argument);
 ```
 
-### 6.9 EagleShell
+### 5.9 EagleShell
 
 
 
-### 6.10 函数调用栈的层数控制
+### 5.10 函数调用栈的层数控制
 
 
 
-## 7. 验证与测试
+## 6. 验证与测试
 
 1. 基本功能
    1. 类使用
    2. 容器使用
    3. ...
 2. 错误示例
+2. EagleShell
