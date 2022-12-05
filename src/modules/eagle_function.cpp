@@ -60,7 +60,9 @@ ObjectPtr EagleLambda::call(std::vector<ObjectPtr>& arguments, int call_line) {
 
     try {
         Interpreter::getInstance().execute(declaration->body, lambda_env);
-    } catch (EagleReturn& eagle_return) { return eagle_return.return_value; }
+    } catch (EagleReturn& eagle_return) {
+        return eagle_return.return_value;
+    }
     return std::make_shared<Null>();
 }
 

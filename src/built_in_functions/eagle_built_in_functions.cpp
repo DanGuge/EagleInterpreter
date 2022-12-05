@@ -66,7 +66,7 @@ std::string WriteToFile::toString() {
 
 std::string WriteToFile::GetBuiltInFunctionInfo() {
     return "function: write content to file\n"
-           "write_to_file(filename: String, content: Object)->Nil";
+           "write_to_file(filename: String, content: Object)->Null";
 }
 
 int Input::arity() {
