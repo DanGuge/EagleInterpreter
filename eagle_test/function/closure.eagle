@@ -1,0 +1,10 @@
+def closure() {
+    var a = "this is a";
+    def print_a() {
+        print a;
+    }
+    return print_a;
+}
+
+var f = closure();
+f(); // expected: this is a

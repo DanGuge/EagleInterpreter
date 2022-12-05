@@ -1,0 +1,10 @@
+def func_test_1() {
+    print "no parameters";
+}
+
+def func_test_2(a, b) {
+    print "parameters is " + str(a) + " and " + str(b);
+}
+
+func_test_1(); // expected: no parameters
+func_test_2(func_test_1, func_test_2); // expected: parameters is <function func_test_1> and <function func_test_2>
