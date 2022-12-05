@@ -10,7 +10,7 @@
 #include <windows.h>
 #endif
 
-#pragma comment(linker, "/STACK:104857600") // 100M
+#pragma comment(linker, "/STACK:104857600")  // 100M
 
 using namespace eagle;
 
@@ -59,6 +59,7 @@ std::string getLine(EagleShell& eagle_shell) {
 int main(int argc, char* argv[]) {
     Eagle eagle;
     if (argc == 1) {
+        eagle.set_running_mode(RunningMode::SHELL_MODE);
         EagleShell eagle_shell;
         std::string input = getLine(eagle_shell);
         while (input != "quit") {
@@ -73,6 +74,7 @@ int main(int argc, char* argv[]) {
         printf("\n");
 #endif
     } else if (argc == 2) {
+        eagle.set_running_mode(RunningMode::INTERPRETER_MODE);
         std::ifstream if_stream;
         if_stream.open(argv[1]);
         std::ostringstream tmp;

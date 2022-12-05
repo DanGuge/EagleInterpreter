@@ -24,6 +24,7 @@ Interpreter Interpreter::interpreter{};
 Interpreter::Interpreter() {
     global_env = std::make_shared<Environment>(nullptr);
     current_env = global_env;
+    running_mode = RunningMode::SHELL_MODE;
     local_variables = {};
     init_built_in();
 }
@@ -50,12 +51,16 @@ void Interpreter::init_built_in() {
                                           std::vector<std::pair<TokenPtr, ObjectPtr>>{}));
 }
 
+void Interpreter::set_running_mode(RunningMode mode) {
+    running_mode = mode;
+}
+
 EagleDictPtr Interpreter::getGlobals() {
     std::vector<EagleDictEntry> elements;
     for (const auto& entry : global_env->get_name_object_map()) {
         ObjectPtr key = std::make_shared<String>(entry.first);
         ObjectPtr value = entry.second;
-        elements.emplace_back(EagleDictEntry{std::move(key), std::move(value)});
+        elements.emplace_back(std::move(key), std::move(value));
     }
     return std::make_shared<EagleDict>(std::move(elements));
 }
@@ -473,12 +478,14 @@ ObjectPtr Interpreter::visitForStmt(std::shared_ptr<Stmt::For> stmt) {
 
 ObjectPtr Interpreter::visitExpressionStmt(std::shared_ptr<Stmt::Expression> stmt) {
     ObjectPtr value = evaluate(stmt->expression);
-    if (InstanceOf<Expr::Assign>(stmt->expression) ||
-        InstanceOf<Expr::InstanceSet>(stmt->expression) ||
-        InstanceOf<Expr::ContainerSet>(stmt->expression)) {
-        return nullptr;
-    } else if (value != nullptr && !InstanceOf<Null>(value)) {
-        pretty_print::PrettyPrint::print(pretty_print::Front::BLUE, stringify(value));
+    if (running_mode == RunningMode::SHELL_MODE) {
+        if (InstanceOf<Expr::Assign>(stmt->expression) ||
+            InstanceOf<Expr::InstanceSet>(stmt->expression) ||
+            InstanceOf<Expr::ContainerSet>(stmt->expression)) {
+            return nullptr;
+        } else if (value != nullptr && !InstanceOf<Null>(value)) {
+            pretty_print::PrettyPrint::print(pretty_print::Front::BLUE, stringify(value));
+        }
     }
     return nullptr;
 }

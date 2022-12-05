@@ -52,4 +52,8 @@ void Eagle::run(std::string source) {
     interpreter.interpret(statements);
 }
 
+void Eagle::set_running_mode(RunningMode running_mode) {
+    Interpreter::getInstance().set_running_mode(running_mode);
+}
+
 }  // namespace eagle

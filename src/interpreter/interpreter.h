@@ -14,6 +14,8 @@ namespace eagle {
 class EagleDict;
 using EagleDictPtr = std::shared_ptr<EagleDict>;
 
+enum class RunningMode { SHELL_MODE, INTERPRETER_MODE };
+
 class Interpreter : public Expr::Visitor, public Stmt::Visitor {
 public:
     static Interpreter& getInstance();
@@ -27,6 +29,7 @@ private:
 public:
     void interpret(const std::vector<StmtPtr>& statements);
     void init_built_in();
+    void set_running_mode(RunningMode mode);
     EagleDictPtr getGlobals();
     // expressions
     ObjectPtr visitAssignExpr(std::shared_ptr<Expr::Assign> expr) override;
@@ -92,6 +95,7 @@ private:
     static EagleRuntimeError interpreterRuntimeError(int line, const std::string& message);
 
 private:
+    RunningMode running_mode;
     EnvironmentPtr global_env;
     EnvironmentPtr current_env;
     std::unordered_map<ExprPtr, int> local_variables;

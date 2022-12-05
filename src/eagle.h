@@ -14,8 +14,8 @@ namespace eagle {
 class Eagle {
 public:
     Eagle();
-
     void run(std::string source);
+    static void set_running_mode(RunningMode running_mode);
 
 private:
     Lexer lexer;
