@@ -1,0 +1,13 @@
+class A {}
+var a = A();
+a.a = 1;
+a.b = (b, c) -> {return str(b) + str(c);};
+
+def f() {
+    print "function f";
+}
+a.c = f;
+
+print a.a; // expected: 1
+print a.b(1, 2); // expected: 12
+a.c(); // expected: function f

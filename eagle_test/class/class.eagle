@@ -1,0 +1,40 @@
+class A {
+    var a = 1;
+    var b = [0];
+    var c = {};
+
+    def init() {
+        print "initialize class A";
+    }
+
+    def printA(a) {
+        print a;
+        print this.a;
+    }
+
+    def printB(b) {
+        this.b.append(b);
+        print this.b;
+    }
+
+    def printC(c) {
+        this.c["cc"] = c;
+        print this.c;
+    }
+}
+
+var a = A(); // expected: initialize class A
+a.printA("aa"); // expected: aa 1
+a.printB(2); // expected: [0, 2]
+a.printC(3); // expected: {"cc": 3}
+
+class B {
+    def init(a, b) {
+        this.a = a;
+        this.b = b;
+        print "initilize class B with " + str(this.a) + str(this.b);
+    }
+}
+
+var b = B("cc", "bb"); // expected: initilize class B with ccbb
+

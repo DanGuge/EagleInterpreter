@@ -1,0 +1,32 @@
+class Father {
+    var a = "father a";
+    var b = "father b";
+    def init() {
+        this.c = "father c";
+    }
+
+    def print_father() {
+        print "father";
+    }
+}
+
+class Son extends Father {
+    var d = "son d";
+    var e = "son e";
+    def init() {
+        super.init();
+        super.print_father();
+    }
+    def print_son() {
+        print "son";
+    }
+}
+
+var son = Son(); // expected: father
+print son.a; // expected: father a
+print son.b; // expected: father b
+print son.c; // expected: father c
+print son.d; // expected: son d
+print son.e; // expected: son e
+son.print_father(); // expected: father
+son.print_son(); // expected: son
