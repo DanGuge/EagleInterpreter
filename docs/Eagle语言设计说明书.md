@@ -974,7 +974,7 @@ Eagle中，Container的抽象行为包括：
 
 #### 5.3.7 List
 
-List为Eagle中的**可变**的线性容器，可存储任意类型的Eagle值，具体而言，使用成员变量`vector<Object> elements`来存储容器内包含的元素。
+List为Eagle中的**可变**的**线性有序**容器，可存储任意类型的Eagle值，具体而言，使用成员变量`vector<Object> elements`来存储容器内包含的元素。
 
 List作为一类Eagle容器，同时也作为一种Eagle值类型，重写了以下方法：
 
@@ -1020,7 +1020,7 @@ List作为一类Eagle容器，同时也作为一种Eagle值类型，重写了以
 
 #### 5.3.8 Tuple
 
-Tuple为Eagle中的**不可变**的线性容器，可存储任意类型的Eagle值，与List基本类似，同样使用成员变量`vector<Object> elements`来存储容器内包含的元素。
+Tuple为Eagle中的**不可变**的**线性有序**容器，可存储任意类型的Eagle值，与List基本类似，同样使用成员变量`vector<Object> elements`来存储容器内包含的元素。
 
 与List相同，Tuple重写了以下方法：
 
@@ -1044,7 +1044,7 @@ Tuple为Eagle中的**不可变**的线性容器，可存储任意类型的Eagle�
 
 #### 5.3.9 Dict
 
-Dict为Eagle中的可变的**关系型**容器，可存储任意类型的、形如(key, value)的Eagle值对。
+Dict为Eagle中的可变的**关系型无序**容器，可存储任意类型的、形如(key, value)的Eagle值对。
 
 + 由于Eagle中的值类型均具有hashcode函数，均可求hash值，因此出于效率的考量，使用c++的`unordered_map`存储Dict的元素，其中`unordered_map`的键值为`key.hashcode()`，存储的值为(key, value)对
 + 考虑到哈希冲突的问题，实际上`unordered_map`中存储的值应为(key, value)对的序列，其中，同一序列的所有(key, value)对的`key.hashcode()`相同
@@ -1072,7 +1072,7 @@ Dict的存储模型如下图所示：
 
 + Object的方法：
 
-	+ `string toString()`：首先使用 `: ` 拼接每个(key, value)对的key的`toString`结果和value的`toString`结果，然后使用`, `将上述字符串拼接起来，最后将得到的字符串在左右两端分别用`{`和`}`包裹后返回。例如，包含元素(1, 2)和(3, 4)的Dict的`toString`结果为 `"{1: 2, 3: 4}"`
+	+ `string toString()`：首先使用 `: ` 拼接每个(key, value)对的key的`toString`结果和value的`toString`结果，然后使用`, `将上述字符串拼接起来，最后将得到的字符串在左右两端分别用`{`和`}`包裹后返回。例如，包含元素(1, 2)和(3, 4)的Dict的`toString`结果为 `"{1: 2, 3: 4}"`；由于Dict为无序容器，因此`toString`结果中元素的打印顺序可能与添加到Dict中的顺序不同；
 	+ `bool equals(Object obj)`：当两个Dict包含完全相同的元素时，可认为这两个Dict相等。由于元素存储顺序的不一致并不影响两个Dict是否相等，因此使用如下的流程进行相等判断：
 		+ 使用RTTI判断obj是否为Dict类型，若是则将其转化为`Dict another`，否则返回false；
 		+ 比较二者的元素数量是否相同，若相同则继续比较，否则返回false；
@@ -1148,9 +1148,9 @@ stream([1, 2, 3]).map((x) -> x*x).filter((x) -> x >= 4).for_each((x) -> {print x
 
 ```
 >>> stream(["c++", "java", "python"]).map((x) -> {print x; return x;}).count();
-"c++"
-"java"
-"python"
+c++
+java
+python
 3
 // 终结流，急求值，输出了语言名称
 >>> stream(["c++", "java", "python"]).map((x) -> {print x; return x;});
