@@ -201,6 +201,7 @@ ObjectPtr EagleDict::size(const BuiltInClassPtr &object, std::vector<ObjectPtr> 
 ObjectPtr EagleDict::clear(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "clear");
     dict->elements.clear();
+    dict->element_cnt = 0;
     return std::make_shared<Null>();
 }
 
