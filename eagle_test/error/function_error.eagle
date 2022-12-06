@@ -1,0 +1,6 @@
+def fun_with_3(a, b, c) {
+    return a + b + c;
+}
+
+print fun_with_3(1, 2);
+// expected: [RuntimeError at line 5] Expect arguments size is 3 But 2 argument(s) is(are) given
