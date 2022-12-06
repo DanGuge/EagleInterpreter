@@ -24,7 +24,7 @@ ObjectPtr EagleTuple::get(const eagle::ObjectPtr &subscript, int line) {
 }
 
 void EagleTuple::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, int line) {
-    throw RuntimeError(line, "'Tuple does not support item assignment");
+    throw RuntimeError(line, "Tuple does not support item assignment");
 }
 
 ObjectPtr EagleTuple::size() {
