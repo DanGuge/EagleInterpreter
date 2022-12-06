@@ -1,0 +1,37 @@
+var s = "str";
+print s; // expected: str
+
+print s == "str"; // expected: true
+print s == "str1"; // expected: false
+
+print "" ? "true" : "false"; // expected: false
+print "x" ? "true" : "false"; // expected: true
+
+s = "ftp: ftpftp: ftp:XY:";
+print s.size(); // expected: 20
+
+print s.empty(); // expected: false
+print "".empty(); // expected: true
+
+print s.char_at(0); // expected: f
+print s.char_at(6); // expected: t
+print s.char_at(-1); // expected: :
+print s.char_at(-5); // expected: p
+
+print s.count("ftp"); // expected: 4
+print "aaa".count("aa"); // expected: 1
+
+print s.find("ftp:"); // expected: 0
+print s.find("ftp:ftp"); // expected: -1
+
+print s.upper(); // expected: "FTP: FTPFTP: FTP:XY:"
+print s.lower(); // expected: "ftp: ftpftp: ftp:xy:"
+print s; // expected: "ftp: ftpftp: ftp:XY:"
+
+print s.split(":"); // expected: ["ftp", " ftpftp", " ftp", "XY", ""]
+print s.split(": "); // expected: ["ftp", "ftpftp", "ftp:XY:"]
+print s.split("ftp"); // expected: ["", ": ", "", ": ", ":XY:"]
+
+print s.replace("ftp", "http"); // expected: "http: httphttp: http:XY:"
+print s.replace("ftp", ""); // expected: ": : :XY:"
+print s;  // expected: "ftp: ftpftp: ftp:XY:"

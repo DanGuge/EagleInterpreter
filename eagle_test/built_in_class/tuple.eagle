@@ -1,0 +1,26 @@
+print (1, 2); // expected: (1, 2)
+print (); // expected: ()
+print (1, ); // expected: (1,)
+
+var l = (1, 2, "3", "4", nil);
+print l; // expected: (1, 2, "3", "4", Nil)
+print l == (1, 2, "3", "4", nil); // expected: true
+print l == (1, 2, 3, "4", nil); // expected: false
+print l == (1, 2, "4", "3", nil); // expected: false
+
+print l ? "true" : "false"; // expected: true
+print () ? "true" : "false"; // expected: false
+print (1, ) ? "true" : "false"; // expected: true
+
+print l[0]; // expected: 1
+print l[3]; // expected: 4
+print l[-1]; // expected: Nil
+print l[-5]; // expected: 1
+
+print l.size(); // expected: 5
+print l.empty(); // expected: false
+print ().empty(); // expected: true
+print l.contains(1); // expected: true
+print l.count(3); // expected: 0
+
+print ([1, 2], (1, 2), [1, 2]).count((1, 2)); // expected: 1
