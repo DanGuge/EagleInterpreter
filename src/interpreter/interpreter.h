@@ -70,6 +70,10 @@ public:
     void executeBlock(const std::vector<StmtPtr>& statements, const EnvironmentPtr& block_env);
     void execute(const StmtPtr& statement, const EnvironmentPtr& stmt_env);
 
+    bool isShellMode() {
+        return running_mode == RunningMode::SHELL_MODE;
+    }
+
 private:
     // help functions
     ObjectPtr evaluate(const ExprPtr& expr);

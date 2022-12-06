@@ -101,8 +101,12 @@ int main(int argc, char* argv[]) {
             "1 parameter: Interpret EagleFile\n"
             "\texample: ./EagleInterpreter ./test.eagle");
     }
+    if (Interpreter::getInstance().isShellMode()) {
 #ifdef _WIN32
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+#elif (__APPLE__) || (__unix__)
+        std::cout << "\e[39;49m";
 #endif
+    }
     return 0;
 }

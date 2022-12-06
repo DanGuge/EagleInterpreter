@@ -5,6 +5,8 @@
 #include <pretty_print/pretty_print.h>
 
 #include <iostream>
+
+#include "interpreter/interpreter.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -53,41 +55,49 @@ void PrettyPrint::print(Back::Color back_color, const std::vector<DisplayStyle>&
 void PrettyPrint::print(Front::Color front_color, Back::Color back_color,
                         const std::vector<DisplayStyle>& display_styles, const std::string& output,
                         bool newline) {
+    if (eagle::Interpreter::getInstance().isShellMode()) {
 #ifdef _WIN32
-    int text_attribute = (back_color << 4) + front_color;
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text_attribute);
-    if (newline) {
-        printf("%s\n", output.c_str());
-    } else {
-        printf("%s", output.c_str());
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 13);
+        int text_attribute = (back_color << 4) + front_color;
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text_attribute);
+        if (newline) {
+            printf("%s\n", output.c_str());
+        } else {
+            printf("%s", output.c_str());
+        }
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 13);
 #elif (__APPLE__) || (__unix__)
-    std::string prefix = ansi_prefix;
-    std::string tmp = ansi_csi;
+        std::string prefix = ansi_prefix;
+        std::string tmp = ansi_csi;
 
-    if (front_color != Front::Color::NONE) {
-        prefix += tmp + std::to_string(front_color);
-        tmp = ansi_delimiter;
-    }
+        if (front_color != Front::Color::NONE) {
+            prefix += tmp + std::to_string(front_color);
+            tmp = ansi_delimiter;
+        }
 
-    if (back_color != Back::Color::NONE) {
-        prefix += tmp + std::to_string(back_color);
-        tmp = ansi_delimiter;
-    }
+        if (back_color != Back::Color::NONE) {
+            prefix += tmp + std::to_string(back_color);
+            tmp = ansi_delimiter;
+        }
 
-    for (const auto& display_style : display_styles) {
-        prefix += tmp + std::to_string(display_style);
-    }
+        for (const auto& display_style : display_styles) {
+            prefix += tmp + std::to_string(display_style);
+        }
 
-    prefix += ansi_suffix;
-    if (newline) {
-        std::cout << prefix << output << "\e[95;23;24;49m"
-                  << "\n";
-    } else {
-        std::cout << prefix << output << "\e[95;23;24;49m";
-    }
+        prefix += ansi_suffix;
+        if (newline) {
+            std::cout << prefix << output << "\e[95;23;24;49m"
+                      << "\n";
+        } else {
+            std::cout << prefix << output << "\e[95;23;24;49m";
+        }
 #endif
+    } else {
+        if (newline) {
+            printf("%s\n", output.c_str());
+        } else {
+            printf("%s", output.c_str());
+        }
+    }
 }
 
 }  // namespace pretty_print
