@@ -1600,21 +1600,248 @@ print son.fun(1, 2);
 
 <img src="./imgs/function_test.png" alt="function_test" style="zoom:50%;" />
 
-#### 容器
+#### List
 
+```
+var l = [1, 2, "3", "4", nil];
+print l;
 
+print l == [1, 2, "3", "4", nil];
+print l ? "true" : "false";
+
+print l[0];
+print l[-5];
+l[1] = 9;
+print l;
+
+l = [1, 2, 3];
+print l.size();
+print l.empty();
+print l.contains(3);
+print l.count(2);
+
+l.append("xyz");
+print l;
+l.insert(0, 4);
+print l;
+l.remove(1);
+print l;
+l.pop();
+print l;
+l.reverse();
+print l;
+l.clear();
+print l;
+```
+
+![image-20221206234546673](./imgs/list_test.png)
+
+![image-20221206234546673](./imgs/list_test2.png)
+
+#### Tuple
+
+```
+var l = (1, 2, "3", "4", nil);
+print l;
+print l == (1, 2, "3", "4", nil);
+
+print l ? "true" : "false";
+print () ? "true" : "false";
+
+print l[0];
+print l[-5];
+
+print l.size();
+print l.empty();
+print l.contains(1);
+print l.count(3);
+```
+
+![image-20221206234546673](./imgs/tuple_test.png)
+
+#### Dict
+
+```
+var d = {1:"2", "3":4};
+print d;
+print d == {"3": 4, 1: "2"};
+print d ? "true" : "false";
+print d.size();
+
+d.clear();
+print d;
+print d.size();
+
+d = {1: 2};
+print d.get(1);
+print d.get("1");
+print d.get(2);
+
+d.put(1, 4);
+print d;
+d.put(3, 4);
+print d;
+
+print d.contains_key(1);
+print d.contains_key(4);
+print d.contains_value(2);
+print d.contains_value(4);
+
+d.remove(3);
+print d;
+d.remove(4);
+print d;
+
+d = {1: 2, 3: 2, 4: 5};
+print d.keys();
+print d.values();
+print d.items();
+```
+
+![image-20221206234546673](./imgs/dict_test1.png)
+
+![image-20221206234546673](./imgs/dict_test2.png)
+
+![image-20221206234546673](./imgs/dict_test3.png)
 
 #### String
 
+```
+var s = "str";
+print s;
+print s == "str";
+print s == "str1";
+print "" ? "true" : "false";
 
+s = "ftp: ftpftp: ftp:XY:";
+print s.size();
+print s.empty();
+print s.char_at(0);
+print s.char_at(-1);
+
+print s.count("ftp");
+print "aaa".count("aa");
+print s.find("ftp:");
+print s.upper();
+print s.lower();
+print s;
+
+print s.split(":");
+print s.replace("ftp", "http");
+```
+
+![image-20221206234546673](./imgs/string_test1.png)
+
+![image-20221206234546673](./imgs/string_test2.png)
 
 #### 流处理
 
+```
+var s1 = stream(["c++", "java", "python"]).map((x) -> {print x; return x;}).count();
+print s1;
 
+var s2 = stream(["c++", "java", "python"]).map((x) -> {print x; return x;});
+print s2.limit(2).count();
+
+var s3 = stream((("c++", "Compiled"), ("java", "Compiled-Interpreted"), ("python", "Interpreted"))).map((x) -> {print x[0]; return x;}).map((x) -> {print x[1]; return x;}).count();
+
+print stream([1, 2, 3, 4, 5]).map((x) -> x*x).to_list();
+print stream([1, 2, 3, 4, 5]).filter((x) -> x % 2 != 0).to_list();
+print stream([1, 2, 3, 4, 5]).limit(3).to_list();
+print stream([1, 2, 3, 4, 5]).map((x) -> x*3+1).filter((x) -> x > 10).filter((x) -> x < 15).to_tuple();
+print stream([1, 2, 3, 4, 5]).map((x) -> (x, x*x*x)).to_dict();
+
+var s = stream([1, 2, 3, 4, 5]).map((x) -> (x, x/2)).for_each((t) -> {
+	print "num: " + str(t[0]) + ", half: " + str(t[1]);
+});
+
+stream({1: 2, 3: 4}).for_each((x) -> {print x;});
+```
+
+![image-20221206234546673](./imgs/stream_test1.png)
+
+![image-20221206234546673](./imgs/stream_test2.png)
+
+#### 用户自定义类的toString等方法
+
+```
+class A {
+    var a;
+    var b;
+    def init(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+class B {
+    var a;
+    var b;
+    def init(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+    def toString() {
+        return "(" + str(this.a) + "|" + str(this.b) + ")";
+    }
+    def equals(o) {
+        return this.a == o.a and this.b == o.b;
+    }
+    def hashcode() {
+        return this.a + this.b;
+    }
+    def isTruthy() {
+        return this.a != 0 or this.b != 0;
+    }
+}
+
+print "toString test:";
+print A(1, 2);
+print B(1, 2);
+
+print "equals test:";
+print A(1, 2) == A(1, 2);
+print B(1, 2) == B(1, 2);
+var l = [1, 2, A(1, 2), B(1, 2), B(1, 2)];
+print l.count(1);
+print l.count(A(1, 2));
+print l.count(B(1, 2));
+
+print "hashcode test:";
+var d = {A(1, 2): "A instance", B(1, 2): "B instance"};
+print d.contains_key(A(1, 2));
+print d.contains_key(B(1, 2));
+d[B(2, 1)] = "xyz";
+print d.size();
+print d[B(1, 2)];
+print d[B(2, 1)];
+
+print "isTruthy test:";
+print A(0 ,0) ? "true" : "false";
+print B(0 ,0) ? "true" : "false";
+print B(1 ,0) ? "true" : "false";
+```
+
+![custom_test](./imgs/custom_test.png)
 
 #### benchmark
 
+```
+def hanoi(a, b, c, n) {
+    if (n == 1) {
+        print a + " -> " + c;
+        return 1;
+    }
+    var l = hanoi(a, c, b, n-1);
+    print a + " -> " + c;
+    var r = hanoi(b, a, c, n-1);
+    return l + r + 1;
+}
+print "3 levels hanoi:";
+print hanoi("A", "B", "C", 3);
+```
 
+![bechmark_test](./imgs/benchmark_test.png)
 
 ### 6.2 错误示例
 
@@ -1697,3 +1924,45 @@ var a = 1
 ```
 
 <img src="./imgs/semicolon_error.png" alt="semicolon_error" style="zoom:50%;" />
+
+#### 容器使用错误
+
+```
+var l = [1, 2, 3];
+print l[3];
+l["str"] = 1;
+l[0.5] = 2;
+l.append(l);
+
+l = (1, 2, 3);
+print l[-4];
+l[0] = 4;
+l.append(5);
+
+var d = {1: 2, 3: 4};
+print d[5];
+d[d] = 1;
+d[1] = d;
+d.put(d, d);
+```
+
+![container_error](./imgs/container_error.png)
+
+#### 流操作错误
+
+```
+var s = stream([1, 2, 3]).map((x) -> x*x*x);
+print s.filter((x) -> x > 5).count();
+print s.count();
+
+print stream([1, 2, 3]).to_dict();
+
+print stream([1, 2, 3]).map((x) -> {
+    if (x <= 1) return (x, x+1);
+    if (x == 2) return [x, str(x)];
+    return (x, x+1, x+2);
+}).to_dict();
+```
+
+![container_error](./imgs/stream_error.png)
+
