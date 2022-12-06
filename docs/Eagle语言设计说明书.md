@@ -1456,9 +1456,66 @@ ObjectPtr WrapperCall(std::vector<ObjectPtr>& arguments, int call_line) {
 
 ## 6. 验证与测试
 
-1. 基本功能
-   1. 类使用
-   2. 容器使用
-   3. ...
-2. 错误示例
-2. EagleShell
+### 6.1 基本功能
+
+#### 内置函数
+
+```
+var a = 19.07;
+print str(a);
+
+var b = "111.111";
+print num(b);
+
+var c = input(); // input: abc
+print c;
+
+help(help);
+
+var d;
+print bool(d);
+
+class E {
+    def a() {}
+    def b(c, d) {}
+    def e(f, g, h) {}
+}
+class_method(E);
+
+print globals();
+
+var f;
+print id(f);
+
+var g = [1, "2", (), E];
+print len(g);
+```
+
+<img src="./imgs/built_in_function.png" alt="built_in_function" style="zoom:50%;" />
+
+#### 表达式
+
+
+
+#### 类
+
+
+
+#### 容器
+
+
+
+#### String
+
+
+
+#### 流处理
+
+
+
+#### 函数/lambda
+
+
+
+### 6.2 错误示例
+
