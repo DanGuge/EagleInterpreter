@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "BigFloat.h"
+#include "Number.h"
 #include "token.h"
 
 namespace eagle {

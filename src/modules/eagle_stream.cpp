@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "BigFloat.h"
 #include "eagle_container.h"
+#include "Number.h"
 
 namespace eagle {
 
@@ -194,10 +194,10 @@ std::vector<ObjectPtr> EagleStream::limit(const eagle::ObjectPtr &para,
     if (para == nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'limit' should not be null");
     }
-    if (!InstanceOf<BigFloat>(para)) {
+    if (!InstanceOf<Number>(para)) {
         throw RuntimeError(line, "The parameter of stream method 'limit' should be integer");
     }
-    BigFloatPtr n = cast<BigFloat>(para);
+    BigFloatPtr n = cast<Number>(para);
     if (!n->isInteger()) {
         throw RuntimeError(line,
                            "The parameter of stream method 'limit' should be integer, not float");
@@ -273,7 +273,7 @@ ObjectPtr EagleStream::count(const eagle::ObjectPtr &para, const std::vector<Obj
     if (para != nullptr) {
         throw RuntimeError(line, "The parameter of stream method 'count' should be null");
     }
-    return std::make_shared<BigFloat>((int)elements.size());
+    return std::make_shared<Number>((int)elements.size());
 }
 
 EagleStreamCall::EagleStreamCall(eagle::EagleStreamPtr stream, eagle::TokenPtr func)

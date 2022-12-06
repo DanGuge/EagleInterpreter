@@ -1,5 +1,5 @@
 /*
- * BigFloat - Arbitrary-Precision Float Arithmetic Library
+ * Number - Arbitrary-Precision Float Arithmetic Library
  * Copyright (C) 2015 Gianfranco Mariotti
  */
 
@@ -14,10 +14,10 @@
 
 namespace eagle {
 
-class BigFloat;
-using BigFloatPtr = std::shared_ptr<BigFloat>;
+class Number;
+using BigFloatPtr = std::shared_ptr<Number>;
 
-class BigFloat : public Object {
+class Number : public Object {
 private:
     char sign;
     std::deque<char> number;
@@ -36,118 +36,118 @@ private:
     };
 
     // Comparator without sign, utilized by Comparators and Operations
-    static int CompareNum(const BigFloat& left, const BigFloat& right);
+    static int CompareNum(const Number& left, const Number& right);
 
     // Operations without sign and decimals, utilized by Operations
-    static BigFloat Sum(const BigFloat& left, const BigFloat& right);
-    static BigFloat Subtract(const BigFloat& left, const BigFloat& right);
-    static BigFloat Multiply(const BigFloat& left, const BigFloat& right);
-    static BigFloat Pow(const BigFloat& left, const BigFloat& right);
+    static Number Sum(const Number& left, const Number& right);
+    static Number Subtract(const Number& left, const Number& right);
+    static Number Multiply(const Number& left, const Number& right);
+    static Number Pow(const Number& left, const Number& right);
 
     // Default decimal
     static const int DEFAULT_DECIMAL = 20;
 
 public:
     // Constructors
-    BigFloat() {
+    Number() {
         sign = '\0';
         decimals = 0;
         error = 1;
         error_code = "Unset";
     };
-    BigFloat(const char* strNum) {
+    Number(const char* strNum) {
         *this = strNum;
     };
-    BigFloat(std::string strNum) {
+    Number(std::string strNum) {
         *this = strNum;
     };
-    BigFloat(int Num) {
+    Number(int Num) {
         *this = Num;
     };
-    BigFloat(double Num) {
+    Number(double Num) {
         *this = Num;
     };
 
     // Assignment operators
-    BigFloat& operator=(const char* strNum);
-    BigFloat& operator=(std::string strNum);
-    BigFloat& operator=(int Num);
-    BigFloat& operator=(double Num);
+    Number& operator=(const char* strNum);
+    Number& operator=(std::string strNum);
+    Number& operator=(int Num);
+    Number& operator=(double Num);
 
     // Operations
-    friend BigFloat operator+(const BigFloat& left_, const BigFloat& right_);
-    friend BigFloat operator+(const BigFloat& left, const int& int_right);
-    friend BigFloat operator+(const BigFloat& left, const double& double_right);
+    friend Number operator+(const Number& left_, const Number& right_);
+    friend Number operator+(const Number& left, const int& int_right);
+    friend Number operator+(const Number& left, const double& double_right);
 
-    friend BigFloat operator-(const BigFloat& left_, const BigFloat& right_);
-    friend BigFloat operator-(const BigFloat& left, const int& int_right);
-    friend BigFloat operator-(const BigFloat& left, const double& double_right);
+    friend Number operator-(const Number& left_, const Number& right_);
+    friend Number operator-(const Number& left, const int& int_right);
+    friend Number operator-(const Number& left, const double& double_right);
 
-    friend BigFloat operator*(const BigFloat& left, const BigFloat& right);
-    friend BigFloat operator*(const BigFloat& left, const int& int_right);
-    friend BigFloat operator*(const BigFloat& left, const double& double_right);
+    friend Number operator*(const Number& left, const Number& right);
+    friend Number operator*(const Number& left, const int& int_right);
+    friend Number operator*(const Number& left, const double& double_right);
 
-    friend BigFloat operator/(const BigFloat& left, const BigFloat& right);
-    friend BigFloat operator/(const BigFloat& left, const int& int_right);
-    friend BigFloat operator/(const BigFloat& left, const double& double_right);
-    static BigFloat PrecDiv(const BigFloat& left, const BigFloat& right, int div_precision);
-    static BigFloat PrecDiv(const BigFloat& left, const int& int_right, int div_precision);
-    static BigFloat PrecDiv(const BigFloat& left, const double& double_right, int div_precision);
+    friend Number operator/(const Number& left, const Number& right);
+    friend Number operator/(const Number& left, const int& int_right);
+    friend Number operator/(const Number& left, const double& double_right);
+    static Number PrecDiv(const Number& left, const Number& right, int div_precision);
+    static Number PrecDiv(const Number& left, const int& int_right, int div_precision);
+    static Number PrecDiv(const Number& left, const double& double_right, int div_precision);
 
-    friend BigFloat operator%(const BigFloat& left, const BigFloat& right);
-    friend BigFloat operator%(const BigFloat& left, const int& int_right);
+    friend Number operator%(const Number& left, const Number& right);
+    friend Number operator%(const Number& left, const int& int_right);
 
-    static BigFloat Power(const BigFloat& left, const BigFloat& right, int div_precision = 0);
-    static BigFloat Power(const BigFloat& left, const int& int_right, int div_precision = 0);
-    static BigFloat Power(const BigFloat& left, const double& double_right, int div_precision = 0);
+    static Number Power(const Number& left, const Number& right, int div_precision = 0);
+    static Number Power(const Number& left, const int& int_right, int div_precision = 0);
+    static Number Power(const Number& left, const double& double_right, int div_precision = 0);
 
-    friend std::ostream& operator<<(std::ostream& out, BigFloat& b);
+    friend std::ostream& operator<<(std::ostream& out, Number& b);
 
-    BigFloat& operator++(int i) {
+    Number& operator++(int i) {
         *this = *this + 1;
         return *this;
     };
-    BigFloat& operator++() {
+    Number& operator++() {
         *this = *this + 1;
         return *this;
     };
-    BigFloat& operator--(int i) {
+    Number& operator--(int i) {
         *this = *this - 1;
         return *this;
     };
-    BigFloat& operator--() {
+    Number& operator--() {
         *this = *this - 1;
         return *this;
     };
 
     // Comparators
-    bool operator==(const BigFloat& right) const;
+    bool operator==(const Number& right) const;
     bool operator==(const int& int_right) const;
     bool operator==(const double& double_right) const;
 
-    bool operator!=(const BigFloat& right) const;
+    bool operator!=(const Number& right) const;
     bool operator!=(const int& int_right) const;
     bool operator!=(const double& double_right) const;
 
-    bool operator>(const BigFloat& right) const;
+    bool operator>(const Number& right) const;
     bool operator>(const int& int_right) const;
     bool operator>(const double& double_right) const;
 
-    bool operator>=(const BigFloat& right) const;
+    bool operator>=(const Number& right) const;
     bool operator>=(const int& int_right) const;
     bool operator>=(const double& double_right) const;
 
-    bool operator<(const BigFloat& right) const;
+    bool operator<(const Number& right) const;
     bool operator<(const int& int_right) const;
     bool operator<(const double& double_right) const;
 
-    bool operator<=(const BigFloat& right) const;
+    bool operator<=(const Number& right) const;
     bool operator<=(const int& int_right) const;
     bool operator<=(const double& double_right) const;
 
     // Stream Operators
-    friend std::ostream& operator<<(std::ostream& out, const BigFloat& right);
-    friend std::istream& operator>>(std::istream& in, BigFloat& right);
+    friend std::ostream& operator<<(std::ostream& out, const Number& right);
+    friend std::istream& operator>>(std::istream& in, Number& right);
 
     // Check Methods
     bool isInteger() const {

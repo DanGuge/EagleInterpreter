@@ -1,23 +1,23 @@
 /*
- * BigFloat - Arbitrary-Precision Float Arithmetic Library
+ * Number - Arbitrary-Precision Float Arithmetic Library
  * Copyright (C) 2015 Gianfranco Mariotti
  */
 
-#include "BigFloat.h"
+#include "Number.h"
 
 #include <algorithm>
 
 //------------------------Private Methods--------------------------------
 namespace eagle {
 // Comparator without sign, utilized by Comparators and Operations
-int BigFloat::CompareNum(const BigFloat& left, const BigFloat& right) {
+int Number::CompareNum(const Number& left, const Number& right) {
     if ((left.number.size() - left.decimals) > (right.number.size() - right.decimals))
         return 1;
     else if ((left.number.size() - left.decimals) < (right.number.size() - right.decimals))
         return 2;
 
     if (left.decimals > right.decimals) {
-        BigFloat tmp;
+        Number tmp;
         tmp = right;
         while (left.decimals > tmp.decimals) {
             tmp.decimals++;
@@ -32,7 +32,7 @@ int BigFloat::CompareNum(const BigFloat& left, const BigFloat& right) {
         }
         return 0;
     } else if (left.decimals < right.decimals) {
-        BigFloat tmp;
+        Number tmp;
         tmp = left;
         while (tmp.decimals < right.decimals) {
             tmp.decimals++;
@@ -58,8 +58,8 @@ int BigFloat::CompareNum(const BigFloat& left, const BigFloat& right) {
 };
 
 // Operations without sign and decimals, utilized by Operations
-BigFloat BigFloat::Sum(const BigFloat& left, const BigFloat& right) {
-    BigFloat tmp;
+Number Number::Sum(const Number& left, const Number& right) {
+    Number tmp;
     int carry = 0;
     size_t loopsize =
         (left.number.size() > right.number.size()) ? left.number.size() : right.number.size();
@@ -85,8 +85,8 @@ BigFloat BigFloat::Sum(const BigFloat& left, const BigFloat& right) {
     return tmp;
 };
 
-BigFloat BigFloat::Subtract(const BigFloat& left, const BigFloat& right) {
-    BigFloat tmp;
+Number Number::Subtract(const Number& left, const Number& right) {
+    Number tmp;
     int carry = 0;
     int aus;
 
@@ -111,9 +111,9 @@ BigFloat BigFloat::Subtract(const BigFloat& left, const BigFloat& right) {
     return tmp;
 };
 
-BigFloat BigFloat::Multiply(const BigFloat& left, const BigFloat& right) {
-    BigFloat ris;
-    BigFloat tmp;
+Number Number::Multiply(const Number& left, const Number& right) {
+    Number ris;
+    Number tmp;
     ris.number.push_back('0');
     int carry = 0;
 
@@ -145,19 +145,19 @@ BigFloat BigFloat::Multiply(const BigFloat& left, const BigFloat& right) {
     return ris;
 };
 
-BigFloat BigFloat::Pow(const BigFloat& left, const BigFloat& right) {
+Number Number::Pow(const Number& left, const Number& right) {
     if (right == 0)
         return 1;
     else if (right % 2 == 0)
-        return BigFloat::Pow(left, right / 2) * BigFloat::Pow(left, right / 2);
+        return Number::Pow(left, right / 2) * Number::Pow(left, right / 2);
     else
-        return left * BigFloat::Pow(left, right / 2) * BigFloat::Pow(left, right / 2);
+        return left * Number::Pow(left, right / 2) * Number::Pow(left, right / 2);
 };
 
 //------------------------Public Methods--------------------------------
 
 // Assignment operators
-BigFloat& BigFloat::operator=(const char* strNum) {
+Number& Number::operator=(const char* strNum) {
     number.clear();
     decimals = 0;
     sign = '\0';
@@ -212,29 +212,29 @@ BigFloat& BigFloat::operator=(const char* strNum) {
     return *this;
 };
 
-BigFloat& BigFloat::operator=(std::string strNum) {
+Number& Number::operator=(std::string strNum) {
     *this = strNum.c_str();
     return *this;
 };
 
-BigFloat& BigFloat::operator=(int Num) {
+Number& Number::operator=(int Num) {
     *this = std::to_string(Num);
     return *this;
 };
 
-BigFloat& BigFloat::operator=(double Num) {
+Number& Number::operator=(double Num) {
     *this = std::to_string(Num);
     return *this;
 };
 
 // Operations
-BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
-    BigFloat tmp;
+Number operator+(const Number& left_, const Number& right_) {
+    Number tmp;
     if ((left_.error) || (right_.error)) {
         return tmp;
     }
 
-    BigFloat left, right;
+    Number left, right;
     left = left_;
     right = right_;
 
@@ -250,13 +250,13 @@ BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
         }
 
     if ((left.sign == '+') && (right.sign == '-')) {
-        int check = BigFloat::CompareNum(left, right);
+        int check = Number::CompareNum(left, right);
         if (check == 0) {
             tmp = 0;
             return tmp;
         }
         if (check == 1) {
-            tmp = BigFloat::Subtract(left, right);
+            tmp = Number::Subtract(left, right);
             tmp.sign = '+';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -264,7 +264,7 @@ BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
             return tmp;
         }
         if (check == 2) {
-            tmp = BigFloat::Subtract(right, left);
+            tmp = Number::Subtract(right, left);
             tmp.sign = '-';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -273,13 +273,13 @@ BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
         }
     }
     if ((left.sign == '-') && (right.sign == '+')) {
-        int check = BigFloat::CompareNum(left, right);
+        int check = Number::CompareNum(left, right);
         if (check == 0) {
             tmp = 0;
             return tmp;
         }
         if (check == 1) {
-            tmp = BigFloat::Subtract(left, right);
+            tmp = Number::Subtract(left, right);
             tmp.sign = '-';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -287,7 +287,7 @@ BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
             return tmp;
         }
         if (check == 2) {
-            tmp = BigFloat::Subtract(right, left);
+            tmp = Number::Subtract(right, left);
             tmp.sign = '+';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -297,14 +297,14 @@ BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
     }
 
     if ((left.sign == '+') && (right.sign == '+')) {
-        tmp = BigFloat::Sum(left, right);
+        tmp = Number::Sum(left, right);
         tmp.sign = '+';
         tmp.decimals = left.decimals;
         tmp.error = 0;
         return tmp;
     }
     if ((left.sign == '-') && (right.sign == '-')) {
-        tmp = BigFloat::Sum(left, right);
+        tmp = Number::Sum(left, right);
         tmp.sign = '-';
         tmp.decimals = left.decimals;
         tmp.error = 0;
@@ -314,25 +314,25 @@ BigFloat operator+(const BigFloat& left_, const BigFloat& right_) {
     return tmp;  // all cases are covered above, this is only to prevent compiler warnings
 };
 
-BigFloat operator+(const BigFloat& left, const int& int_right) {
-    BigFloat right;
+Number operator+(const Number& left, const int& int_right) {
+    Number right;
     right = int_right;
     return left + right;
 };
 
-BigFloat operator+(const BigFloat& left, const double& double_right) {
-    BigFloat right;
+Number operator+(const Number& left, const double& double_right) {
+    Number right;
     right = double_right;
     return left + right;
 };
 
-BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
-    BigFloat tmp;
+Number operator-(const Number& left_, const Number& right_) {
+    Number tmp;
     if ((left_.error) || (right_.error)) {
         return tmp;
     }
 
-    BigFloat left, right;
+    Number left, right;
     left = left_;
     right = right_;
 
@@ -348,14 +348,14 @@ BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
         }
 
     if ((left.sign == '+') && (right.sign == '-')) {
-        tmp = BigFloat::Sum(left, right);
+        tmp = Number::Sum(left, right);
         tmp.sign = '+';
         tmp.decimals = left.decimals;
         tmp.error = 0;
         return tmp;
     }
     if ((left.sign == '-') && (right.sign == '+')) {
-        tmp = BigFloat::Sum(left, right);
+        tmp = Number::Sum(left, right);
         tmp.sign = '-';
         tmp.decimals = left.decimals;
         tmp.error = 0;
@@ -363,13 +363,13 @@ BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
     }
 
     if ((left.sign == '+') && (right.sign == '+')) {
-        int check = BigFloat::CompareNum(left, right);
+        int check = Number::CompareNum(left, right);
         if (check == 0) {
             tmp = 0;
             return tmp;
         }
         if (check == 1) {
-            tmp = BigFloat::Subtract(left, right);
+            tmp = Number::Subtract(left, right);
             tmp.sign = '+';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -377,7 +377,7 @@ BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
             return tmp;
         }
         if (check == 2) {
-            tmp = BigFloat::Subtract(right, left);
+            tmp = Number::Subtract(right, left);
             tmp.sign = '-';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -387,13 +387,13 @@ BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
     }
 
     if ((left.sign == '-') && (right.sign == '-')) {
-        int check = BigFloat::CompareNum(left, right);
+        int check = Number::CompareNum(left, right);
         if (check == 0) {
             tmp = 0;
             return tmp;
         }
         if (check == 1) {
-            tmp = BigFloat::Subtract(left, right);
+            tmp = Number::Subtract(left, right);
             tmp.sign = '-';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -401,7 +401,7 @@ BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
             return tmp;
         }
         if (check == 2) {
-            tmp = BigFloat::Subtract(right, left);
+            tmp = Number::Subtract(right, left);
             tmp.sign = '+';
             tmp.decimals = left.decimals;
             tmp.LeadTrim();
@@ -413,25 +413,25 @@ BigFloat operator-(const BigFloat& left_, const BigFloat& right_) {
     return tmp;  // all cases are covered above, this is only to prevent compiler warnings
 };
 
-BigFloat operator-(const BigFloat& left, const int& int_right) {
-    BigFloat right;
+Number operator-(const Number& left, const int& int_right) {
+    Number right;
     right = int_right;
     return left - right;
 };
 
-BigFloat operator-(const BigFloat& left, const double& double_right) {
-    BigFloat right;
+Number operator-(const Number& left, const double& double_right) {
+    Number right;
     right = double_right;
     return left - right;
 };
 
-BigFloat operator*(const BigFloat& left, const BigFloat& right) {
-    BigFloat tmp;
+Number operator*(const Number& left, const Number& right) {
+    Number tmp;
     if ((left.error) || (right.error)) {
         return tmp;
     }
 
-    tmp = BigFloat::Multiply(left, right);
+    tmp = Number::Multiply(left, right);
     if (((left.sign == '-') && (right.sign == '-')) || ((left.sign == '+') && (right.sign == '+')))
         tmp.sign = '+';
     else
@@ -444,26 +444,26 @@ BigFloat operator*(const BigFloat& left, const BigFloat& right) {
     return tmp;
 };
 
-BigFloat operator*(const BigFloat& left, const int& int_right) {
-    BigFloat right;
+Number operator*(const Number& left, const int& int_right) {
+    Number right;
     right = int_right;
     return left * right;
 };
 
-BigFloat operator*(const BigFloat& left, const double& double_right) {
-    BigFloat right;
+Number operator*(const Number& left, const double& double_right) {
+    Number right;
     right = double_right;
     return left * right;
 };
 
-BigFloat operator/(const BigFloat& left, const BigFloat& right) {
-    BigFloat tmp;
+Number operator/(const Number& left, const Number& right) {
+    Number tmp;
 
     if ((left.error) || (right.error)) {
         return tmp;
     }
 
-    BigFloat Q, R, D, N, zero;
+    Number Q, R, D, N, zero;
     zero = 0;
 
     if (right == zero) {
@@ -493,11 +493,11 @@ BigFloat operator/(const BigFloat& left, const BigFloat& right) {
     // Increase Precision to highest decimal quote
     int div_precision = (left.decimals > right.decimals) ? (left.decimals) : (right.decimals);
     div_precision =
-        (div_precision > BigFloat::DEFAULT_DECIMAL) ? div_precision : BigFloat::DEFAULT_DECIMAL;
+        (div_precision > Number::DEFAULT_DECIMAL) ? div_precision : Number::DEFAULT_DECIMAL;
     for (int i = 0; i < div_precision; i++)
         N.number.push_front('0');
 
-    int check = BigFloat::CompareNum(N, D);
+    int check = Number::CompareNum(N, D);
 
     if (check == 0) {
         tmp.number.push_front('1');
@@ -525,7 +525,7 @@ BigFloat operator/(const BigFloat& left, const BigFloat& right) {
                     int mod_avg = avg / 2;
                     avg = (avg - mod_avg * 2) ? (mod_avg + 1) : (mod_avg);
 
-                    int div_check = BigFloat::CompareNum(R, D * avg);
+                    int div_check = Number::CompareNum(R, D * avg);
 
                     if (div_check == 2) {
                         max = avg;
@@ -537,7 +537,7 @@ BigFloat operator/(const BigFloat& left, const BigFloat& right) {
                     }
                 }
 
-                Q.number.push_front(BigFloat::IntToChar(Q_sub));
+                Q.number.push_front(Number::IntToChar(Q_sub));
 
                 bool is_zero = true;
                 std::deque<char>::const_iterator zero_iter = R.number.begin();
@@ -566,22 +566,22 @@ BigFloat operator/(const BigFloat& left, const BigFloat& right) {
     return tmp;
 };
 
-BigFloat operator/(const BigFloat& left, const int& int_right) {
-    BigFloat right;
+Number operator/(const Number& left, const int& int_right) {
+    Number right;
     right = int_right;
     return left / right;
 };
 
-BigFloat operator/(const BigFloat& left, const double& double_right) {
-    BigFloat right;
+Number operator/(const Number& left, const double& double_right) {
+    Number right;
     right = double_right;
     return left / right;
 };
 
-BigFloat BigFloat::PrecDiv(const BigFloat& left, const BigFloat& right, int div_precision) {
-    BigFloat tmp;
+Number Number::PrecDiv(const Number& left, const Number& right, int div_precision) {
+    Number tmp;
 
-    BigFloat Q, R, D, N, zero;
+    Number Q, R, D, N, zero;
     zero = 0;
 
     if (right == zero) {
@@ -612,7 +612,7 @@ BigFloat BigFloat::PrecDiv(const BigFloat& left, const BigFloat& right, int div_
     for (int i = 0; i < div_precision; i++)
         N.number.push_front('0');
 
-    int check = BigFloat::CompareNum(N, D);
+    int check = Number::CompareNum(N, D);
 
     if (check == 0) {
         tmp.number.push_front('1');
@@ -640,7 +640,7 @@ BigFloat BigFloat::PrecDiv(const BigFloat& left, const BigFloat& right, int div_
                     int mod_avg = avg / 2;
                     avg = (avg - mod_avg * 2) ? (mod_avg + 1) : (mod_avg);
 
-                    int div_check = BigFloat::CompareNum(R, D * avg);
+                    int div_check = Number::CompareNum(R, D * avg);
 
                     if (div_check == 2) {
                         max = avg;
@@ -652,7 +652,7 @@ BigFloat BigFloat::PrecDiv(const BigFloat& left, const BigFloat& right, int div_
                     }
                 }
 
-                Q.number.push_front(BigFloat::IntToChar(Q_sub));
+                Q.number.push_front(Number::IntToChar(Q_sub));
 
                 bool is_zero = true;
                 std::deque<char>::const_iterator zero_iter = R.number.begin();
@@ -681,20 +681,20 @@ BigFloat BigFloat::PrecDiv(const BigFloat& left, const BigFloat& right, int div_
     return tmp;
 };
 
-BigFloat BigFloat::PrecDiv(const BigFloat& left, const int& int_right, int div_precision) {
-    BigFloat right;
+Number Number::PrecDiv(const Number& left, const int& int_right, int div_precision) {
+    Number right;
     right = int_right;
-    return BigFloat::PrecDiv(left, right, div_precision);
+    return Number::PrecDiv(left, right, div_precision);
 };
 
-BigFloat BigFloat::PrecDiv(const BigFloat& left, const double& double_right, int div_precision) {
-    BigFloat right;
+Number Number::PrecDiv(const Number& left, const double& double_right, int div_precision) {
+    Number right;
     right = double_right;
-    return BigFloat::PrecDiv(left, right, div_precision);
+    return Number::PrecDiv(left, right, div_precision);
 };
 
-BigFloat operator%(const BigFloat& left, const BigFloat& right) {
-    BigFloat tmp;
+Number operator%(const Number& left, const Number& right) {
+    Number tmp;
 
     if ((left.error) || (right.error)) {
         return tmp;
@@ -705,7 +705,7 @@ BigFloat operator%(const BigFloat& left, const BigFloat& right) {
         return tmp;
     }
 
-    BigFloat Q, R, D, N, zero, ret;
+    Number Q, R, D, N, zero, ret;
     zero = 0;
 
     if (right == zero) {
@@ -718,7 +718,7 @@ BigFloat operator%(const BigFloat& left, const BigFloat& right) {
     R.sign = '+';
     R.error = 0;
 
-    int check = BigFloat::CompareNum(N, D);
+    int check = Number::CompareNum(N, D);
 
     if (check == 0) {
         return zero;
@@ -746,7 +746,7 @@ BigFloat operator%(const BigFloat& left, const BigFloat& right) {
                     int mod_avg = avg / 2;
                     avg = (avg - mod_avg * 2) ? (mod_avg + 1) : (mod_avg);
 
-                    int div_check = BigFloat::CompareNum(R, D * avg);
+                    int div_check = Number::CompareNum(R, D * avg);
 
                     if (div_check == 2) {
                         max = avg;
@@ -758,7 +758,7 @@ BigFloat operator%(const BigFloat& left, const BigFloat& right) {
                     }
                 }
 
-                Q.number.push_front(BigFloat::IntToChar(Q_sub));
+                Q.number.push_front(Number::IntToChar(Q_sub));
                 ret = R;
 
                 bool is_zero = true;
@@ -784,23 +784,23 @@ BigFloat operator%(const BigFloat& left, const BigFloat& right) {
     else
         tmp.sign = '-';
 
-    if (!BigFloat::CompareNum(tmp, zero))
+    if (!Number::CompareNum(tmp, zero))
         tmp.sign = '+';
 
     tmp.error = 0;
     return tmp;
 };
 
-BigFloat operator%(const BigFloat& left, const int& int_right) {
-    BigFloat right;
+Number operator%(const Number& left, const int& int_right) {
+    Number right;
     right = int_right;
     return left % right;
 };
 
-BigFloat BigFloat::Power(const BigFloat& left, const BigFloat& right, int div_precision) {
-    BigFloat tmp;
+Number Number::Power(const Number& left, const Number& right, int div_precision) {
+    Number tmp;
 
-    tmp = BigFloat::Pow(left, right);
+    tmp = Number::Pow(left, right);
 
     tmp.sign = '+';
     if (left.sign == '-')
@@ -812,30 +812,30 @@ BigFloat BigFloat::Power(const BigFloat& left, const BigFloat& right, int div_pr
     tmp.LeadTrim();
 
     if (right.sign == '-')
-        tmp = BigFloat::PrecDiv(1, tmp, div_precision);
+        tmp = Number::PrecDiv(1, tmp, div_precision);
 
     return tmp;
 };
 
-BigFloat BigFloat::Power(const BigFloat& left, const int& int_right, int div_precision) {
-    BigFloat right;
+Number Number::Power(const Number& left, const int& int_right, int div_precision) {
+    Number right;
     right = int_right;
-    return BigFloat::Power(left, right, div_precision);
+    return Number::Power(left, right, div_precision);
 };
 
-BigFloat BigFloat::Power(const BigFloat& left, const double& double_right, int div_precision) {
-    BigFloat right;
+Number Number::Power(const Number& left, const double& double_right, int div_precision) {
+    Number right;
     right = double_right;
-    return BigFloat::Power(left, right, div_precision);
+    return Number::Power(left, right, div_precision);
 };
 
-std::ostream& operator<<(std::ostream& out, BigFloat& b) {
+std::ostream& operator<<(std::ostream& out, Number& b) {
     out << b.ToString();
     return out;
 }
 
 // Comparators
-bool BigFloat::operator==(const BigFloat& right) const {
+bool Number::operator==(const Number& right) const {
     if ((error) || (right.error))
         return false;
 
@@ -845,34 +845,34 @@ bool BigFloat::operator==(const BigFloat& right) const {
     return false;
 };
 
-bool BigFloat::operator==(const int& int_right) const {
-    BigFloat right(int_right);
+bool Number::operator==(const int& int_right) const {
+    Number right(int_right);
     return *this == right;
 };
 
-bool BigFloat::operator==(const double& double_right) const {
-    BigFloat right(double_right);
+bool Number::operator==(const double& double_right) const {
+    Number right(double_right);
     return *this == right;
 };
 
-bool BigFloat::operator!=(const BigFloat& right) const {
+bool Number::operator!=(const Number& right) const {
     if ((error) || (right.error))
         return false;
 
     return !(*this == right);
 };
 
-bool BigFloat::operator!=(const int& int_right) const {
-    BigFloat right(int_right);
+bool Number::operator!=(const int& int_right) const {
+    Number right(int_right);
     return *this != right;
 };
 
-bool BigFloat::operator!=(const double& double_right) const {
-    BigFloat right(double_right);
+bool Number::operator!=(const double& double_right) const {
+    Number right(double_right);
     return *this != right;
 };
 
-bool BigFloat::operator>(const BigFloat& right) const {
+bool Number::operator>(const Number& right) const {
     if ((error) || (right.error))
         return false;
 
@@ -896,33 +896,33 @@ bool BigFloat::operator>(const BigFloat& right) const {
     return false;  // all cases are covered above, this is only to prevent compiler warnings
 };
 
-bool BigFloat::operator>(const int& int_right) const {
-    BigFloat right(int_right);
+bool Number::operator>(const int& int_right) const {
+    Number right(int_right);
     return *this > right;
 };
 
-bool BigFloat::operator>(const double& double_right) const {
-    BigFloat right(double_right);
+bool Number::operator>(const double& double_right) const {
+    Number right(double_right);
     return *this > right;
 };
 
-bool BigFloat::operator>=(const BigFloat& right) const {
+bool Number::operator>=(const Number& right) const {
     if ((error) || (right.error))
         return false;
     return !(*this < right);
 };
 
-bool BigFloat::operator>=(const int& int_right) const {
-    BigFloat right(int_right);
+bool Number::operator>=(const int& int_right) const {
+    Number right(int_right);
     return *this >= right;
 };
 
-bool BigFloat::operator>=(const double& double_right) const {
-    BigFloat right(double_right);
+bool Number::operator>=(const double& double_right) const {
+    Number right(double_right);
     return *this >= right;
 };
 
-bool BigFloat::operator<(const BigFloat& right) const {
+bool Number::operator<(const Number& right) const {
     if ((error) || (right.error))
         return false;
 
@@ -946,34 +946,34 @@ bool BigFloat::operator<(const BigFloat& right) const {
     return false;  // all cases are covered above, this is only to prevent compiler warnings
 };
 
-bool BigFloat::operator<(const int& int_right) const {
-    BigFloat right(int_right);
+bool Number::operator<(const int& int_right) const {
+    Number right(int_right);
     return *this < right;
 };
 
-bool BigFloat::operator<(const double& double_right) const {
-    BigFloat right(double_right);
+bool Number::operator<(const double& double_right) const {
+    Number right(double_right);
     return *this < right;
 };
 
-bool BigFloat::operator<=(const BigFloat& right) const {
+bool Number::operator<=(const Number& right) const {
     if ((error) || (right.error))
         return false;
     return !(*this > right);
 };
 
-bool BigFloat::operator<=(const int& int_right) const {
-    BigFloat right(int_right);
+bool Number::operator<=(const int& int_right) const {
+    Number right(int_right);
     return *this <= right;
 };
 
-bool BigFloat::operator<=(const double& double_right) const {
-    BigFloat right(double_right);
+bool Number::operator<=(const double& double_right) const {
+    Number right(double_right);
     return *this <= right;
 };
 
 // Stream Operators
-std::ostream& operator<<(std::ostream& out, const BigFloat& right) {
+std::ostream& operator<<(std::ostream& out, const Number& right) {
     if (right.error) {
         out << "nan";
         return out;
@@ -988,7 +988,7 @@ std::ostream& operator<<(std::ostream& out, const BigFloat& right) {
     return out;
 };
 
-std::istream& operator>>(std::istream& in, BigFloat& right) {
+std::istream& operator>>(std::istream& in, Number& right) {
     std::string c;
     in >> c;
     right = c;
@@ -996,7 +996,7 @@ std::istream& operator>>(std::istream& in, BigFloat& right) {
 };
 
 // Transformation Methods
-double BigFloat::ToDouble() const {
+double Number::ToDouble() const {
     double var = 0;
 
     if (error) {
@@ -1024,7 +1024,7 @@ double BigFloat::ToDouble() const {
     return var;
 }
 
-float BigFloat::ToFloat() const {
+float Number::ToFloat() const {
     float var = 0;
 
     if (error) {
@@ -1052,7 +1052,7 @@ float BigFloat::ToFloat() const {
     return var;
 }
 
-int BigFloat::ToInt() const {
+int Number::ToInt() const {
     int var = 0;
 
     if (error) {
@@ -1072,7 +1072,7 @@ int BigFloat::ToInt() const {
     return var;
 }
 
-std::string BigFloat::ToString() const {
+std::string Number::ToString() const {
     std::string var;
     std::stringstream ss;
 
@@ -1092,7 +1092,7 @@ std::string BigFloat::ToString() const {
     return var;
 };
 
-void BigFloat::SetPrecision(int prec) {
+void Number::SetPrecision(int prec) {
     if ((error) || (prec < 0))
         return;
     if (this->decimals < prec) {
@@ -1116,7 +1116,7 @@ void BigFloat::SetPrecision(int prec) {
                 for (int i = 1; i < prec; i++)
                     ss << "0";
                 ss << "1";
-                BigFloat aus(ss.str());
+                Number aus(ss.str());
                 *this = *this + aus;
             }
         }
@@ -1124,7 +1124,7 @@ void BigFloat::SetPrecision(int prec) {
 };
 
 // Remove leading zeros of numbers, utilized by Operations without sign
-void BigFloat::LeadTrim() {
+void Number::LeadTrim() {
     for (int i = number.size() - 1; i > decimals; --i) {
         if (number[i] == '0')
             number.pop_back();
@@ -1134,7 +1134,7 @@ void BigFloat::LeadTrim() {
 };
 
 // Remove non significant trailing zeros
-void BigFloat::TrailTrim() {
+void Number::TrailTrim() {
     if (!error)
         while ((number[0] == '0') && (decimals > 0)) {
             number.pop_front();
@@ -1143,14 +1143,14 @@ void BigFloat::TrailTrim() {
 };
 
 // Miscellaneous Methods
-std::string BigFloat::Exp() const {
+std::string Number::Exp() const {
     std::stringstream out;
     if (error) {
         out << "nan";
         return out.str();
     }
 
-    int check = BigFloat::CompareNum(*this, BigFloat(1));
+    int check = Number::CompareNum(*this, Number(1));
     if (check == 0) {
         out << sign;
         out << "1e+0";
@@ -1191,25 +1191,25 @@ std::string BigFloat::Exp() const {
     return out.str();
 };
 
-std::string BigFloat::toString() {
+std::string Number::toString() {
     return this->ToString();
 }
 
-bool BigFloat::equals(ObjectPtr other) {
+bool Number::equals(ObjectPtr other) {
     if (other.get() == this) {
         return true;
     }
-    if (!InstanceOf<BigFloat>(other)) {
+    if (!InstanceOf<Number>(other)) {
         return false;
     }
-    return *this == *cast<BigFloat>(other);
+    return *this == *cast<Number>(other);
 }
 
-size_t BigFloat::hashcode() {
+size_t Number::hashcode() {
     return std::hash<std::string>()(this->ToString());
 }
 
-bool BigFloat::isTruthy() {
+bool Number::isTruthy() {
     return std::any_of(number.begin(), number.end(), [](char c) { return c != '0'; });
 }
 

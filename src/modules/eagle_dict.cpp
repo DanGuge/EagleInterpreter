@@ -4,8 +4,8 @@
 
 #include <algorithm>
 
-#include "BigFloat.h"
 #include "eagle_container.h"
+#include "Number.h"
 
 namespace eagle {
 
@@ -52,7 +52,7 @@ void EagleDict::set(const eagle::ObjectPtr &key, eagle::ObjectPtr value, int lin
 }
 
 ObjectPtr EagleDict::size() {
-    return std::make_shared<BigFloat>(this->element_cnt);
+    return std::make_shared<Number>(this->element_cnt);
 }
 
 std::vector<ObjectPtr> EagleDict::iterator() {
@@ -195,7 +195,7 @@ bool EagleDict::contains(const eagle::ObjectPtr &key) {
 
 ObjectPtr EagleDict::size(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "size");
-    return std::make_shared<BigFloat>(dict->element_cnt);
+    return std::make_shared<Number>(dict->element_cnt);
 }
 
 ObjectPtr EagleDict::clear(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {

@@ -8,8 +8,8 @@ include_directories(./src)
 include_directories(./lib)
 
 set(LIB_FILES
-        lib/BigFloat.h
-        lib/BigFloat.cc
+        lib/Number.h
+        lib/Number.cc
         src/object.h
         src/object.cpp)
 

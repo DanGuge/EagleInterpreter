@@ -6,9 +6,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "BigFloat.h"
 #include "eagle_built_in_class.h"
 #include "eagle_exceptions.h"
+#include "Number.h"
 #include "object.h"
 
 namespace eagle {

@@ -4,9 +4,9 @@
 
 #include <algorithm>
 
-#include "BigFloat.h"
 #include "eagle_container.h"
 #include "eagle_exceptions.h"
+#include "Number.h"
 
 namespace eagle {
 
@@ -32,7 +32,7 @@ void EagleList::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, i
 }
 
 ObjectPtr EagleList::size() {
-    return std::make_shared<BigFloat>((int)elements.size());
+    return std::make_shared<Number>((int)elements.size());
 }
 
 std::vector<ObjectPtr> EagleList::iterator() {
@@ -125,10 +125,10 @@ bool EagleList::isTruthy() {
 }
 
 int EagleList::CheckSubscript(const eagle::ObjectPtr &subscript, int line) {
-    if (!InstanceOf<BigFloat>(subscript)) {
+    if (!InstanceOf<Number>(subscript)) {
         throw RuntimeError(line, "List subscript must be integer.");
     }
-    auto index = cast<BigFloat>(subscript);
+    auto index = cast<Number>(subscript);
     if (!index->isInteger()) {
         throw RuntimeError(line, "List subscript must be integer, not float.");
     }
@@ -145,7 +145,7 @@ int EagleList::CheckSubscript(const eagle::ObjectPtr &subscript, int line) {
 ObjectPtr EagleList::size(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
                           int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "size");
-    return std::make_shared<BigFloat>((int)list->elements.size());
+    return std::make_shared<Number>((int)list->elements.size());
 }
 
 ObjectPtr EagleList::empty(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -184,16 +184,16 @@ ObjectPtr EagleList::count(const eagle::BuiltInClassPtr &object, std::vector<Obj
     EagleListPtr list = CheckBuiltInClassType(object, line, "count");
     int cnt = (int)std::count_if(list->elements.begin(), list->elements.end(),
                                  [&](const ObjectPtr &e) { return e->equals(args[0]); });
-    return std::make_shared<BigFloat>(cnt);
+    return std::make_shared<Number>(cnt);
 }
 
 ObjectPtr EagleList::insert(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
                             int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "insert");
-    if (!InstanceOf<BigFloat>(args[0])) {
+    if (!InstanceOf<Number>(args[0])) {
         throw RuntimeError(line, "List subscript must be integer.");
     }
-    auto position = cast<BigFloat>(args[0]);
+    auto position = cast<Number>(args[0]);
     if (!position->isInteger()) {
         throw RuntimeError(line, "List subscript must be integer, not float.");
     }

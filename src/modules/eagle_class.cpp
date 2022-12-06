@@ -149,8 +149,8 @@ size_t EagleInstance::hashcode() {
     if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 0) {
         std::vector<ObjectPtr> arguments;
         ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
-        if (InstanceOf<BigFloat>(result) && cast<BigFloat>(result)->isInteger()) {
-            return static_cast<size_t>(cast<BigFloat>(result)->ToInt());
+        if (InstanceOf<Number>(result) && cast<Number>(result)->isInteger()) {
+            return static_cast<size_t>(cast<Number>(result)->ToInt());
         }
     }
     return reinterpret_cast<size_t>(this);

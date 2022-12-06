@@ -99,7 +99,7 @@ void Lexer::addNum() {
     }
 
     addToken(NUMBER,
-             std::make_shared<BigFloat>(std::string(source.substr(start, current - start))));
+             std::make_shared<Number>(std::string(source.substr(start, current - start))));
 }
 
 void Lexer::addString() {

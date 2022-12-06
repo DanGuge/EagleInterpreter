@@ -4,8 +4,8 @@
 
 #include <algorithm>
 
-#include "BigFloat.h"
 #include "eagle_container.h"
+#include "Number.h"
 
 namespace eagle {
 
@@ -28,7 +28,7 @@ void EagleTuple::set(const eagle::ObjectPtr &subscript, eagle::ObjectPtr value, 
 }
 
 ObjectPtr EagleTuple::size() {
-    return std::make_shared<BigFloat>((int)elements.size());
+    return std::make_shared<Number>((int)elements.size());
 }
 
 std::vector<ObjectPtr> EagleTuple::iterator() {
@@ -103,10 +103,10 @@ bool EagleTuple::isTruthy() {
 }
 
 int EagleTuple::CheckSubscript(const eagle::ObjectPtr &subscript, int line) {
-    if (!InstanceOf<BigFloat>(subscript)) {
+    if (!InstanceOf<Number>(subscript)) {
         throw RuntimeError(line, "Tuple subscript must be integer.");
     }
-    auto index = cast<BigFloat>(subscript);
+    auto index = cast<Number>(subscript);
     if (!index->isInteger()) {
         throw RuntimeError(line, "Tuple subscript must be integer, not float.");
     }
@@ -123,7 +123,7 @@ int EagleTuple::CheckSubscript(const eagle::ObjectPtr &subscript, int line) {
 ObjectPtr EagleTuple::size(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
                            int line) {
     EagleTuplePtr tuple = CheckBuiltInClassType(object, line, "size");
-    return std::make_shared<BigFloat>((int)tuple->elements.size());
+    return std::make_shared<Number>((int)tuple->elements.size());
 }
 
 ObjectPtr EagleTuple::empty(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,
@@ -137,7 +137,7 @@ ObjectPtr EagleTuple::count(const eagle::BuiltInClassPtr &object, std::vector<Ob
     EagleTuplePtr tuple = CheckBuiltInClassType(object, line, "count");
     int cnt = (int)std::count_if(tuple->elements.begin(), tuple->elements.end(),
                                  [&](const ObjectPtr &e) { return e->equals(args[0]); });
-    return std::make_shared<BigFloat>(cnt);
+    return std::make_shared<Number>(cnt);
 }
 
 ObjectPtr EagleTuple::contains(const eagle::BuiltInClassPtr &object, std::vector<ObjectPtr> &args,

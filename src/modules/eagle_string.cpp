@@ -56,7 +56,7 @@ std::string String::GetBuiltInClassInfo() {
 ObjectPtr String::size(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
                        int line) {
     StringPtr str = CheckBuiltInClassType(instance, line, "size");
-    return std::make_shared<BigFloat>((int)str->str.size());
+    return std::make_shared<Number>((int)str->str.size());
 }
 
 ObjectPtr String::empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
@@ -68,10 +68,10 @@ ObjectPtr String::empty(const BuiltInClassPtr& instance, std::vector<ObjectPtr>&
 ObjectPtr String::char_at(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
                           int line) {
     StringPtr str = CheckBuiltInClassType(instance, line, "char_at");
-    if (!InstanceOf<BigFloat>(arguments[0])) {
+    if (!InstanceOf<Number>(arguments[0])) {
         throw RuntimeError(line, "Parameter of method char_at must be integer");
     }
-    std::shared_ptr<BigFloat> index = cast<BigFloat>(arguments[0]);
+    std::shared_ptr<Number> index = cast<Number>(arguments[0]);
     if (index->Decimals() != 0) {
         throw RuntimeError(line, "Parameter of method char_at must be integer, not float");
     }
@@ -100,7 +100,7 @@ ObjectPtr String::count(const BuiltInClassPtr& instance, std::vector<ObjectPtr>&
         pos = found + substr->str.size();
         found = str->str.find(substr->str, pos);
     }
-    return std::make_shared<BigFloat>(found_count);
+    return std::make_shared<Number>(found_count);
 }
 
 ObjectPtr String::find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,
@@ -112,7 +112,7 @@ ObjectPtr String::find(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& 
     StringPtr substr = cast<String>(arguments[0]);
     auto found = str->str.find(substr->str);
     int position = found == std::string::npos ? -1 : static_cast<int>(found);
-    return std::make_shared<BigFloat>(position);
+    return std::make_shared<Number>(position);
 }
 
 ObjectPtr String::upper(const BuiltInClassPtr& instance, std::vector<ObjectPtr>& arguments,

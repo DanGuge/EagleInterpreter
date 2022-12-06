@@ -26,9 +26,9 @@ void Eagle::run(std::string source) {
 //        } else if (InstanceOf<Boolean>(token->literal)) {
 //            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
 //                      << "Boolean Literal " + cast<Boolean>(token->literal)->ToString();
-//        } else if (InstanceOf<BigFloat>(token->literal)) {
+//        } else if (InstanceOf<Number>(token->literal)) {
 //            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
-//                      << "BigFloat Literal " + cast<BigFloat>(token->literal)->ToString();
+//                      << "Number Literal " + cast<Number>(token->literal)->ToString();
 //        } else if (InstanceOf<Null>(token->literal)) {
 //            std::cout << std::setiosflags(std::ios::left) << std::setw(print_literal_len)
 //                      << "Null Literal ";

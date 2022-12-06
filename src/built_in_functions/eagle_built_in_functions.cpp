@@ -120,10 +120,10 @@ int Num::arity() {
 }
 
 ObjectPtr Num::call(std::vector<ObjectPtr>& arguments, int call_line) {
-    if (InstanceOf<BigFloat>(arguments[0])) {
+    if (InstanceOf<Number>(arguments[0])) {
         return arguments[0];
     } else if (InstanceOf<String>(arguments[0])) {
-        return std::make_shared<BigFloat>(cast<String>(arguments[0])->str);
+        return std::make_shared<Number>(cast<String>(arguments[0])->str);
     } else {
         throw RuntimeError(call_line, "num() need one 'Number' or 'String' argument");
     }
@@ -234,7 +234,7 @@ int Id::arity() {
 }
 
 ObjectPtr Id::call(std::vector<ObjectPtr>& arguments, int call_line) {
-    return std::make_shared<BigFloat>(std::to_string(reinterpret_cast<size_t>(arguments[0].get())));
+    return std::make_shared<Number>(std::to_string(reinterpret_cast<size_t>(arguments[0].get())));
 }
 
 std::string Id::toString() {
@@ -254,7 +254,7 @@ ObjectPtr Len::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<EagleContainer>(arguments[0])) {
         return cast<EagleContainer>(arguments[0])->size();
     } else if (InstanceOf<String>(arguments[0])) {
-        return std::make_shared<BigFloat>(std::to_string(cast<String>(arguments[0])->str.size()));
+        return std::make_shared<Number>(std::to_string(cast<String>(arguments[0])->str.size()));
     } else {
         throw RuntimeError(call_line, "len() need 'Container' or 'String' argument");
     }

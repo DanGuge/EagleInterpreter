@@ -4,12 +4,12 @@
 
 #include "interpreter.h"
 
-#include "BigFloat.h"
 #include "built_in_functions/eagle_built_in_functions.h"
 #include "modules/eagle_class.h"
 #include "modules/eagle_container.h"
 #include "modules/eagle_stream.h"
 #include "modules/eagle_string.h"
+#include "Number.h"
 #include "pretty_print/pretty_print.h"
 #include "util/error_reporter.h"
 
@@ -160,7 +160,7 @@ ObjectPtr Interpreter::visitUnaryExpr(std::shared_ptr<Expr::Unary> expr) {
         case NOT: return std::make_shared<Boolean>(!isTruthy(value));
         case MINUS:
             checkNumber(expr->op, value);
-            return std::make_shared<BigFloat>(0 - (*cast<BigFloat>(value)));
+            return std::make_shared<Number>(0 - (*cast<Number>(value)));
         default:
             throw EagleRuntimeError("[RuntimeError at line " + std::to_string(expr->op->line) +
                                     "] " + "Undefined behavior of operator " + expr->op->text);
@@ -574,7 +574,7 @@ ObjectPtr Interpreter::getVariable(const TokenPtr& name, const ExprPtr& expr) {
 }
 
 bool Interpreter::checkNumber(const TokenPtr& op, const ObjectPtr& object) {
-    if (InstanceOf<BigFloat>(object)) {
+    if (InstanceOf<Number>(object)) {
         return true;
     } else {
         throw interpreterRuntimeError(op->line,
@@ -584,7 +584,7 @@ bool Interpreter::checkNumber(const TokenPtr& op, const ObjectPtr& object) {
 
 bool Interpreter::checkTwoNumbers(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right,
                                   bool need_throw) {
-    if (InstanceOf<BigFloat>(left) && InstanceOf<BigFloat>(right)) {
+    if (InstanceOf<Number>(left) && InstanceOf<Number>(right)) {
         return true;
     } else {
         if (need_throw) {
@@ -606,7 +606,7 @@ bool Interpreter::checkTwoStrings(const ObjectPtr& left, const TokenPtr& op,
 
 ObjectPtr Interpreter::plus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
-        return std::make_shared<BigFloat>((*cast<BigFloat>(left)) + (*cast<BigFloat>(right)));
+        return std::make_shared<Number>((*cast<Number>(left)) + (*cast<Number>(right)));
     } else if (checkTwoStrings(left, op, right)) {
         return std::make_shared<String>(cast<String>(left)->str + cast<String>(right)->str);
     } else {
@@ -618,27 +618,27 @@ ObjectPtr Interpreter::plus(const ObjectPtr& left, const TokenPtr& op, const Obj
 
 ObjectPtr Interpreter::minus(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     checkTwoNumbers(left, op, right, true);
-    return std::make_shared<BigFloat>((*cast<BigFloat>(left)) - (*cast<BigFloat>(right)));
+    return std::make_shared<Number>((*cast<Number>(left)) - (*cast<Number>(right)));
 }
 
 ObjectPtr Interpreter::multi(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     checkTwoNumbers(left, op, right, true);
-    return std::make_shared<BigFloat>((*cast<BigFloat>(left)) * (*cast<BigFloat>(right)));
+    return std::make_shared<Number>((*cast<Number>(left)) * (*cast<Number>(right)));
 }
 
 ObjectPtr Interpreter::div(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     checkTwoNumbers(left, op, right, true);
-    return std::make_shared<BigFloat>((*cast<BigFloat>(left)) / (*cast<BigFloat>(right)));
+    return std::make_shared<Number>((*cast<Number>(left)) / (*cast<Number>(right)));
 }
 
 ObjectPtr Interpreter::mod(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     checkTwoNumbers(left, op, right, true);
-    return std::make_shared<BigFloat>((*cast<BigFloat>(left)) % (*cast<BigFloat>(right)));
+    return std::make_shared<Number>((*cast<Number>(left)) % (*cast<Number>(right)));
 }
 
 bool Interpreter::less(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
-        return (*cast<BigFloat>(left)) < (*cast<BigFloat>(right));
+        return (*cast<Number>(left)) < (*cast<Number>(right));
     } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str < cast<String>(right)->str;
     } else {
@@ -650,7 +650,7 @@ bool Interpreter::less(const ObjectPtr& left, const TokenPtr& op, const ObjectPt
 
 bool Interpreter::lessEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
-        return (*cast<BigFloat>(left)) <= (*cast<BigFloat>(right));
+        return (*cast<Number>(left)) <= (*cast<Number>(right));
     } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str <= cast<String>(right)->str;
     } else {
@@ -662,7 +662,7 @@ bool Interpreter::lessEqual(const ObjectPtr& left, const TokenPtr& op, const Obj
 
 bool Interpreter::greater(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
-        return (*cast<BigFloat>(left)) > (*cast<BigFloat>(right));
+        return (*cast<Number>(left)) > (*cast<Number>(right));
     } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str > cast<String>(right)->str;
     } else {
@@ -674,7 +674,7 @@ bool Interpreter::greater(const ObjectPtr& left, const TokenPtr& op, const Objec
 
 bool Interpreter::greaterEqual(const ObjectPtr& left, const TokenPtr& op, const ObjectPtr& right) {
     if (checkTwoNumbers(left, op, right, false)) {
-        return (*cast<BigFloat>(left)) >= (*cast<BigFloat>(right));
+        return (*cast<Number>(left)) >= (*cast<Number>(right));
     } else if (checkTwoStrings(left, op, right)) {
         return cast<String>(left)->str >= cast<String>(right)->str;
     } else {
@@ -686,7 +686,7 @@ bool Interpreter::greaterEqual(const ObjectPtr& left, const TokenPtr& op, const 
 
 /* isTruthy(), isEqual(), stringify()
  * Need to support:
- * 1. Null & BigFloat & Boolean
+ * 1. Null & Number & Boolean
  * 2. String
  * 3. Class & Instance
  * 4. Function
