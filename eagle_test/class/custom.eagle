@@ -1,0 +1,78 @@
+class A {
+    var a;
+    var b;
+    def init(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+}
+
+class B {
+    var a;
+    var b;
+    def init(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+    def toString() {
+        return "(" + str(this.a) + "|" + str(this.b) + ")";
+    }
+    def equals(o) {
+        return this.a == o.a and this.b == o.b;
+    }
+    def hashcode() {
+        return this.a + this.b;
+    }
+    def isTruthy() {
+        return this.a != 0 or this.b != 0;
+    }
+}
+
+print A(1, 2); // expected: <instance of class A>
+print B(1, 2); // expected: (1|2)
+
+print A(1, 2) == A(1, 2); // expected: false
+print B(1, 2) == B(1, 2); // expected: true
+var l = [1, 2, A(1, 2), B(1, 2), B(1, 2)];
+print l.count(1); // expected: 1
+print l.count(A(1, 2)); // expected: 0
+print l.count(B(1, 2)); // expected: 2
+
+var d = {A(1, 2): "A instance", B(1, 2): "B instance"};
+print d.contains_key(A(1, 2)); // expected: false
+print d.contains_key(B(1, 2)); // expected: true
+d[B(2, 1)] = "xyz";
+print d.size(); // expected: 3
+print d[B(1, 2)]; // expected: B instance
+print d[B(2, 1)]; // expected: xyz
+
+print A(0 ,0) ? "true" : "false"; // expected: true
+print B(0 ,0) ? "true" : "false"; // expected: false
+print B(1 ,0) ? "true" : "false"; // expected: true
+
+class C {
+    var a;
+    var b;
+    def init(a, b) {
+        this.a = a;
+        this.b = b;
+    }
+    def equals(o) {
+        return this.a == o.a and this.b == o.b;
+    }
+    def hashcode() {
+        return this.a + this.b;
+    }
+}
+
+var d1 = {};
+var d2 = {};
+d1.put(C(1, 2), 1);
+d1.put(C(2, 1), 2);
+d2.put(C(2, 1), 2);
+d2.put(C(1, 2), 1);
+print d1 == d2; // expected: true
+print d1[C(1, 2)]; // expected: 1
+print d1[C(2, 1)]; // expected: 2
+var d = {d1: "dict of instance C"};
+print d[d2]; // expected: dict of instance C
