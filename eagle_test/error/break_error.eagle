@@ -1,0 +1,2 @@
+break;
+// expected: [Error at line 1] At 'break': Can't use 'break' keyword outside loop

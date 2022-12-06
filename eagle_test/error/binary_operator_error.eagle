@@ -1,0 +1,4 @@
+var a = 1;
+var b = "2";
+print a + b;
+// expected: [RuntimeError at line 3] Operator + needs both left and right to be digits or strings

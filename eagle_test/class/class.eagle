@@ -32,9 +32,9 @@ class B {
     def init(a, b) {
         this.a = a;
         this.b = b;
-        print "initilize class B with " + str(this.a) + str(this.b);
+        print "initialize class B with " + str(this.a) + str(this.b);
     }
 }
 
-var b = B("cc", "bb"); // expected: initilize class B with ccbb
+var b = B("cc", "bb"); // expected: initialize class B with ccbb
 

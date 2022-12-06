@@ -1,0 +1,2 @@
+continue;
+// expected: [Error at line 1] At 'continue': Can't use 'continue' keyword outside loop

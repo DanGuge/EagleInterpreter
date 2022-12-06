@@ -1,0 +1,5 @@
+def g(n) {
+    return g(n-1);
+}
+g(1000);
+// expected: [RuntimeError] Maximum recursion depth exceeded

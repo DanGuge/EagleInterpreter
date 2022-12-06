@@ -1,0 +1,2 @@
+var b = this.c;
+// expected: [Error at line 1] At 'super': Can't use 'super' keyword outside class
