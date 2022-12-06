@@ -1,6 +1,14 @@
-# Eagle语言设计说明书
+## 目录
 
-吴晨灿 王艺坤
+[TOC]
+
+<div STYLE="page-break-after: always;"></div>
+
+## 工作量说明
+
+Eagle语言为两位同学共同设计、开发，工作量各占50%
+
+<div STYLE="page-break-after: always;"></div>
 
 ## 1. 语言的背景和目标
 
@@ -13,6 +21,8 @@ Eagle的设计目标，是想要设计一款类Python的解释型的动态类型
 现在Python语言在多个领域受到人们的追捧，比如机器学习，数据挖掘，后端开发等。其简单直白的语法规则和动态类型的语言设计，使得Python常常成为人们入门计算机编程的第一选择。这种简单直白的语法逻辑，和易于上手的便捷性，也是我们选择Python作为我们对标语言的主要原因，我们希望Eagle也能够成为成为一款易于上手，且功能强大的语言。
 
 Eagle在尝试向Python看齐，但是又与Python在一些方面有所不同。
+
+
 
 ### 1.2 特性与目标
 
@@ -44,6 +54,8 @@ Eagle在尝试向Python看齐，但是又与Python在一些方面有所不同。
 
 * Python，Java，Scala，C++，Ruby
 
+
+
 ### 1.3 实现
 
 * 在架构设计上，我们使用了Visitor模式作为解释器的主要架构，参考了以下开源项目的实现方案：
@@ -58,6 +70,8 @@ Eagle在尝试向Python看齐，但是又与Python在一些方面有所不同。
 * 在实现上，我们参考了java中的公共父类Object和面向对象的思想，在Eagle中也实现公共父类Object，所有Eagle中使用的对象均继承了Object，以此作为Eagle的开发基础
     * 我们也实现了java中的`InstanceOf`等函数，来辅助开发
 
+<div STYLE="page-break-after: always;"></div>
+
 ## 2. 词法设计
 
 ### 2.1 Token设计
@@ -69,6 +83,8 @@ Eagle在尝试向Python看齐，但是又与Python在一些方面有所不同。
 * string text：Token对应的字符串
 * Object literal：当该Token为基本类型，则literal为具体基本类型，否则为nullptr
   * Object为Eagle内置实现的公共父类
+
+
 
 ### 2.2 TokenType设计
 
@@ -172,6 +188,8 @@ TokenType的作用是区分Lexer词法解析的分析结果，在Parser中通过
 | --------- | ------------------------------------------------ |
 | END       | 在词法解析结束后，在末尾添加END标识最后一个Token |
 
+
+
 ### 2.3 Lexer设计
 
 Eagle解释器中的Lexer词法解析，采用手动构造的方式来实现，没有依赖第三方支持。
@@ -190,6 +208,8 @@ Eagle解释器中的Lexer词法解析，采用手动构造的方式来实现，�
 #### 2.3.2 处理过程
 
 <img src="./imgs/Lexer处理过程.png" alt="Lexer处理过程" style="zoom:20%;" />
+
+<div STYLE="page-break-after: always;"></div>
 
 ## 3. 语法设计
 
@@ -321,6 +341,8 @@ identifier ::= alpha (alpha|digit)* ;
 alpha ::= "a"..."z"|"A"..."Z"|"_" ;
 ```
 
+
+
 ### 3.2 AST抽象语法树设计
 
 抽象语法树（AST）是通过Parser语法解析，将Lexer词法解析的结果构造为Eagle对应的语言成分，在Eagle中主要分为Expression和Statement两类
@@ -415,6 +437,8 @@ for (var a = 1; a < 10; a += 1) {
 
 
 
+<div STYLE="page-break-after: always;"></div>
+
 ## 4. 语义说明
 
 ### 4.1 存储域
@@ -450,6 +474,8 @@ fetch(sto, loc) = let stored_value (stored stble) = stble
 				  	  in stored_value (sto(loc))
 ```
 
+
+
 ### 4.2 环境域
 
 标识环境域Environ，标识符域Identifier，可绑定体域Bindable，环境特性的映射关系如下：
@@ -481,6 +507,8 @@ find(env, I) =
 	in bound_value(env(I))
 ```
 
+
+
 ### 4.3 原始域表达式
 
 Primary原始域中包含：真值域Boolean，空值域Nil，字符串域String，数值域Number，容器域Container，标识符域Identifier。
@@ -510,6 +538,8 @@ container_get(container, env, index) =
 	let container_sto = find(env, container) in
 	fetch_variable(container_env, index)
 ```
+
+
 
 ### 4.4 表达式
 
@@ -710,6 +740,8 @@ evaluate [switch(E) case E1: V1, case E2: V2, default V3] env sto =
 evaluate [(E)] env sto = evaluate E env sto
 ```
 
+
+
 ### 4.5 语句
 
 * 使用Statement来表示语句域，语句主要可以分为条件语句，循环语句，表达式语句，输出语句，空语句。
@@ -748,6 +780,8 @@ execute [print E] env sto =
 	print output
 execute [] env sto = sto
 ```
+
+
 
 ### 4.6 声明
 
@@ -827,6 +861,8 @@ execute [class I1 extends I2 VD FD] env sto =
 		(bind(I1, class class), sto')
 ```
 
+<div STYLE="page-break-after: always;"></div>
+
 ## 5. 实现细节
 
 ### 5.1 总述
@@ -837,6 +873,8 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 
 使用面向对象的编程范式完成代码的具体实现，将模块功能封装在相应的类中。为了方便管理内存，使用c++17的智能指针`shared_ptr`管理堆内存资源。
 
+
+
 ### 5.2 Object类
 
 #### 5.2.1 使用Object类的原因
@@ -846,9 +884,7 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 + 在访问AST节点时，需要使用RTTI（Run Time Type Identification，运行时类型识别）来确定子节点的类型，从而确定处理逻辑；
 + Eagle语言的值Value没有具体的类型，可以是字符串、数值、列表等等，为了方便实现，将Value定义为公共父类的指针，并在解释执行时通过RTTI确定子节点的类型并选择相应的处理方法。
 
-出于以上两点考虑，定义Object类作为所有AST节点类型和Eagle所有值类型的公共父类，其继承关系如下图所示
-
-<img src="./imgs/Object继承关系.png" alt="Object继承关系" style="zoom:80%;" />
+出于以上两点考虑，定义Object类作为所有AST节点类型和Eagle所有值类型的公共父类，其继承关系如下页图所示
 
 其中：
 
@@ -869,6 +905,8 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 		+ 内置函数 BuiltInFunction
 		+ 其他
 
+<img src="./imgs/Object继承关系.png" alt="Object继承关系" style="zoom: 67%;" />
+
 #### 5.2.2 Object类的方法
 
 考虑到Eagle的各种值类型具有一些公共的行为，参考java语言Object类的方法，设计Object类具有以下四个可继承的方法：
@@ -885,6 +923,8 @@ Eagle语言的解释器使用c++17实现，可以运行在windows，linux，macO
 4. `bool isTruthy()`
 	+ 含义：返回该Eagle值作为布尔值进行判断时，是否为真
 	+ 缺省行为：返回true
+
+
 
 ### 5.3 内置类型
 
@@ -1206,6 +1246,8 @@ python
 	+ `for_each(Callable func) - Null`：对流中的每一个元素`element`执行`func(element)`，返回值为`Null`；
 	+ `count() - Number`：返回流中元素的数量。
 
+
+
 ### 5.4 环境域
 
 在Eagle中，设计了`Environment`类来管理不同作用域中的环境变量，其主要有以下成员变量和方法。（环境域，也就是符号表）
@@ -1229,6 +1271,8 @@ while(true) {
 
 <img src="./imgs/Environment.png" alt="Environment" style="zoom:18%;" />
 
+
+
 ### 5.5 内置函数
 
 在Eagle中，BuiltInFunction继承了Callable接口，内置函数需要实现BuiltInFunction接口，所以都可以执行`call`动作。Eagle中内置函数的处理逻辑就是在全局环境域中提前注册一系列实现了Callable接口的实例，使其具有可调用的性质。
@@ -1248,6 +1292,8 @@ while(true) {
 * `globals()->Dict`：返回一个字典，包含全局环境域中的所有信息
 *  `id(object: Object)->Number`：输出对象的存储地址
 * `len(object: Container/String)->Number`：输出容器/字符串的长度
+
+
 
 ### 5.6 类与实例
 
@@ -1323,6 +1369,8 @@ false
 3. `size_t hashcode()`：若对应的类定义了名为`hashcode`的方法，且参数数量满足条件，且执行结果为正整数，则返回该方法的执行结果；否则返回缺省结果；
 4. `bool isTruthy()`：若对应的类定义了名为`isTruthy`的方法，且参数数量满足条件，且执行结果为Boolean，则返回该方法的执行结果；否则返回缺省结果；
 
+
+
 ### 5.7 Return, Break, Continue实现
 
 在Eagle中，Return语句会出现在方法中，Break和Continue语句会出现在循环中，它们的语义是跳出方法/循环的作用域，返回到调用的地方。
@@ -1350,6 +1398,8 @@ ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
 }
 ```
 
+
+
 ### 5.8 函数 / lambda
 
 在Eagle中，函数和lambda本质是相同，lambda就是匿名的函数。EagleFunction主要由函数声明`Stmt::Function declaration`和函数声明的环境域`Environment closure` 组成。
@@ -1362,6 +1412,8 @@ ObjectPtr Interpreter::visitWhileStmt(std::shared_ptr<Stmt::While> stmt) {
 ```cpp
 Object call(vector<Object> argument);
 ```
+
+
 
 ### 5.9 EagleShell
 
@@ -1428,6 +1480,8 @@ EagleShell支持彩色输出、斜体输出等，使得输出内容的意义更�
 
 当EagleShell检测到用户输入的命令是一个Expression，且该Expression不是赋值表达式时，会将Expression的结果打印出来，方便用户及时检查运算结果是否正确。
 
+
+
 ### 5.10 函数调用栈的层数控制
 
 当用户的程序陷入死递归时，Eagle的解释器能够及时检测并报错，这需要实现对函数调用栈的层数控制。
@@ -1453,6 +1507,8 @@ ObjectPtr WrapperCall(std::vector<ObjectPtr>& arguments, int call_line) {
 实现效果如下图所示，预设函数调用栈的最大层数为1000：
 
 <img src="./imgs/stackoverflow.png" alt="stackoverflow" style="zoom: 67%;" />
+
+<div STYLE="page-break-after: always;"></div>
 
 ## 6. 验证与测试
 
@@ -1530,7 +1586,7 @@ print a == 9 ? 9 :
       a == 10 ? a * a : a;
 ```
 
-<img src="./imgs/expression.png" alt="expression" style="zoom:50%;" />
+<img src="./imgs/expression.png" alt="expression" style="zoom: 33%;" />
 
 #### 类
 
@@ -1569,7 +1625,7 @@ son.fun = fun;
 print son.fun(1, 2);
 ```
 
-<img src="./imgs/class.png" alt="class" style="zoom:50%;" />
+<img src="./imgs/class.png" alt="class" style="zoom: 33%;" />
 
 #### 函数/lambda
 
@@ -1598,7 +1654,7 @@ print son.fun(1, 2);
  print add(a, b);
  ```
 
-<img src="./imgs/function_test.png" alt="function_test" style="zoom:50%;" />
+<img src="./imgs/function_test.png" alt="function_test" style="zoom: 33%;" />
 
 #### List
 
@@ -1634,9 +1690,9 @@ l.clear();
 print l;
 ```
 
-![image-20221206234546673](./imgs/list_test.png)
+<img src="./imgs/list_test.png" alt="image-20221206234546673" style="zoom:80%;" />
 
-![image-20221206234546673](./imgs/list_test2.png)
+<img src="./imgs/list_test2.png" alt="image-20221206234546673" style="zoom:80%;" />
 
 #### Tuple
 
@@ -1657,7 +1713,7 @@ print l.contains(1);
 print l.count(3);
 ```
 
-![image-20221206234546673](./imgs/tuple_test.png)
+<img src="./imgs/tuple_test.png" alt="image-20221206234546673" style="zoom:80%;" />
 
 #### Dict
 
@@ -1698,11 +1754,11 @@ print d.values();
 print d.items();
 ```
 
-![image-20221206234546673](./imgs/dict_test1.png)
+<img src="./imgs/dict_test1.png" alt="image-20221206234546673" style="zoom:80%;" />
 
-![image-20221206234546673](./imgs/dict_test2.png)
+<img src="./imgs/dict_test2.png" alt="image-20221206234546673" style="zoom:80%;" />
 
-![image-20221206234546673](./imgs/dict_test3.png)
+<img src="./imgs/dict_test3.png" alt="image-20221206234546673" style="zoom:80%;" />
 
 #### String
 
@@ -1730,9 +1786,9 @@ print s.split(":");
 print s.replace("ftp", "http");
 ```
 
-![image-20221206234546673](./imgs/string_test1.png)
+<img src="./imgs/string_test1.png" alt="image-20221206234546673" style="zoom:80%;" />
 
-![image-20221206234546673](./imgs/string_test2.png)
+<img src="./imgs/string_test2.png" alt="image-20221206234546673" style="zoom:80%;" />
 
 #### 流处理
 
@@ -1758,9 +1814,9 @@ var s = stream([1, 2, 3, 4, 5]).map((x) -> (x, x/2)).for_each((t) -> {
 stream({1: 2, 3: 4}).for_each((x) -> {print x;});
 ```
 
-![image-20221206234546673](./imgs/stream_test1.png)
+<img src="./imgs/stream_test1.png" alt="image-20221206234546673" style="zoom:80%;" />
 
-![image-20221206234546673](./imgs/stream_test2.png)
+<img src="./imgs/stream_test2.png" alt="image-20221206234546673" style="zoom:80%;" />
 
 #### 用户自定义类的toString等方法
 
@@ -1841,7 +1897,9 @@ print "3 levels hanoi:";
 print hanoi("A", "B", "C", 3);
 ```
 
-![bechmark_test](./imgs/benchmark_test.png)
+![benchmark_test](./imgs/benchmark_test.png)
+
+
 
 ### 6.2 错误示例
 
