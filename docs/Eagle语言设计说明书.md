@@ -1456,6 +1456,8 @@ ObjectPtr WrapperCall(std::vector<ObjectPtr>& arguments, int call_line) {
 
 ## 6. 验证与测试
 
+> 以下测试在EagleShell或文件中进行
+
 ### 6.1 基本功能
 
 #### 内置函数
@@ -1495,11 +1497,108 @@ print len(g);
 
 #### 表达式
 
+```
+var a = 10;
+a += a *= 3;
+print a;
 
+var b = 99;
+print b - a;
+
+var c = "this is a ";
+print c + "test";
+
+print true and false;
+print false or true;
+print true and not false;
+
+print 1 < 2 < 3 < 4;
+print 1 < 3 < 2 < 4;
+print 1 < 3 > 2 < 4;
+
+var d = 7;
+var e = switch(d) {
+        case 1: 1 * 1,
+        case 2: 2 * 2,
+        case 3: 3 * 3,
+        default: d * d
+        };
+print e;
+
+print a == 9 ? 9 :
+      a != 10 ? 11 :
+      a == 10 ? a * a : a;
+```
+
+<img src="./imgs/expression.png" alt="expression" style="zoom:50%;" />
 
 #### 类
 
+```
+class Father {
+    var a = "father a";
+    def init() {
+        this.b = "father b";
+    }
 
+    def print_father() {
+        print "father";
+    }
+}
+
+class Son extends Father {
+    var c = "son c";
+    def init() {
+        super.init();
+        super.print_father();
+    }
+    def print_son() {
+        print "son";
+    }
+}
+
+var son = Son();
+print son.a;
+print son.b;
+print son.c;
+son.print_father();
+son.print_son();
+
+var fun = (b, c) -> {return str(b) + str(c);};
+son.fun = fun;
+print son.fun(1, 2);
+```
+
+<img src="./imgs/class.png" alt="class" style="zoom:50%;" />
+
+#### 函数/lambda
+
+ ```
+ def closure() {
+     var a = "this is a";
+     def print_a() {
+         print a;
+     }
+     return print_a;
+ }
+ 
+ var f = closure();
+ f();
+ 
+ def func_test_2(a, b) {
+     print "parameters are " + str(a) + " and " + str(b);
+ }
+ 
+ func_test_2("aa", "bb");
+ 
+ var a = 1;
+ var b = 2;
+ var add = (left, right) -> left + right;
+ 
+ print add(a, b);
+ ```
+
+<img src="./imgs/function_test.png" alt="function_test" style="zoom:50%;" />
 
 #### 容器
 
@@ -1513,9 +1612,88 @@ print len(g);
 
 
 
-#### 函数/lambda
+#### benchmark
 
 
 
 ### 6.2 错误示例
 
+#### 未定义标识符
+
+```
+var a = a;
+```
+
+<img src="./imgs/undefined_identifier.png" alt="undefined_identifier" style="zoom:50%;" />
+
+#### 二元操作运算
+
+```
+var a = 1;
+var b = "2";
+print a + b;
+```
+
+<img src="./imgs/binary_operator.png" alt="binary_operator" style="zoom:50%;" />
+
+#### 关键字作用域
+
+```
+break;
+continue;
+var a = super.a;
+var b = this.b;
+return 1;
+```
+
+<img src="./imgs/keyword_env.png" alt="keyword_env" style="zoom:50%;" />
+
+#### 函数参数个数不对
+
+```
+def fun_with_3(a, b, c) {
+    return a + b + c;
+}
+print fun_with_3(1, 2);
+```
+
+<img src="./imgs/arguments_error.png" alt="arguments_error" style="zoom:50%;" />
+
+#### 继承自身
+
+```
+class A extends A {
+}
+```
+
+<img src="./imgs/inheritance_error.png" alt="inheritance_error" style="zoom:50%;" />
+
+#### 括号匹配
+
+```
+var a = (1, 2;
+var b = [1, 2;
+var c = {1: 2;
+if (true ;
+```
+
+<img src="./imgs/paren_error.png" alt="paren_error" style="zoom:50%;" />
+
+#### 栈溢出
+
+```
+def g(n) {
+    return g(n-1);
+}
+g(1000);
+```
+
+<img src="./imgs/stackoverflow_test.png" alt="stackoverflow_test" style="zoom:50%;" />
+
+#### 缺少分号
+
+```
+var a = 1
+```
+
+<img src="./imgs/semicolon_error.png" alt="semicolon_error" style="zoom:50%;" />
