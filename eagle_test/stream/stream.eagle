@@ -1,0 +1,61 @@
+var s1 = stream(["c++", "java", "python"]).map((x) -> {print x; return x;}).count();
+// expected:
+// c++
+// java
+// python
+
+print s1; // expected: 3
+
+var s2 = stream(["c++", "java", "python"]).map((x) -> {print x; return x;});
+
+print s2.limit(2).count();
+// expected:
+// c++
+// java
+// python
+// 2
+
+var s3 = stream((("c++", "Compiled"), ("java", "Compiled-Interpreted"), ("python", "Interpreted")))
+            .map((x) -> {print x[0]; return x;}).map((x) -> {print x[1]; return x;}).count();
+// expected:
+// c++
+// Compiled
+// java
+// Compiled-Interpreted
+// python
+// Interpreted
+print s3; // expected: 3
+
+print stream([1, 2, 3, 4, 5]).map((x) -> x*x).to_list();
+// expected: [1, 4, 9, 16, 25]
+
+print stream([1, 2, 3, 4, 5]).filter((x) -> x % 2 != 0).to_list();
+// expected: [1, 3, 5]
+
+print stream([1, 2, 3, 4, 5]).limit(3).to_list();
+// expected: [1, 2, 3]
+
+print stream([1, 2, 3, 4, 5]).map((x) -> x*3+1).filter((x) -> x > 10)
+        .filter((x) -> x < 15).to_tuple();
+// expected: (13,)
+
+print stream([1, 2, 3, 4, 5]).map((x) -> (x, x*x*x)).to_dict();
+// expected: {5: 125, 1: 1, 2: 8, 3: 27, 4: 64}
+
+var s = stream([1, 2, 3, 4, 5])
+        .map((x) -> (x, x/2))
+        .for_each((t) -> {
+            print "num: " + str(t[0]) + ", half: " + str(t[1]);
+        });
+// expected:
+// num: 1, half: 0.5
+// num: 2, half: 1
+// num: 3, half: 1.5
+// num: 4, half: 2
+// num: 5, half: 2.5
+print s; // expected: Nil
+
+stream({1: 2, 3: 4}).for_each((x) -> {print x;});
+// expected:
+// 3
+// 1
