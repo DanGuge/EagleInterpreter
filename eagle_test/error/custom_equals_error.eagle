@@ -1,0 +1,7 @@
+class A {
+    def equals(o) {
+        return this == o;
+    }
+}
+print A() == A();
+// expected: [RuntimeError] Maximum recursion depth exceeded

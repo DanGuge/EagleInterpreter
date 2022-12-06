@@ -1,0 +1,4 @@
+print "str".method();
+// expected: [RuntimeError at line 1] String has no method named method
+print "str".upper(1);
+// expected: [RuntimeError at line 3] Expect arguments size is 0 But 1 argument(s) is(are) given
