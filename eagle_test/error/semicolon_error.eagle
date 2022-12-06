@@ -1,0 +1,1 @@
+var a = 1 // expected: [Error at line 1] At the end: Expect ';' after variable declaration

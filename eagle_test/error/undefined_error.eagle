@@ -1,0 +1,2 @@
+print a;
+// expected: [RuntimeError at line 1] Undefined variable 'a'
