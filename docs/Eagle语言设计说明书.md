@@ -69,6 +69,7 @@ Eagle在尝试向Python看齐，但是又与Python在一些方面有所不同。
 * 在内存管理上，我们使用了c++17的智能指针`shared_ptr`来管理堆内存资源
 * 在实现上，我们参考了java中的公共父类Object和面向对象的思想，在Eagle中也实现公共父类Object，所有Eagle中使用的对象均继承了Object，以此作为Eagle的开发基础
     * 我们也实现了java中的`InstanceOf`等函数，来辅助开发
+* 在便捷使用上，我们仿照Python的命令行交互，开发了EagleShell，方便用户通过命令行交互的方式，来对Eagle进行使用和调试
 
 <div STYLE="page-break-after: always;"></div>
 
