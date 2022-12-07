@@ -24,7 +24,7 @@
 git clone git@github.com:DanGuge/EagleInterpreter.git
 cd EagleInterpreter
 mkdir build && cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 

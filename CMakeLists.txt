@@ -70,5 +70,5 @@ add_library(big_float_lib STATIC ${LIB_FILES})
 add_library(pretty_print_lib STATIC ${PRETTY_PRINT_FILES})
 add_library(built_in_functions STATIC ${BUILT_IN_FUNCTIONS})
 
-add_executable(EagleInterpreter src/main.cpp)
-target_link_libraries(EagleInterpreter eagle_lib big_float_lib pretty_print_lib built_in_functions)
+add_executable(eagle src/main.cpp)
+target_link_libraries(eagle eagle_lib big_float_lib pretty_print_lib built_in_functions)
