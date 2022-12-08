@@ -693,15 +693,15 @@ bool Interpreter::greaterEqual(const ObjectPtr& left, const TokenPtr& op, const 
  * 5. List & Tuple & Dict
  */
 bool Interpreter::isTruthy(const ObjectPtr& object) {
-    return object->isTruthy();
+    return object->WrapIsTruthy();
 }
 
 bool Interpreter::isEqual(const ObjectPtr& left, const ObjectPtr& right) {
-    return left->equals(right);
+    return left->WrapEquals(right);
 }
 
 std::string Interpreter::stringify(const ObjectPtr& object) {
-    return object->toString();
+    return object->WrapToString();
 }
 
 EagleRuntimeError Interpreter::interpreterRuntimeError(int line, const std::string& message) {

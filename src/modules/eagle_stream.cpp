@@ -186,7 +186,7 @@ ObjectPtr EagleStream::filter(const eagle::ObjectPtr &para, const eagle::ObjectP
     }
     std::vector<ObjectPtr> arguments{element};
     ObjectPtr filter_result = call->WrapperCall(arguments, line);
-    return filter_result->isTruthy() ? element : nullptr;
+    return filter_result->WrapIsTruthy() ? element : nullptr;
 }
 
 std::vector<ObjectPtr> EagleStream::limit(const eagle::ObjectPtr &para,

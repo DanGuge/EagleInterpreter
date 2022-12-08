@@ -64,7 +64,7 @@ std::string EagleTuple::GetBuiltInClassInfo() {
 std::string EagleTuple::toString() {
     std::string str = "(";
     for (int i = 0; i < elements.size(); i++) {
-        str += elements[i]->toString();
+        str += elements[i]->WrapToString();
         str += (elements.size() == 1) ? "," : (i == elements.size() - 1) ? "" : ", ";
     }
     str += ")";
@@ -83,7 +83,7 @@ bool EagleTuple::equals(eagle::ObjectPtr other) {
         return false;
     }
     for (int i = 0; i < elements.size(); i++) {
-        if (!elements[i]->equals(another->elements[i])) {
+        if (!elements[i]->WrapEquals(another->elements[i])) {
             return false;
         }
     }
@@ -93,7 +93,7 @@ bool EagleTuple::equals(eagle::ObjectPtr other) {
 size_t EagleTuple::hashcode() {
     size_t h = 0;
     for (auto &element : elements) {
-        h = 31 * h + element->hashcode();
+        h = 31 * h + element->WrapHashCode();
     }
     return h;
 }
@@ -136,7 +136,7 @@ ObjectPtr EagleTuple::count(const eagle::BuiltInClassPtr &object, std::vector<Ob
                             int line) {
     EagleTuplePtr tuple = CheckBuiltInClassType(object, line, "count");
     int cnt = (int)std::count_if(tuple->elements.begin(), tuple->elements.end(),
-                                 [&](const ObjectPtr &e) { return e->equals(args[0]); });
+                                 [&](const ObjectPtr &e) { return e->WrapEquals(args[0]); });
     return std::make_shared<Number>(cnt);
 }
 
@@ -144,7 +144,7 @@ ObjectPtr EagleTuple::contains(const eagle::BuiltInClassPtr &object, std::vector
                                int line) {
     EagleTuplePtr tuple = CheckBuiltInClassType(object, line, "contains");
     bool contain = std::any_of(tuple->elements.begin(), tuple->elements.end(),
-                               [&](const ObjectPtr &e) { return e->equals(args[0]); });
+                               [&](const ObjectPtr &e) { return e->WrapEquals(args[0]); });
     return std::make_shared<Boolean>(contain);
 }
 

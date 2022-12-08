@@ -54,7 +54,7 @@ ObjectPtr WriteToFile::call(std::vector<ObjectPtr>& arguments, int call_line) {
         if (InstanceOf<String>(arguments[1])) {
             of_stream << cast<String>(arguments[1])->str;
         } else {
-            of_stream << arguments[1]->toString();
+            of_stream << arguments[1]->WrapToString();
         }
         of_stream.close();
         return std::make_shared<Null>();
@@ -100,7 +100,7 @@ ObjectPtr Str::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<String>(arguments[0])) {
         return arguments[0];
     } else if (InstanceOf<Object>(arguments[0])) {
-        return std::make_shared<String>(arguments[0]->toString());
+        return std::make_shared<String>(arguments[0]->WrapToString());
     } else {
         throw RuntimeError(call_line, "str() need one 'Object' argument");
     }
@@ -175,7 +175,7 @@ ObjectPtr Bool::call(std::vector<ObjectPtr>& arguments, int call_line) {
     if (InstanceOf<Boolean>(arguments[0])) {
         return arguments[0];
     } else {
-        return std::make_shared<Boolean>(arguments[0]->isTruthy());
+        return std::make_shared<Boolean>(arguments[0]->WrapIsTruthy());
     }
 }
 

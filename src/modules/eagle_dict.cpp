@@ -25,30 +25,30 @@ const std::unordered_map<std::string, BuiltInClassMethodInfo> EagleDict::built_i
 EagleDict::EagleDict(const std::vector<EagleDictEntry> &elements) {
     element_cnt = 0;
     for (auto &insert_entry : elements) {
-        size_t h = insert_entry.first->hashcode();
+        size_t h = insert_entry.first->WrapHashCode();
         InsertDictEntry(h, insert_entry.first, insert_entry.second);
     }
 }
 
 ObjectPtr EagleDict::get(const eagle::ObjectPtr &key, int line) {
-    size_t h = key->hashcode();
+    size_t h = key->WrapHashCode();
     auto found = elements.find(h);
     if (found == elements.end()) {
-        throw RuntimeError(line, "Dict does not have key: " + key->toString());
+        throw RuntimeError(line, "Dict does not have key: " + key->WrapToString());
     }
     for (auto &entry : found->second) {
-        if (key->equals(entry.first)) {
+        if (key->WrapEquals(entry.first)) {
             return entry.second;
         }
     }
-    throw RuntimeError(line, "Dict does not have key: " + key->toString());
+    throw RuntimeError(line, "Dict does not have key: " + key->WrapToString());
 }
 
 void EagleDict::set(const eagle::ObjectPtr &key, eagle::ObjectPtr value, int line) {
     if (key.get() == this || value.get() == this) {
         throw RuntimeError(line, "Dict can not contain itself.");
     }
-    InsertDictEntry(key->hashcode(), key, std::move(value));
+    InsertDictEntry(key->WrapHashCode(), key, std::move(value));
 }
 
 ObjectPtr EagleDict::size() {
@@ -120,7 +120,7 @@ std::string EagleDict::toString() {
             } else {
                 str += ", ";
             }
-            str += (entry.first->toString() + ": " + entry.second->toString());
+            str += (entry.first->WrapToString() + ": " + entry.second->WrapToString());
         }
     }
     str += "}";
@@ -145,7 +145,7 @@ bool EagleDict::equals(eagle::ObjectPtr other) {
             if (!another->contains(key)) {
                 return false;
             }
-            if (!value->equals(another->get(key, 0))) {
+            if (!value->WrapEquals(another->get(key, 0))) {
                 return false;
             }
         }
@@ -159,7 +159,7 @@ size_t EagleDict::hashcode() {
         for (auto &entry : node.second) {
             auto &key = entry.first;
             auto &value = entry.second;
-            h += (key->hashcode() ^ value->hashcode());
+            h += (key->WrapHashCode() ^ value->WrapHashCode());
         }
     }
     return h;
@@ -174,7 +174,7 @@ void EagleDict::InsertDictEntry(size_t h, const eagle::ObjectPtr &key, eagle::Ob
         elements[h] = std::vector<EagleDictEntry>{};
     }
     for (auto &entry : elements[h]) {
-        if (key->equals(entry.first)) {
+        if (key->WrapEquals(entry.first)) {
             entry.second = std::move(value);
             return;
         }
@@ -184,13 +184,13 @@ void EagleDict::InsertDictEntry(size_t h, const eagle::ObjectPtr &key, eagle::Ob
 }
 
 bool EagleDict::contains(const eagle::ObjectPtr &key) {
-    size_t h = key->hashcode();
+    size_t h = key->WrapHashCode();
     auto found = elements.find(h);
     if (found == elements.end()) {
         return false;
     }
     return std::any_of(found->second.begin(), found->second.end(),
-                       [&](const EagleDictEntry &entry) { return key->equals(entry.first); });
+                       [&](const EagleDictEntry &entry) { return key->WrapEquals(entry.first); });
 }
 
 ObjectPtr EagleDict::size(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
@@ -233,7 +233,7 @@ ObjectPtr EagleDict::contains_value(const BuiltInClassPtr &object, std::vector<O
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "contains_value");
     for (auto &node : dict->elements) {
         for (auto &entry : node.second) {
-            if (entry.second->equals(args[0])) {
+            if (entry.second->WrapEquals(args[0])) {
                 return std::make_shared<Boolean>(true);
             }
         }
@@ -244,11 +244,11 @@ ObjectPtr EagleDict::contains_value(const BuiltInClassPtr &object, std::vector<O
 ObjectPtr EagleDict::remove(const BuiltInClassPtr &object, std::vector<ObjectPtr> &args, int line) {
     EagleDictPtr dict = CheckBuiltInClassType(object, line, "remove");
     ObjectPtr &key = args[0];
-    size_t h = key->hashcode();
+    size_t h = key->WrapHashCode();
     if (dict->elements.find(h) != dict->elements.end()) {
         auto &list = dict->elements[h];
         for (auto it = list.begin(); it != list.end(); it++) {
-            if (key->equals(it->first)) {
+            if (key->WrapEquals(it->first)) {
                 list.erase(it);
                 dict->element_cnt--;
                 return std::make_shared<Null>();

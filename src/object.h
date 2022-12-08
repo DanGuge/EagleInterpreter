@@ -14,15 +14,15 @@ using ObjectPtr = std::shared_ptr<Object>;
 
 class Object {
 public:
-    virtual void ObjectEmptyFunction() {}
-
     virtual std::string toString();
-
     virtual bool equals(ObjectPtr other);
-
     virtual size_t hashcode();
-
     virtual bool isTruthy();
+
+    std::string WrapToString();
+    bool WrapEquals(ObjectPtr other);
+    size_t WrapHashCode();
+    bool WrapIsTruthy();
 };
 
 template <class V>

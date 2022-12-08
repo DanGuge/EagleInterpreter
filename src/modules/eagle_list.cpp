@@ -86,7 +86,7 @@ std::string EagleList::GetBuiltInClassInfo() {
 std::string EagleList::toString() {
     std::string str = "[";
     for (int i = 0; i < elements.size(); i++) {
-        str += elements[i]->toString();
+        str += elements[i]->WrapToString();
         str += (i == elements.size() - 1) ? "" : ", ";
     }
     str += "]";
@@ -105,7 +105,7 @@ bool EagleList::equals(eagle::ObjectPtr other) {
         return false;
     }
     for (int i = 0; i < elements.size(); i++) {
-        if (!elements[i]->equals(another->elements[i])) {
+        if (!elements[i]->WrapEquals(another->elements[i])) {
             return false;
         }
     }
@@ -115,7 +115,7 @@ bool EagleList::equals(eagle::ObjectPtr other) {
 size_t EagleList::hashcode() {
     size_t h = 0;
     for (auto &element : elements) {
-        h = 31 * h + element->hashcode();
+        h = 31 * h + element->WrapHashCode();
     }
     return h;
 }
@@ -175,7 +175,7 @@ ObjectPtr EagleList::contains(const eagle::BuiltInClassPtr &object, std::vector<
                               int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "contains");
     bool contain = std::any_of(list->elements.begin(), list->elements.end(),
-                               [&](const ObjectPtr &e) { return e->equals(args[0]); });
+                               [&](const ObjectPtr &e) { return e->WrapEquals(args[0]); });
     return std::make_shared<Boolean>(contain);
 }
 
@@ -183,7 +183,7 @@ ObjectPtr EagleList::count(const eagle::BuiltInClassPtr &object, std::vector<Obj
                            int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "count");
     int cnt = (int)std::count_if(list->elements.begin(), list->elements.end(),
-                                 [&](const ObjectPtr &e) { return e->equals(args[0]); });
+                                 [&](const ObjectPtr &e) { return e->WrapEquals(args[0]); });
     return std::make_shared<Number>(cnt);
 }
 
@@ -216,7 +216,7 @@ ObjectPtr EagleList::remove(const eagle::BuiltInClassPtr &object, std::vector<Ob
                             int line) {
     EagleListPtr list = CheckBuiltInClassType(object, line, "remove");
     for (auto it = list->elements.begin(); it != list->elements.end(); it++) {
-        if ((*it)->equals(args[0])) {
+        if ((*it)->WrapEquals(args[0])) {
             list->elements.erase(it);
             return std::make_shared<Null>();
         }

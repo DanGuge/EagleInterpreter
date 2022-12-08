@@ -4,6 +4,8 @@
 
 #include "object.h"
 
+#include "modules/eagle_stack.h"
+
 namespace eagle {
 
 std::string Object::toString() {
@@ -20,6 +22,34 @@ size_t Object::hashcode() {
 
 bool Object::isTruthy() {
     return true;
+}
+
+std::string Object::WrapToString() {
+    EagleStack::Push();
+    std::string result = this->toString();
+    EagleStack::Pop();
+    return std::move(result);
+}
+
+bool Object::WrapEquals(ObjectPtr other) {
+    EagleStack::Push();
+    bool result = this->equals(std::move(other));
+    EagleStack::Pop();
+    return result;
+}
+
+size_t Object::WrapHashCode() {
+    EagleStack::Push();
+    size_t result = this->hashcode();
+    EagleStack::Pop();
+    return result;
+}
+
+bool Object::WrapIsTruthy() {
+    EagleStack::Push();
+    bool result = this->isTruthy();
+    EagleStack::Pop();
+    return result;
 }
 
 std::string Null::toString() {
