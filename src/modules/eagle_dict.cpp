@@ -22,6 +22,8 @@ const std::unordered_map<std::string, BuiltInClassMethodInfo> EagleDict::built_i
     {"items", {items, 0}},
 };
 
+std::unordered_set<size_t> EagleDict::to_string_stack{};
+
 EagleDict::EagleDict(const std::vector<EagleDictEntry> &elements) {
     element_cnt = 0;
     for (auto &insert_entry : elements) {
@@ -108,6 +110,10 @@ std::string EagleDict::GetBuiltInClassInfo() {
 }
 
 std::string EagleDict::toString() {
+    if (to_string_stack.find(reinterpret_cast<size_t>(this)) != to_string_stack.end()) {
+        return "{...}";
+    }
+    to_string_stack.insert(reinterpret_cast<size_t>(this));
     std::string str = "{";
     bool first_entry = true;
     for (auto &node : elements) {
@@ -121,6 +127,7 @@ std::string EagleDict::toString() {
         }
     }
     str += "}";
+    to_string_stack.erase(reinterpret_cast<size_t>(this));
     return std::move(str);
 }
 

@@ -16,6 +16,8 @@ const std::unordered_map<std::string, BuiltInClassMethodInfo> EagleList::built_i
     {"insert", {insert, 2}},  {"remove", {remove, 1}},     {"pop", {pop, 0}},
     {"reverse", {reverse, 0}}};
 
+std::unordered_set<size_t> EagleList::to_string_stack{};
+
 EagleList::EagleList(std::vector<ObjectPtr> elements) : elements(std::move(elements)) {}
 
 ObjectPtr EagleList::get(const eagle::ObjectPtr &subscript, int line) {
@@ -81,12 +83,17 @@ std::string EagleList::GetBuiltInClassInfo() {
 }
 
 std::string EagleList::toString() {
+    if (to_string_stack.find(reinterpret_cast<size_t>(this)) != to_string_stack.end()) {
+        return "[...]";
+    }
+    to_string_stack.insert(reinterpret_cast<size_t>(this));
     std::string str = "[";
     for (int i = 0; i < elements.size(); i++) {
         str += elements[i]->WrapToString();
         str += (i == elements.size() - 1) ? "" : ", ";
     }
     str += "]";
+    to_string_stack.erase(reinterpret_cast<size_t>(this));
     return std::move(str);
 }
 

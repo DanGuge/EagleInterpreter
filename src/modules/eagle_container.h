@@ -5,6 +5,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -73,6 +74,8 @@ private:
 
 private:
     static const std::unordered_map<std::string, BuiltInClassMethodInfo> built_in_methods;
+
+    static std::unordered_set<size_t> to_string_stack;
 };
 
 class EagleTuple : public EagleContainer {
@@ -160,6 +163,8 @@ private:
 
 private:
     static const std::unordered_map<std::string, BuiltInClassMethodInfo> built_in_methods;
+
+    static std::unordered_set<size_t> to_string_stack;
 };
 
 }  // namespace eagle
