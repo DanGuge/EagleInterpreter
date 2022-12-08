@@ -139,7 +139,9 @@ bool EagleInstance::equals(eagle::ObjectPtr other) {
     if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 1) {
         std::vector<ObjectPtr> arguments{another};
         ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
-        return result->WrapIsTruthy();
+        if (InstanceOf<Boolean>(result)) {
+            return cast<Boolean>(result)->value;
+        }
     }
     return false;
 }
@@ -149,7 +151,12 @@ size_t EagleInstance::hashcode() {
     if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 0) {
         std::vector<ObjectPtr> arguments;
         ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
-        return result->WrapHashCode();
+        if (InstanceOf<Number>(result)) {
+            std::shared_ptr<Number> hashcode_result = cast<Number>(result);
+            if (hashcode_result->isInteger() && *hashcode_result >= 0) {
+                return static_cast<size_t>(hashcode_result->ToInt());
+            }
+        }
     }
     return reinterpret_cast<size_t>(this);
 }
@@ -159,7 +166,9 @@ bool EagleInstance::isTruthy() {
     if (InstanceOf<EagleCallable>(method) && cast<EagleCallable>(method)->arity() == 0) {
         std::vector<ObjectPtr> arguments;
         ObjectPtr result = cast<EagleCallable>(method)->WrapperCall(arguments, -1);
-        return result->WrapIsTruthy();
+        if (InstanceOf<Boolean>(result)) {
+            return cast<Boolean>(result)->value;
+        }
     }
     return true;
 }
