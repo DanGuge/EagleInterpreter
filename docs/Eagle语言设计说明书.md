@@ -1991,7 +1991,6 @@ var l = [1, 2, 3];
 print l[3];
 l["str"] = 1;
 l[0.5] = 2;
-l.append(l);
 
 l = (1, 2, 3);
 print l[-4];
@@ -2000,9 +1999,6 @@ l.append(5);
 
 var d = {1: 2, 3: 4};
 print d[5];
-d[d] = 1;
-d[1] = d;
-d.put(d, d);
 ```
 
 ![container_error](./imgs/container_error.png)

@@ -7,5 +7,3 @@ l["str"] = 1;
 // expected: [RuntimeError at line 6] List subscript must be integer.
 l[0.5] = 2;
 // expected: [RuntimeError at line 8] List subscript must be integer, not float.
-l.append(l);
-// expected: [RuntimeError at line 10] List can not contain itself.
