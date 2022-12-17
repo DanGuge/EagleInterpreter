@@ -17,6 +17,8 @@ public:
     void forward();
     void backward();
     void append(std::string line);
+    bool forward_end();
+    bool backward_end();
 
 private:
     static std::string empty_str;

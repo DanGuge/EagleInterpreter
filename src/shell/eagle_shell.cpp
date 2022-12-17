@@ -6,10 +6,25 @@
 
 #ifdef _WIN32
 #include <conio.h>
+
+#define PREFIX -32
+#define UP     72
+#define LEFT   75
+#define RIGHT  77
+#define DOWN   80
+
 #elif (__APPLE__) || (__unix__)
 #include <termios.h>
 #include <unistd.h>
 #define putch(x) putc((x), stdout)
+
+#define PREFIX      27
+#define NEXT_PREFIX '['
+#define UP          'A'
+#define DOWN        'B'
+#define RIGHT       'C'
+#define LEFT        'D'
+
 #endif
 
 namespace eagle {
@@ -42,15 +57,24 @@ void EagleShellHistory::append(std::string line) {
     lines.emplace_back(std::move(line));
 }
 
+bool EagleShellHistory::forward_end() {
+    return index == 0;
+}
+
+bool EagleShellHistory::backward_end() {
+    return index == lines.size();
+}
+
 #ifdef _WIN32
 std::string EagleShell::readLine() {
     std::string line;
+    int pos = 0;
     char c;
     c = getch();
     while (c != '\n' && c != '\r') {
-        if (c == -32) {
+        if (c == PREFIX) {
             c = getch();
-            if (c == 72) {
+            if (c == UP && !history.forward_end()) {
                 if (!line.empty()) {
                     moveLeftToEndAndClear((int)line.size());
                 }
@@ -58,7 +82,8 @@ std::string EagleShell::readLine() {
                 line.clear();
                 line = history.get();
                 printf("%s", line.c_str());
-            } else if (c == 80) {
+                pos = (int)line.size();
+            } else if (c == DOWN && !history.backward_end()) {
                 if (!line.empty()) {
                     moveLeftToEndAndClear((int)line.size());
                 }
@@ -66,35 +91,71 @@ std::string EagleShell::readLine() {
                 line.clear();
                 line = history.get();
                 printf("%s", line.c_str());
+                pos = (int)line.size();
+            } else if (c == LEFT && pos > 0) {
+                putch('\b');
+                pos--;
+            } else if (c == RIGHT && pos < line.size()) {
+                putch(line[pos]);
+                pos++;
             }
             c = getch();
             continue;
         }
 
         if (c == '\b') {
-            if (!line.empty()) {
-                line.pop_back();
-                moveLeftOneAndClear();
+            if (!line.empty() && pos > 0) {
+                // process variables
+                pos--;
+                line.erase(pos, 1);
+                // process console output
+                putch('\b');
+                for (int i = pos; i < line.size(); i++) {
+                    putch(line[i]);
+                }
+                putch(' ');
+                for (int i = 0; i < line.size() - pos + 1; i++) {
+                    putch('\b');
+                }
             }
             c = getch();
             continue;
         }
-
         if (c == '\t') {
+            // process variables
+            line.insert(pos, 4, ' ');
+            pos += 4;
+            // process console output
             for (int i = 0; i < 4; i++) {
-                line += ' ';
                 putch(' ');
             }
+            for (int i = pos; i < line.size(); i++) {
+                putch(line[i]);
+            }
+            for (int i = 0; i < line.size() - pos; i++) {
+                putch('\b');
+            }
+
             c = getch();
             continue;
         }
 
-        line += c;
+        // process variables
+        line.insert(pos, 1, c);
+        pos++;
+        // process console output
         putch(c);
+        for (int i = pos; i < line.size(); i++) {
+            putch(line[i]);
+        }
+        for (int i = 0; i < line.size() - pos; i++) {
+            putch('\b');
+        }
         // printf("%d\n", c);
 
         c = getch();
     }
+
     if (!line.empty()) {
         history.append(line);
     }
@@ -120,14 +181,15 @@ char getch() {
 
 std::string EagleShell::readLine() {
     std::string line;
+    int pos = 0;
     char c;
     c = getch();
     while (c != '\n' && c != '\r') {
-        if (c == 27) {
+        if (c == PREFIX) {
             c = getch();
-            if (c == '[') {
+            if (c == NEXT_PREFIX) {
                 c = getch();
-                if (c == 'A') {
+                if (c == UP && !history.forward_end()) {
                     if (!line.empty()) {
                         moveLeftToEndAndClear((int)line.size());
                     }
@@ -135,7 +197,8 @@ std::string EagleShell::readLine() {
                     line.clear();
                     line = history.get();
                     printf("%s", line.c_str());
-                } else if (c == 'B') {
+                    pos = line.size();
+                } else if (c == DOWN && !history.backward_end()) {
                     if (!line.empty()) {
                         moveLeftToEndAndClear((int)line.size());
                     }
@@ -143,6 +206,13 @@ std::string EagleShell::readLine() {
                     line.clear();
                     line = history.get();
                     printf("%s", line.c_str());
+                    pos = line.size();
+                } else if (c == LEFT && pos > 0) {
+                    putch('\b');
+                    pos--;
+                } else if (c == RIGHT && pos < line.size()) {
+                    putch(line[pos]);
+                    pos++;
                 }
             }
             c = getch();
@@ -150,25 +220,55 @@ std::string EagleShell::readLine() {
         }
 
         if (c == 127) {
-            if (!line.empty()) {
-                line.pop_back();
-                moveLeftOneAndClear();
+            if (!line.empty() && pos > 0) {
+                // process variables
+                pos--;
+                line.erase(pos, 1);
+                // process console output
+                putch('\b');
+                for (int i = pos; i < line.size(); i++) {
+                    putch(line[i]);
+                }
+                putch(' ');
+                for (int i = 0; i < line.size() - pos + 1; i++) {
+                    putch('\b');
+                }
             }
             c = getch();
             continue;
         }
 
         if (c == '\t') {
+            // process variables
+            line.insert(pos, 4, ' ');
+            pos += 4;
+            // process console output
             for (int i = 0; i < 4; i++) {
-                line += ' ';
                 putch(' ');
             }
+            for (int i = pos; i < line.size(); i++) {
+                putch(line[i]);
+            }
+            for (int i = 0; i < line.size() - pos; i++) {
+                putch('\b');
+            }
+
             c = getch();
             continue;
         }
 
-        line += c;
+        // process variables
+        line.insert(pos, 1, c);
+        pos++;
+        // process console output
         putch(c);
+        for (int i = pos; i < line.size(); i++) {
+            putch(line[i]);
+        }
+        for (int i = 0; i < line.size() - pos; i++) {
+            putch('\b');
+        }
+        // printf("%d\n", c);
 
         c = getch();
     }
